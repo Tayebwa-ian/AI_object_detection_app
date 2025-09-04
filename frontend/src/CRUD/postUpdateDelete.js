@@ -1,31 +1,37 @@
 // send a post, update or delete request to the API
 
-async function postUpdateDelete(url, info, reqMethod="POST") {
-    // it defaults to a post request if not request method is specified
+export async function sendJSON(url, payload = null, method = 'POST', options = {}) {
+  const controller = new AbortController();
+  const { signal } = controller;
+  const timeout = options.timeout || 20000;
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...(options.headers || {}),
+      },
+      body: payload != null ? JSON.stringify(payload) : undefined,
+      signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    const text = await res.text();
     let data = null;
-    let error = "Request has no errors";
-    let statusCode;
+    try { data = text ? JSON.parse(text) : null; } catch (e) { data = text; }
 
-    try {
-      const res = await fetch(url, {
-        method: reqMethod,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(info)
-      });
-      statusCode = res;
-      if (!res.ok) { // error coming back from server
-        const error_data = await res.json();
-        throw Error(error_data.message);
-      };
-      const resp_data = await res.json();
-      data = resp_data;
-    } catch(err) {
-      // auto catches network / connection error
-      error = err.message;
-    };
-    return {data, error, statusCode};
+    if (!res.ok) {
+      const message = (data && data.message) || `Request failed: ${res.status}`;
+      throw new Error(message);
+    }
+
+    return { data, status: res.status };
+  } catch (err) {
+    if (err.name === 'AbortError') throw new Error('Request aborted or timed out');
+    throw err;
+  }
 }
-
-export default postUpdateDelete;
