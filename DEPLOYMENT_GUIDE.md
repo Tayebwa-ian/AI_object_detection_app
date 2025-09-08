@@ -33,7 +33,7 @@ This guide provides comprehensive instructions for deploying the AI Object Count
 pip install -r requirements.txt
 
 # Frontend dependencies
-cd seth_front_end
+cd frontend
 npm install
 ```
 
@@ -103,7 +103,7 @@ AI_DEVICE=cpu
 
 3. **Start frontend** (in another terminal):
    ```bash
-   cd seth_front_end
+   cd frontend
    npm install
    npm run dev
    ```
@@ -314,7 +314,7 @@ print('Default object types created')
 ### 1. Development
 
 ```bash
-cd seth_front_end
+cd frontend
 npm install
 npm run dev
 ```
@@ -322,7 +322,7 @@ npm run dev
 ### 2. Production Build
 
 ```bash
-cd seth_front_end
+cd frontend
 npm install
 npm run build
 ```
@@ -335,7 +335,7 @@ server {
     server_name your-domain.com;
     
     location / {
-        root /path/to/seth_front_end/dist;
+        root /path/to/frontend/dist;
         try_files $uri $uri/ /index.html;
     }
     

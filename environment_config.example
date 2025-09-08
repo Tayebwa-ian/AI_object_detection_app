@@ -122,7 +122,7 @@ HEALTH_CHECK_INTERVAL=30
 # =============================================================================
 
 # Frontend Build Directory
-FRONTEND_BUILD_DIR=seth_front_end/dist
+FRONTEND_BUILD_DIR=frontend/dist
 
 # Frontend Development Server
 FRONTEND_DEV_PORT=3000

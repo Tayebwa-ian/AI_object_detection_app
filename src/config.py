@@ -77,7 +77,7 @@ class Config:
     HEALTH_CHECK_INTERVAL = int(os.getenv('HEALTH_CHECK_INTERVAL', '30'))
     
     # Frontend Configuration
-    FRONTEND_BUILD_DIR = os.getenv('FRONTEND_BUILD_DIR', 'seth_front_end/dist')
+    FRONTEND_BUILD_DIR = os.getenv('FRONTEND_BUILD_DIR', 'frontend/dist')
     FRONTEND_DEV_PORT = int(os.getenv('FRONTEND_DEV_PORT', '3000'))
     
     @classmethod

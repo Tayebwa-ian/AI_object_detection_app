@@ -35,7 +35,7 @@ If you prefer not to run MySQL, you can run the backend locally in development (
 ```
 python start_development.py
 
-cd seth_front_end
+cd frontend
 npm install
 npm run dev
 ```
@@ -92,7 +92,7 @@ python start_development.py
 
 Frontend:
 ```
-cd seth_front_end
+cd frontend
 npm install
 npm run dev
 ```
@@ -102,9 +102,9 @@ npm run dev
 ## Project Structure
 
 - `src/` – Flask app, API routes, storage engine, pipeline
-- `seth_front_end/` – Vite/React app (TypeScript)
+- `frontend/` – Vite/React app (TypeScript)
 - `Dockerfile` – Backend container (Python)
-- `seth_front_end/Dockerfile` – Frontend container (Node → static nginx)
+- `frontend/Dockerfile` – Frontend container (Node → static nginx)
 - `docker-compose.yml` – Orchestration of backend, frontend, MySQL
 - `media/` – Uploaded images (mounted volume in Docker)
 - `logs/` – Logs (mounted volume in Docker)
