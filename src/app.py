@@ -3,7 +3,7 @@
 
 from flask import Flask
 from os import getenv
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, Response
 from src import storage
 from flask_restful import Api
 from flask_cors import CORS
@@ -13,6 +13,7 @@ from .config import config
 import logging
 from flask import send_from_directory
 import os
+from .monitoring.metrics import get_metrics, get_metrics_content_type
 
 
 # create the app instance
@@ -53,6 +54,23 @@ def health_check():
         'pipeline_available': True,
         'database': 'connected'
     })
+
+@app.route('/metrics')
+def metrics():
+    """OpenMetrics compatible metrics endpoint for Prometheus"""
+    try:
+        metrics_data = get_metrics()
+        return Response(
+            metrics_data,
+            mimetype=get_metrics_content_type()
+        )
+    except Exception as e:
+        logging.error(f"Failed to generate metrics: {e}")
+        return Response(
+            "# Error generating metrics\n",
+            status=500,
+            mimetype='text/plain'
+        )
 
 # setup the API and the endpoints
 api = Api(app)

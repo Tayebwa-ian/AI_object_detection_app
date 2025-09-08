@@ -14,6 +14,7 @@ import cv2
 from segment_anything import SamAutomaticMaskGenerator, sam_model_registry
 from transformers import AutoImageProcessor, AutoModelForImageClassification
 import os
+import time
 from typing import List, Dict, Any
 import warnings
 warnings.filterwarnings("ignore")
@@ -119,6 +120,7 @@ class LightweightPipeline:
     
     def segment_image(self, image_path):
         """Generate segments using SAM with memory optimization"""
+        start_time = time.time()
         try:
             # Check if SAM is available
             if self.mask_generator is None:
@@ -166,6 +168,10 @@ class LightweightPipeline:
                 segments.append(segment)
                 bboxes.append(bbox)
             
+            # Record timing
+            duration = time.time() - start_time
+            print(f"SAM segmentation completed in {duration:.3f}s")
+            
             return segments, bboxes, image_rgb
             
         except Exception as e:
@@ -174,6 +180,7 @@ class LightweightPipeline:
     
     def classify_segments(self, segments, bboxes=None, original_image=None):
         """Classify segments using ResNet with enhanced processing"""
+        start_time = time.time()
         results = []
         
         for i, segment in enumerate(segments):
@@ -192,6 +199,10 @@ class LightweightPipeline:
                     'confidence': 0.0,
                     'calibrated_confidence': 0.0
                 })
+        
+        # Record timing
+        duration = time.time() - start_time
+        print(f"ResNet classification completed in {duration:.3f}s")
         
         return results
     
@@ -294,7 +305,9 @@ def run_pipeline(image_path,
         
         # Step 1: Segmentation
         print(f"Processing: {image_path}")
+        sam_start = time.time()
         segments, bboxes, original_image = pipeline.segment_image(image_path)
+        sam_time = time.time() - sam_start
         
         if not segments:
             return {
@@ -310,10 +323,13 @@ def run_pipeline(image_path,
         
         # Step 2: Classification (FIXED: Pass additional context)
         print(f"Classifying {len(segments)} segments...")
+        resnet_start = time.time()
         classifications = pipeline.classify_segments(segments, bboxes, original_image)
+        resnet_time = time.time() - resnet_start
         
         # Step 3: Post-processing
         print("Post-processing...")
+        mapper_start = time.time()
         filtered_results = filter_segments(
             classifications, bboxes, 
             confidence_threshold=confidence_threshold
@@ -330,6 +346,7 @@ def run_pipeline(image_path,
         
         # Step 5: Aggregation
         final_results = aggregate_results(mapped_results)
+        mapper_time = time.time() - mapper_start
         
         processing_time = time.time() - start_time
         
@@ -343,7 +360,16 @@ def run_pipeline(image_path,
                 'segments_after_filtering': len(filtered_results),
                 'segments_after_nms': len(nms_results)
             },
-            'processing_time': processing_time
+            'processing_time': processing_time,
+            'model_times': {
+                'sam': sam_time,
+                'resnet': resnet_time,
+                'mapper': mapper_time
+            },
+            'segments_count': len(segments),
+            'object_types_found': len(set(d.get('mapped_label', d.get('raw_label', 'unknown')) for d in final_results)),
+            'avg_segment_area': sum(d.get('area', 0) for d in final_results) / max(len(final_results), 1),
+            'models_used': ['sam', 'resnet', 'mapper']
         }
         
     except Exception as e:
@@ -433,6 +459,11 @@ class _PipelineCompatibilityAdapter:
             'confidence': float(stats['avg_conf']),
             'processing_time': float(result.get('processing_time', 0.0)),
             'object_type': object_type,
+            'model_times': result.get('model_times', {}),
+            'segments_count': result.get('segments_count', 0),
+            'object_types_found': result.get('object_types_found', 1),
+            'avg_segment_area': result.get('avg_segment_area', 0),
+            'models_used': result.get('models_used', ['sam', 'resnet', 'mapper'])
         }
 
     def process_image_auto(self, image_path: str) -> Dict[str, Any]:

@@ -16,8 +16,12 @@ from ..utils.error_handlers import (
     handle_database_error, validate_file_upload, validate_object_type,
     ValidationAPIError, ProcessingAPIError, DatabaseAPIError
 )
+from ...monitoring.decorators import track_response_time
+from ...monitoring.metrics import record_request_metadata, record_model_inference
 import os
 import uuid
+import time
+from PIL import Image
 
 
 input_schema = InputSchema(unknown=EXCLUDE)
@@ -53,6 +57,7 @@ class InputList(Resource):
             return make_response(jsonify(response), 400)
         return inputs_schema.dump(inputs), 200
 
+    @track_response_time('api_count')
     def post(self):
         """
         Upload image and process with AI pipeline
@@ -188,6 +193,39 @@ class InputList(Resource):
             success = ai_result.get('success', True)
             monitoring.record_request(object_type, processing_time, success)
             
+            # Record metadata metrics
+            try:
+                # Get image dimensions
+                with Image.open(fs_image_path) as img:
+                    image_width, image_height = img.size
+                
+                # Extract metadata from AI result
+                predicted_count = ai_result.get('predicted_count', 0)
+                segments_count = ai_result.get('segments_count', 0)
+                object_types_found = ai_result.get('object_types_found', 1)
+                avg_segment_area = ai_result.get('avg_segment_area', 0)
+                models_used = ai_result.get('models_used', ['sam', 'resnet', 'mapper'])
+                
+                # Record metadata
+                record_request_metadata(
+                    image_width=image_width,
+                    image_height=image_height,
+                    predicted_count=predicted_count,
+                    object_type=object_type,
+                    segments_count=segments_count,
+                    object_types_found=object_types_found,
+                    avg_segment_area=avg_segment_area,
+                    models_used=models_used
+                )
+                
+                # Record model inference times if available
+                if 'model_times' in ai_result:
+                    for model_name, duration in ai_result['model_times'].items():
+                        record_model_inference(model_name, object_type, duration)
+                        
+            except Exception as e:
+                print(f"Warning: Failed to record metadata: {e}")
+            
             print(f"Successfully processed image: {ai_result.get('predicted_count', 0)} {object_type}s detected")
             return make_response(jsonify(response_data), 201)
             
@@ -197,6 +235,7 @@ class InputList(Resource):
             print(f"Error processing image: {str(e)}")
             return create_error_response(e, include_details=True)
 
+    @track_response_time('api_count_all')
     def count_all_objects(self):
         """
         Upload image and detect all objects (auto-detection)
