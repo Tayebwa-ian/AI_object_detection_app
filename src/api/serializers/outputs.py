@@ -15,3 +15,5 @@ class OutputSchema(Schema):
     pred_confidence = fields.Float(required=True)
     object_type_id = fields.Str(required=True)
     input_id = fields.Str(required=True)
+    object_type = fields.Str(dump_only=True)  # Object type name for frontend
+    image_path = fields.Str(dump_only=True)   # Image path for frontend

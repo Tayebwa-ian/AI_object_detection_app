@@ -1,4 +1,4 @@
-#!/usr/bin/python3"
+#!/usr/bin/python3
 """Object_type Model - Module"""
 from sqlalchemy import String, Column, Text
 from sqlalchemy.orm import relationship
@@ -15,6 +15,10 @@ class ObjectType(BaseModel, Base):
     description = Column(String(128), nullable=False)
     outputs = relationship("Output", backref="object_output", cascade="all, delete-orphan")
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """initializes Object_type class"""
         super().__init__()
+        if kwargs:
+            for key, value in kwargs.items():
+                if hasattr(self, key):
+                    setattr(self, key, value)

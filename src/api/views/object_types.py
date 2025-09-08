@@ -23,7 +23,7 @@ class ObjectTypeList(Resource):
         tags:
           - Object Types
         summary: Retrieve all object types
-        description: Returns a list of all object types in the database.
+        description: Returns a list of all object types in the database. If no object types exist, creates default ones.
         responses:
           200:
             description: List of object types
@@ -31,18 +31,35 @@ class ObjectTypeList(Resource):
               type: array
               items:
                 $ref: '#/definitions/ObjectType'
-          400:
-            description: Could not fetch data from storage
         """
         objs = database.all(ObjectType)
+        
+        # If no object types exist, create default ones
         if not objs:
-            response = {
-                "status": "error",
-                "message": "could not fetch data from the storage",
-                "data": objs
-            }
-            return make_response(jsonify(response), 400)
-        return objs_schema.dump(objs), 200
+            default_object_types = [
+                {"name": "car", "description": "Automobile vehicles"},
+                {"name": "person", "description": "Human beings"},
+                {"name": "bicycle", "description": "Two-wheeled vehicles"},
+                {"name": "dog", "description": "Canine animals"},
+                {"name": "cat", "description": "Feline animals"},
+                {"name": "tree", "description": "Tall plants with trunk and leaves"},
+                {"name": "building", "description": "Man-made structures with walls and roof"},
+                {"name": "chair", "description": "Furniture for sitting"},
+                {"name": "bottle", "description": "Container for liquids"},
+                {"name": "cup", "description": "Small container for drinking"}
+            ]
+            
+            for obj_data in default_object_types:
+                # Check if object type already exists
+                existing = database.get(ObjectType, name=obj_data["name"])
+                if not existing:
+                    new_obj = ObjectType(**obj_data)
+                    new_obj.save()
+            
+            # Get all object types again (including newly created ones)
+            objs = database.all(ObjectType)
+        
+        return {"object_types": objs_schema.dump(objs)}, 200
 
     def post(self):
         """

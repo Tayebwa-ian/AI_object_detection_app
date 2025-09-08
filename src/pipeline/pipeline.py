@@ -13,11 +13,14 @@ from PIL import Image
 import cv2
 from segment_anything import SamAutomaticMaskGenerator, sam_model_registry
 from transformers import AutoImageProcessor, AutoModelForImageClassification
+import os
+from typing import List, Dict, Any
 import warnings
 warnings.filterwarnings("ignore")
 
 from .postprocess import filter_segments, apply_nms, aggregate_results
 from .mapping import map_labels, get_synonyms
+from .mapping import get_candidate_set
 
 
 class LightweightPipeline:
@@ -61,7 +64,27 @@ class LightweightPipeline:
                 print("Using CPU for SAM (slower but stable)")
             
             self.sam_device = device
-            self.sam_model = sam_model_registry[model_type](checkpoint=f"sam_{model_type}.pth")
+            # Robust checkpoint discovery: try standard name then known local names
+            checkpoint_candidates = [
+                f"sam_{model_type}.pth",
+                # Known repo file for vit_b
+                "sam_vit_b_01ec64.pth" if model_type == "vit_b" else None,
+            ]
+            checkpoint_candidates = [c for c in checkpoint_candidates if c]
+
+            checkpoint_path = None
+            for candidate in checkpoint_candidates:
+                if os.path.isabs(candidate) and os.path.exists(candidate):
+                    checkpoint_path = candidate
+                    break
+                if os.path.exists(candidate):
+                    checkpoint_path = candidate
+                    break
+            if checkpoint_path is None:
+                # Fall back to first candidate; underlying loader may fetch/download
+                checkpoint_path = checkpoint_candidates[0]
+
+            self.sam_model = sam_model_registry[model_type](checkpoint=checkpoint_path)
             self.sam_model.to(device=device)
             
             # FIXED: Optimized parameters for better performance
@@ -274,7 +297,7 @@ def run_pipeline(image_path,
         segments, bboxes, original_image = pipeline.segment_image(image_path)
         
         if not segments:
-                    return {
+            return {
             'image_path': image_path,
             'detections': [],
             'summary': {
@@ -362,3 +385,101 @@ def test_pipeline():
 if __name__ == "__main__":
     # Test the pipeline
     test_pipeline()
+
+
+# -----------------------------------------------------------------------------
+# Compatibility API for existing views expecting `pipeline.process_*` methods
+# -----------------------------------------------------------------------------
+
+class _PipelineCompatibilityAdapter:
+    """Adapter exposing the legacy interface used by API views.
+
+    Methods:
+        - process_image(image_path, object_type)
+        - process_image_auto(image_path)
+    """
+
+    def __init__(self):
+        pass
+
+    def _count_by_label(self, detections: List[Dict[str, Any]], label: str) -> Dict[str, Any]:
+        matched = [d for d in detections if (d.get('mapped_label') or d.get('raw_label', '')).lower() == label.lower()]
+        count = len(matched)
+        if count == 0:
+            return {"count": 0, "avg_conf": 0.0}
+        avg_conf = float(np.mean([d.get('confidence', 0.0) for d in matched]))
+        return {"count": count, "avg_conf": avg_conf}
+
+    def process_image(self, image_path: str, object_type: str) -> Dict[str, Any]:
+        """Process a single image focusing on a specific object_type."""
+        # Use a broader candidate set for mapping to enable meaningful
+        # zero-shot selection instead of a single-class (trivial) list.
+        candidates = get_candidate_set('general')
+        if object_type not in candidates:
+            candidates = candidates + [object_type]
+
+        result = run_pipeline(
+            image_path,
+            confidence_threshold=0.7,
+            nms_threshold=0.3,
+            target_classes=candidates,
+            enable_mapping=True,
+        )
+        detections = result.get('detections', [])
+        stats = self._count_by_label(detections, object_type)
+        return {
+            'success': True,
+            'predicted_count': int(stats['count']),
+            'confidence': float(stats['avg_conf']),
+            'processing_time': float(result.get('processing_time', 0.0)),
+            'object_type': object_type,
+        }
+
+    def process_image_auto(self, image_path: str) -> Dict[str, Any]:
+        """Process a single image and infer the dominant object type by frequency."""
+        result = run_pipeline(
+            image_path,
+            confidence_threshold=0.7,
+            nms_threshold=0.3,
+            target_classes=None,
+            enable_mapping=True,
+        )
+        detections = result.get('detections', [])
+        if not detections:
+            return {
+                'success': True,
+                'predicted_count': 0,
+                'confidence': 0.0,
+                'processing_time': float(result.get('processing_time', 0.0)),
+                'object_type': 'unknown',
+            }
+
+        # Count by mapped label
+        label_to_items: Dict[str, List[Dict[str, Any]]] = {}
+        for d in detections:
+            lbl = (d.get('mapped_label') or d.get('raw_label', 'unknown')).lower()
+            label_to_items.setdefault(lbl, []).append(d)
+
+        # Choose the label with highest count; tie-break by avg confidence
+        best_label = None
+        best_count = -1
+        best_avg_conf = -1.0
+        for lbl, items in label_to_items.items():
+            count = len(items)
+            avg_conf = float(np.mean([it.get('confidence', 0.0) for it in items])) if items else 0.0
+            if count > best_count or (count == best_count and avg_conf > best_avg_conf):
+                best_label = lbl
+                best_count = count
+                best_avg_conf = avg_conf
+
+        return {
+            'success': True,
+            'predicted_count': int(best_count if best_count > 0 else 0),
+            'confidence': float(best_avg_conf if best_avg_conf > 0 else 0.0),
+            'processing_time': float(result.get('processing_time', 0.0)),
+            'object_type': best_label or 'unknown',
+        }
+
+
+# Public adapter instance expected by views: `from ...pipeline.pipeline import pipeline`
+pipeline = _PipelineCompatibilityAdapter()

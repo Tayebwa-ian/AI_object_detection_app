@@ -1,0 +1,16 @@
+node_modules
+**/node_modules
+**/.DS_Store
+__pycache__
+*.pyc
+.pytest_cache
+.venv
+dev_media
+media
+logs
+*.db
+seth_front_end/build
+seth_front_end/dist
+.git
+.gitignore
+README.MD

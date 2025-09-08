@@ -1,0 +1,77 @@
+# AI Object Counting Application - Docker Compose Configuration
+version: '3.8'
+
+services:
+  # Main Application
+  ai-object-counter:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - OBJ_DETECT_ENV=production
+      - DATABASE_TYPE=mysql
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=obj_detect_user
+      - MYSQL_PASSWORD=secure_password_123
+      - MYSQL_DATABASE=obj_detect_db
+      - SECRET_KEY=your-production-secret-key-here
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./media:/app/media
+      - ./logs:/app/logs
+    depends_on:
+      - mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password_123
+      - MYSQL_DATABASE=obj_detect_db
+      - MYSQL_USER=obj_detect_user
+      - MYSQL_PASSWORD=secure_password_123
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend (if needed)
+  frontend:
+    build:
+      context: ./seth_front_end
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:5000
+    ports:
+      - "3000:80"
+    depends_on:
+      - ai-object-counter
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy (optional)
+  # nginx reverse proxy not required for local dev; frontend calls backend via VITE_API_BASE_URL
+
+volumes:
+  mysql_data:
+
+
+
+
+
+
+
+

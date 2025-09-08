@@ -21,17 +21,34 @@ class Engine:
         OBJ_DETECT_MYSQL_HOST = getenv('OBJ_DETECT_MYSQL_HOST')
         OBJ_DETECT_MYSQL_DB = getenv('OBJ_DETECT_MYSQL_DB')
         OBJ_DETECT_ENV = getenv('OBJ_DETECT_ENV')
-        if OBJ_DETECT_ENV != 'test':
+        
+        if OBJ_DETECT_ENV == 'production':
             exec_db = f'mysql+mysqldb://{OBJ_DETECT_MYSQL_USER}:{OBJ_DETECT_MYSQL_PWD}@{OBJ_DETECT_MYSQL_HOST}/{OBJ_DETECT_MYSQL_DB}'
-        else:  # Configure an SQLITE DB instance for testing
+        else:  # Use SQLite for development and testing
             exec_db = f'sqlite:///{OBJ_DETECT_MYSQL_DB}'
-        # Create the engine
-        self.__engine = create_engine(exec_db, pool_pre_ping=True)
+        
+        # Create the engine (special handling for SQLite in threaded dev server)
+        if exec_db.startswith('sqlite:///'):
+            self.__engine = create_engine(
+                exec_db,
+                pool_pre_ping=True,
+                connect_args={"check_same_thread": False}
+            )
+        else:
+            self.__engine = create_engine(exec_db, pool_pre_ping=True)
+        
+        # Initialize session
+        session_db = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(session_db)
+        self.__session = Session()
 
         if OBJ_DETECT_ENV == 'test':
-            # Drop all tables to ensure a clean slate for testing
+            # In test env, reset DB to a clean state each run
             Base.metadata.drop_all(self.__engine)
-            Base.metadata.create_all(self.__engine)  # Recreate tables for testing
+            Base.metadata.create_all(self.__engine)
+        else:
+            # In development/production, ensure tables exist but do not drop data
+            Base.metadata.create_all(self.__engine)
 
     def new(self, obj):
         """
@@ -46,16 +63,22 @@ class Engine:
         self.__session.commit()
 
     def get(self, cls, id=None, **kwargs) -> object:
-        """retrieve one object based on cls and id
+        """retrieve one object based on cls and id or kwargs
         Args:
             cls: class of the object
             id: Id of the object
-        Return: object based on the class and its ID, or None
+            **kwargs: additional filter criteria
+        Return: object based on the class and its ID or kwargs, or None
         """
         if id:
             query = self.__session.query(cls).\
                 filter_by(id=id).one_or_none()
             return query
+        elif kwargs:
+            query = self.__session.query(cls).\
+                filter_by(**kwargs).one_or_none()
+            return query
+        return None
         
     def all(self, cls=None):
         """ query on the current database session (self.__session)

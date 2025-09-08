@@ -11,4 +11,4 @@ class InputSchema(Schema):
     created_at = fields.Str(dump_only=True)
     updated_at = fields.Str(dump_only=True)
     description = fields.Str(required=True)
-    image_url = fields.Str(required=True)
+    image_path = fields.Str(required=True)
