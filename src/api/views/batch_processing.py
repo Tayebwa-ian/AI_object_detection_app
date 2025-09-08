@@ -49,7 +49,7 @@ class BatchProcessing(Resource):
             name: auto_detect
             type: boolean
             required: false
-            description: Whether to use auto-detection (default: false)
+            description: "Whether to use auto-detection (default: false)"
         responses:
           200:
             description: Batch processing completed

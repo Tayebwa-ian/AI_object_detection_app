@@ -27,17 +27,17 @@ def setup_environment():
             missing_vars.append(var)
     
     if missing_vars:
-        print(f"❌ Missing required environment variables: {', '.join(missing_vars)}")
+        print(f"Missing required environment variables: {', '.join(missing_vars)}")
         print("Please set these variables before starting the application.")
         sys.exit(1)
     
     # Validate database configuration
     database_type = os.getenv('DATABASE_TYPE', 'sqlite')
     if database_type == 'sqlite':
-        print("⚠️  Warning: Using SQLite in production is not recommended.")
+        print("Warning: Using SQLite in production is not recommended.")
         print("Consider using MySQL or PostgreSQL for better performance and reliability.")
     
-    print("✅ Environment validation passed")
+    print("Environment validation passed")
 
 def setup_directories():
     """Create necessary directories"""
@@ -49,7 +49,7 @@ def setup_directories():
     
     for directory in directories:
         Path(directory).mkdir(parents=True, exist_ok=True)
-        print(f"✅ Directory created/verified: {directory}")
+        print(f"Directory created/verified: {directory}")
 
 def setup_logging():
     """Setup production logging"""
@@ -69,7 +69,7 @@ def setup_logging():
         ]
     )
     
-    print(f"✅ Logging configured: {log_level} level, file: {log_file}")
+    print(f"Logging configured: {log_level} level, file: {log_file}")
 
 def check_dependencies():
     """Check if all required dependencies are available"""
@@ -79,10 +79,10 @@ def check_dependencies():
         import torch
         import transformers
         import segment_anything
-        print("✅ All required dependencies are available")
+        print("All required dependencies are available")
         return True
     except ImportError as e:
-        print(f"❌ Missing dependency: {e}")
+        print(f"Missing dependency: {e}")
         print("Please install all requirements: pip install -r requirements.txt")
         return False
 
@@ -92,7 +92,7 @@ def start_application():
         from src.app import app
         from src.config import config
         
-        print("🚀 Starting AI Object Counting Application...")
+        print(" Starting AI Object Counting Application...")
         print(f"   Environment: {config.ENV}")
         print(f"   Host: {config.HOST}")
         print(f"   Port: {config.PORT}")
@@ -109,12 +109,12 @@ def start_application():
         
     except Exception as e:
         logging.error(f"Failed to start application: {e}")
-        print(f"❌ Failed to start application: {e}")
+        print(f"Failed to start application: {e}")
         sys.exit(1)
 
 def main():
     """Main startup function"""
-    print("🔧 AI Object Counting Application - Production Startup")
+    print("AI Object Counting Application - Production Startup")
     print("=" * 60)
     
     # Setup steps
@@ -125,7 +125,7 @@ def main():
     if not check_dependencies():
         sys.exit(1)
     
-    print("\n🎉 All startup checks passed!")
+    print("\nAll startup checks passed!")
     print("=" * 60)
     
     # Start the application
@@ -133,11 +133,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-

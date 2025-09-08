@@ -2,7 +2,6 @@ stages:
   - test
 
 variables:
-  MYSQL_DATABASE: obj_detect_test_db
   APP_ENV: ai_env
 
 run_tests:
@@ -14,7 +13,6 @@ run_tests:
     - source $APP_ENV/bin/activate   # Activate environment
     - pip install --upgrade pip
     - pip install -r requirements.txt
-    - export OBJ_DETECT_ENV=test
-    - export OBJ_DETECT_MYSQL_DB=$MYSQL_DATABASE
-    - python3 -m unittest discover
+    - chmod +x run_tests.py
+    - ./run_tests.py
     - deactivate

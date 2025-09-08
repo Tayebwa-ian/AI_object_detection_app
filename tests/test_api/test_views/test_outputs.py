@@ -1,123 +1,180 @@
-# tests/test_outputs.py
 import unittest
 from unittest.mock import patch, MagicMock
-from flask import Flask
-from flask_restful import Api
-from marshmallow import ValidationError
-
+from flask import Flask, json
 from src.api.views.outputs import OutputList, OutputSingle
 
 
-class TestOutputViews(unittest.TestCase):
+class TestOutputList(unittest.TestCase):
     def setUp(self):
-        app = Flask(__name__)
-        api = Api(app)
-        api.add_resource(OutputList, '/api/outputs')
-        api.add_resource(OutputSingle, '/api/outputs/<string:output_id>')
+        self.app = Flask(__name__)
+        self.client = self.app.test_client()
+        self.app.add_url_rule('/outputs', view_func=OutputList.as_view('output_list'))
 
-        self.app = app
-        self.client = app.test_client()
+    @patch("src.api.views.outputs.database")
+    def test_get_outputs_success(self, mock_db):
+        """GET /outputs returns list of enhanced outputs"""
+        mock_output = MagicMock()
+        mock_output.id = 1
+        mock_output.object_type_id = "ot1"
+        mock_output.input_id = "in1"
+        mock_output.predicted_count = 5
+        mock_output.corrected_count = 4
+        mock_output.pred_confidence = 0.95
+        mock_output.created_at = MagicMock()
+        mock_output.updated_at = MagicMock()
+        mock_output.created_at.isoformat.return_value = "2025-01-01T00:00:00"
+        mock_output.updated_at.isoformat.return_value = "2025-01-01T01:00:00"
 
-        # Patch module-level dependencies
-        self.db_patcher = patch('src.api.views.outputs.database')
-        self.output_schema_patcher = patch('src.api.views.outputs.output_schema')
-        self.outputs_schema_patcher = patch('src.api.views.outputs.outputs_schema')
-        self.Output_patcher = patch('src.api.views.outputs.Output')
+        mock_db.all.return_value = [mock_output]
 
-        self.mock_db = self.db_patcher.start()
-        self.mock_output_schema = self.output_schema_patcher.start()
-        self.mock_outputs_schema = self.outputs_schema_patcher.start()
-        self.mock_Output = self.Output_patcher.start()
+        mock_object_type = MagicMock()
+        mock_object_type.name = "car"
+        mock_input = MagicMock()
+        mock_input.image_path = "/path/to/image.jpg"
+        mock_db.get.side_effect = [mock_object_type, mock_input]
 
-        self.mock_output_schema.load = MagicMock()
-        self.mock_output_schema.dump = MagicMock()
-        self.mock_outputs_schema.dump = MagicMock()
+        response = self.client.get("/outputs")
+        data = json.loads(response.data)
 
-    def tearDown(self):
-        patch.stopall()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]["object_type"], "car")
+        self.assertEqual(data[0]["image_path"], "/path/to/image.jpg")
 
-    def test_get_all_outputs_empty_returns_400(self):
-        self.mock_db.all.return_value = []
-        resp = self.client.get('/api/outputs')
-        self.assertEqual(resp.status_code, 400)
-        data = resp.get_json()
-        self.assertIn('message', data)
+    @patch("src.api.views.outputs.database")
+    def test_get_outputs_with_filter(self, mock_db):
+        """GET /outputs supports object_type filter"""
+        mock_output = MagicMock()
+        mock_output.id = 1
+        mock_output.object_type_id = "ot1"
+        mock_output.input_id = "in1"
+        mock_output.predicted_count = 5
+        mock_output.corrected_count = 4
+        mock_output.pred_confidence = 0.95
+        mock_output.created_at = MagicMock()
+        mock_output.updated_at = MagicMock()
+        mock_output.created_at.isoformat.return_value = "2025-01-01T00:00:00"
+        mock_output.updated_at.isoformat.return_value = "2025-01-01T01:00:00"
 
-    def test_get_all_outputs_success_returns_200(self):
-        fake_model = MagicMock()
-        self.mock_db.all.return_value = [fake_model]
-        self.mock_outputs_schema.dump.return_value = [{'id': 'o1', 'predicted_count': 3}]
+        mock_db.all.return_value = [mock_output]
 
-        resp = self.client.get('/api/outputs')
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.get_json(), [{'id': 'o1', 'predicted_count': 3}])
+        mock_object_type = MagicMock()
+        mock_object_type.name = "dog"
+        mock_input = MagicMock()
+        mock_input.image_path = "/img.jpg"
+        mock_db.get.side_effect = [mock_object_type, mock_input]
 
-    def test_post_output_success_returns_201(self):
-        payload = {
-            'predicted_count': 5,
-            'pred_confidence': 0.9,
-            'object_type_id': 'otype-1',
-            'input_id': 'input-1'
-        }
-        # note: view calls load twice in original code; returning same result is fine
-        self.mock_output_schema.load.return_value = payload
-        fake_instance = MagicMock()
-        fake_instance.save = MagicMock()
-        self.mock_Output.return_value = fake_instance
-        self.mock_output_schema.dump.return_value = {'id': 'o1', **payload}
+        response = self.client.get("/outputs?object_type=dog")
+        data = json.loads(response.data)
 
-        resp = self.client.post('/api/outputs', json=payload)
-        self.assertEqual(resp.status_code, 201)
-        self.assertEqual(resp.get_json(), {'id': 'o1', **payload})
-        fake_instance.save.assert_called_once()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]["object_type"], "dog")
 
-    def test_post_output_validation_error_returns_403(self):
-        payload = {}
-        self.mock_output_schema.load.side_effect = ValidationError({'predicted_count': ['required']})
+    @patch("src.api.views.outputs.Output")
+    def test_post_output_success(self, mock_output_cls):
+        """POST /outputs creates new output"""
+        mock_instance = MagicMock()
+        mock_output_cls.return_value = mock_instance
+        mock_instance.id = 1
 
-        resp = self.client.post('/api/outputs', json=payload)
-        self.assertEqual(resp.status_code, 403)
-        data = resp.get_json()
-        self.assertEqual(data.get('status'), 'fail')
+        with patch("src.api.views.outputs.output_schema.load", return_value={"predicted_count": 5}), \
+             patch("src.api.views.outputs.output_schema.dump", return_value={"id": 1, "predicted_count": 5}):
+            response = self.client.post(
+                "/outputs",
+                data=json.dumps({"predicted_count": 5, "pred_confidence": 0.9, "object_type_id": "ot1", "input_id": "in1"}),
+                content_type="application/json"
+            )
+            data = json.loads(response.data)
 
-    def test_get_single_output_success(self):
-        fake_instance = MagicMock()
-        self.mock_db.get.return_value = fake_instance
-        self.mock_output_schema.dump.return_value = {'id': 'o1', 'predicted_count': 3}
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(data["id"], 1)
 
-        resp = self.client.get('/api/outputs/o1')
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.get_json(), {'id': 'o1', 'predicted_count': 3})
-
-    def test_delete_output_calls_delete_and_returns_200(self):
-        fake_instance = MagicMock()
-        self.mock_db.get.return_value = fake_instance
-        resp = self.client.delete('/api/outputs/o1')
-        self.assertEqual(resp.status_code, 200)
-        data = resp.get_json()
-        self.assertEqual(data.get('message'), 'resource successfully deleted')
-        self.mock_db.delete.assert_called_once_with(fake_instance)
-
-    def test_put_output_success_returns_200(self):
-        payload = {'predicted_count': 6, 'pred_confidence': 0.88}
-        self.mock_output_schema.load.return_value = payload
-        updated_instance = MagicMock()
-        self.mock_db.update.return_value = updated_instance
-        self.mock_output_schema.dump.return_value = {'id': 'o1', **payload}
-
-        resp = self.client.put('/api/outputs/o1', json=payload)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.get_json(), {'id': 'o1', **payload})
-        self.mock_db.update.assert_called_once()
-
-    def test_put_output_validation_error_returns_403(self):
-        payload = {}
-        self.mock_output_schema.load.side_effect = ValidationError({'predicted_count': ['required']})
-        resp = self.client.put('/api/outputs/o1', json=payload)
-        self.assertEqual(resp.status_code, 403)
-        data = resp.get_json()
-        self.assertEqual(data.get('status'), 'fail')
+    def test_post_output_validation_error(self):
+        """POST /outputs with invalid data returns 403"""
+        response = self.client.post(
+            "/outputs",
+            data=json.dumps({"invalid": "field"}),
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 403)
 
 
-if __name__ == '__main__':
+class TestOutputSingle(unittest.TestCase):
+    def setUp(self):
+        self.app = Flask(__name__)
+        self.client = self.app.test_client()
+        self.app.add_url_rule('/outputs/<int:output_id>', view_func=OutputSingle.as_view('output_single'))
+
+    @patch("src.api.views.outputs.database")
+    def test_get_single_output_success(self, mock_db):
+        mock_output = MagicMock()
+        mock_output.id = 1
+        mock_output.object_type_id = "ot1"
+        mock_output.input_id = "in1"
+
+        mock_object_type = MagicMock()
+        mock_object_type.name = "car"
+
+        mock_input = MagicMock()
+        mock_input.image_path = "/img.jpg"
+
+        mock_db.get.side_effect = [mock_output, mock_object_type, mock_input]
+
+        with patch("src.api.views.outputs.output_schema.dump", return_value={"id": 1, "predicted_count": 5}):
+            response = self.client.get("/outputs/1")
+            data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["id"], 1)
+        self.assertEqual(data["object_type"], "car")
+        self.assertEqual(data["image_path"], "/img.jpg")
+
+    @patch("src.api.views.outputs.database")
+    def test_delete_output(self, mock_db):
+        mock_output = MagicMock()
+        mock_db.get.return_value = mock_output
+        response = self.client.delete("/outputs/1")
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["message"], "resource successfully deleted")
+
+    @patch("src.api.views.outputs.database")
+    def test_put_output_success(self, mock_db):
+        mock_output = MagicMock()
+        mock_output.id = 1
+        mock_output.predicted_count = 5
+        mock_output.updated_at = MagicMock()
+        mock_output.updated_at.isoformat.return_value = "2025-01-01T02:00:00"
+        mock_db.get.return_value = mock_output
+
+        response = self.client.put(
+            "/outputs/1",
+            data=json.dumps({"corrected_count": 3}),
+            content_type="application/json"
+        )
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data["corrected_count"], 3)
+        self.assertTrue(data["success"])
+
+    @patch("src.api.views.outputs.database")
+    def test_put_output_missing_corrected_count(self, mock_db):
+        mock_output = MagicMock()
+        mock_db.get.return_value = mock_output
+
+        response = self.client.put(
+            "/outputs/1",
+            data=json.dumps({}),
+            content_type="application/json"
+        )
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", data)
+
+
+if __name__ == "__main__":
     unittest.main()

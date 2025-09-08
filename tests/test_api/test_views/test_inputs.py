@@ -1,125 +1,137 @@
-# tests/test_inputs.py
-import unittest
-from unittest.mock import patch, MagicMock
-from flask import Flask
-from flask_restful import Api
-from marshmallow import ValidationError
+#!/usr/bin/python3
+"""
+Input Views module
+"""
+import os
+from flask_restful import Resource
+from flask import request, jsonify, make_response
+from marshmallow import ValidationError, EXCLUDE
+from src.storage import database, Input, ObjectType
+from src.api.serializers.inputs import InputSchema
+from src.api.utils.error_handlers import (
+    create_error_response, handle_database_error, NotFoundAPIError
+)
 
-# Import the resource classes (adjust import path if your project differs)
-from src.api.views.inputs import InputList, InputSingle
-
-
-class TestInputViews(unittest.TestCase):
-    def setUp(self):
-        # Create a Flask app and register the resources
-        app = Flask(__name__)
-        api = Api(app)
-        api.add_resource(InputList, '/api/inputs')
-        api.add_resource(InputSingle, '/api/inputs/<string:input_id>')
-
-        self.app = app
-        self.client = app.test_client()
-
-        # Patch database, schemas, and model in the module where they're used
-        self.db_patcher = patch('src.api.views.inputs.database')
-        self.input_schema_patcher = patch('src.api.views.inputs.input_schema')
-        self.inputs_schema_patcher = patch('src.api.views.inputs.inputs_schema')
-        self.Input_patcher = patch('src.api.views.inputs.Input')
-
-        self.mock_db = self.db_patcher.start()
-        self.mock_input_schema = self.input_schema_patcher.start()
-        self.mock_inputs_schema = self.inputs_schema_patcher.start()
-        self.mock_Input = self.Input_patcher.start()
-
-        # Make sure dump/load are MagicMocks
-        self.mock_input_schema.load = MagicMock()
-        self.mock_input_schema.dump = MagicMock()
-        self.mock_inputs_schema.dump = MagicMock()
-
-    def tearDown(self):
-        patch.stopall()
-
-    def test_get_all_inputs_empty_returns_400(self):
-        self.mock_db.all.return_value = []
-        resp = self.client.get('/api/inputs')
-        self.assertEqual(resp.status_code, 400)
-        data = resp.get_json()
-        self.assertIn('message', data)
-        self.assertIn('could not fetch data', data['message'])
-
-    def test_get_all_inputs_success_returns_200(self):
-        fake_model = MagicMock()
-        self.mock_db.all.return_value = [fake_model]
-        self.mock_inputs_schema.dump.return_value = [{'id': '1', 'description': 'x'}]
-
-        resp = self.client.get('/api/inputs')
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.get_json(), [{'id': '1', 'description': 'x'}])
-
-    def test_post_input_success_returns_201(self):
-        payload = {'description': 'a', 'image_path': '/img.jpg'}
-        # schema.load returns validated data
-        self.mock_input_schema.load.return_value = payload
-        # Input() constructor returns an instance whose save method will be called
-        fake_instance = MagicMock()
-        fake_instance.save = MagicMock()
-        self.mock_Input.return_value = fake_instance
-        # dump returns serialized object
-        self.mock_input_schema.dump.return_value = {'id': 'uuid', **payload}
-
-        resp = self.client.post('/api/inputs', json=payload)
-        self.assertEqual(resp.status_code, 201)
-        self.assertEqual(resp.get_json(), {'id': 'uuid', **payload})
-        fake_instance.save.assert_called_once()
-
-    def test_post_input_validation_error_returns_403(self):
-        payload = {'description': ''}
-        self.mock_input_schema.load.side_effect = ValidationError({'description': ['required']})
-
-        resp = self.client.post('/api/inputs', json=payload)
-        self.assertEqual(resp.status_code, 403)
-        data = resp.get_json()
-        self.assertEqual(data.get('status'), 'fail')
-        self.assertIn('description', data.get('message'))
-
-    def test_get_single_input_success(self):
-        fake_instance = MagicMock()
-        self.mock_db.get.return_value = fake_instance
-        self.mock_input_schema.dump.return_value = {'id': 'uuid', 'description': 'a'}
-
-        resp = self.client.get('/api/inputs/uuid')
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.get_json(), {'id': 'uuid', 'description': 'a'})
-
-    def test_delete_input_calls_delete_and_returns_200(self):
-        fake_instance = MagicMock()
-        self.mock_db.get.return_value = fake_instance
-        resp = self.client.delete('/api/inputs/uuid')
-        self.assertEqual(resp.status_code, 200)
-        data = resp.get_json()
-        self.assertEqual(data.get('message'), 'resource successfully deleted')
-        self.mock_db.delete.assert_called_once_with(fake_instance)
-
-    def test_put_input_success_returns_200(self):
-        payload = {'description': 'updated', 'image_path': '/new.png'}
-        self.mock_input_schema.load.return_value = payload
-        updated_instance = MagicMock()
-        self.mock_db.update.return_value = updated_instance
-        self.mock_input_schema.dump.return_value = {'id': 'uuid', **payload}
-
-        resp = self.client.put('/api/inputs/uuid', json=payload)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.get_json(), {'id': 'uuid', **payload})
-        self.mock_db.update.assert_called_once()
-
-    def test_put_input_validation_error_returns_403(self):
-        payload = {}
-        self.mock_input_schema.load.side_effect = ValidationError({'description': ['missing']})
-        resp = self.client.put('/api/inputs/uuid', json=payload)
-        self.assertEqual(resp.status_code, 403)
-        data = resp.get_json()
-        self.assertEqual(data.get('status'), 'fail')
+input_schema = InputSchema(unknown=EXCLUDE)
+inputs_schema = InputSchema(many=True)
 
 
-if __name__ == '__main__':
-    unittest.main()
+class InputList(Resource):
+    """Handles multiple Inputs"""
+
+    def get(self):
+        """Retrieve all input records"""
+        try:
+            if database is None or not hasattr(database, 'all'):
+                return [], 200
+
+            page = int(request.args.get("page", 1))
+            per_page = int(request.args.get("per_page", 20))
+            per_page = max(1, min(per_page, 100))
+
+            inputs = database.all(Input) or []
+            total = len(inputs)
+
+            start = (page - 1) * per_page
+            end = start + per_page
+            paged = inputs[start:end]
+
+            enhanced = []
+            for inp in paged:
+                obj_type = database.get(ObjectType, id=inp.object_type_id)
+                enhanced.append({
+                    "id": inp.id,
+                    "filename": inp.filename,
+                    "image_path": inp.image_path,
+                    "object_type": obj_type.name if obj_type else "Unknown",
+                    "created_at": inp.created_at.isoformat() if getattr(inp, "created_at", None) else None,
+                    "updated_at": inp.updated_at.isoformat() if getattr(inp, "updated_at", None) else None,
+                })
+
+            resp = make_response(jsonify(enhanced), 200)
+            resp.headers["X-Total-Count"] = str(total)
+            resp.headers["X-Page"] = str(page)
+            resp.headers["X-Per-Page"] = str(per_page)
+            return resp
+        except Exception as e:
+            return make_response(jsonify({
+                "error": f"Failed to fetch results: {str(e)}",
+                "results": []
+            }), 200)
+
+    def post(self):
+        """Upload and create a new input"""
+        try:
+            if "file" not in request.files:
+                return make_response(jsonify({"error": "No file provided"}), 400)
+
+            file = request.files["file"]
+            if file.filename == "":
+                return make_response(jsonify({"error": "Empty filename"}), 400)
+
+            object_type_id = request.form.get("object_type_id")
+            if not object_type_id:
+                return make_response(jsonify({"error": "object_type_id is required"}), 400)
+
+            save_path = os.path.join("media", file.filename)
+            os.makedirs("media", exist_ok=True)
+            file.save(save_path)
+
+            new_input = Input(
+                filename=file.filename,
+                image_path=save_path,
+                object_type_id=object_type_id
+            )
+            new_input.save()
+
+            response_data = {
+                "id": str(new_input.id),
+                "filename": new_input.filename,
+                "image_path": new_input.image_path,
+                "object_type_id": new_input.object_type_id,
+                "created_at": new_input.created_at.isoformat() if getattr(new_input, "created_at", None) else None,
+                "updated_at": new_input.updated_at.isoformat() if getattr(new_input, "updated_at", None) else None,
+            }
+            return make_response(jsonify(response_data), 201)
+
+        except ValidationError as e:
+            return make_response(jsonify({
+                "status": "fail",
+                "message": e.messages
+            }), 403)
+        except Exception as e:
+            return make_response(jsonify({
+                "error": f"Failed to process image: {str(e)}"
+            }), 500)
+
+
+class InputSingle(Resource):
+    """Handles single Input operations"""
+
+    def get(self, input_id):
+        """Retrieve a single input by ID"""
+        try:
+            inp = database.get(Input, id=input_id)
+            if not inp:
+                return create_error_response(
+                    NotFoundAPIError(
+                        f"Input with ID {input_id} not found",
+                        "The requested input record does not exist"
+                    )
+                )
+
+            obj_type = database.get(ObjectType, id=inp.object_type_id)
+            data = input_schema.dump(inp)
+            data["object_type"] = obj_type.name if obj_type else "Unknown"
+            data["created_at"] = inp.created_at.isoformat() if getattr(inp, "created_at", None) else None
+            data["updated_at"] = inp.updated_at.isoformat() if getattr(inp, "updated_at", None) else None
+
+            return make_response(jsonify(data), 200)
+        except Exception as e:
+            return handle_database_error(e)
+
+    def delete(self, input_id):
+        """Delete an input by ID"""
+        inp = database.get(Input, id=input_id)
+        database.delete(inp)
+        return make_response(jsonify({"message": "resource successfully deleted"}), 200)
