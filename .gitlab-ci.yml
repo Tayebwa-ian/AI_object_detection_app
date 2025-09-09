@@ -1,0 +1,21 @@
+stages:
+  - test
+
+variables:
+  APP_ENV: ai_env
+
+run_tests:
+  image: python:3.11  # use latest stable python version
+  stage: test
+  script:
+    - echo "Running tests"
+    - apt update
+    - apt install -y libgl1
+    - python -m venv $APP_ENV        # Create virtual environment
+    - source $APP_ENV/bin/activate   # Activate environment
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+    - chmod +x test_complete_workflow.py
+    - ./test_complete_workflow.py
+    - deactivate
+
