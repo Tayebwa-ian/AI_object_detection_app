@@ -26,7 +26,7 @@ sys.path.append('src')
 sys.path.append('model_pipeline')
 
 # Import our modules
-from tools.generate_and_post import ImageGenerator, APITester, CSVLogger
+from tools.image_generation_scripts import ImageGenerator, APITester, CSVLogger
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

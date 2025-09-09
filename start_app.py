@@ -52,7 +52,7 @@ def run_simple_test():
     
     try:
         result = subprocess.run([
-            sys.executable, "tests/test_simple.py"
+            sys.executable, "tests/test_basic.py"
         ], capture_output=True, text=True, timeout=30)
         
         if result.returncode == 0:

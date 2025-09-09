@@ -10,8 +10,11 @@ import unittest
 import sys
 import os
 
-# Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+# Add src to path - works from any directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_dir)
+src_path = os.path.join(project_root, 'src')
+sys.path.insert(0, src_path)
 
 class TestSimpleFunctionality(unittest.TestCase):
     """Simple tests to verify basic functionality"""
@@ -21,19 +24,19 @@ class TestSimpleFunctionality(unittest.TestCase):
         print("Testing imports...")
         
         try:
-            from src.app import app
+            import app
             print("✅ Flask app imports successfully")
         except ImportError as e:
             self.fail(f"Failed to import Flask app: {e}")
         
         try:
-            from src.config import config
+            import config
             print("✅ Config imports successfully")
         except ImportError as e:
             self.fail(f"Failed to import config: {e}")
         
         try:
-            from src.storage import database
+            import storage
             print("✅ Database imports successfully")
         except ImportError as e:
             self.fail(f"Failed to import database: {e}")
@@ -43,8 +46,8 @@ class TestSimpleFunctionality(unittest.TestCase):
         print("Testing Flask app creation...")
         
         try:
-            from src.app import app
-            self.assertIsNotNone(app)
+            import app
+            self.assertIsNotNone(app.app)
             print("✅ Flask app created successfully")
         except Exception as e:
             self.fail(f"Failed to create Flask app: {e}")
@@ -54,9 +57,9 @@ class TestSimpleFunctionality(unittest.TestCase):
         print("Testing configuration...")
         
         try:
-            from src.config import config
-            self.assertIsNotNone(config.SECRET_KEY)
-            self.assertIsNotNone(config.DATABASE_TYPE)
+            import config
+            self.assertIsNotNone(config.config.SECRET_KEY)
+            self.assertIsNotNone(config.config.DATABASE_TYPE)
             print("✅ Configuration loaded successfully")
         except Exception as e:
             self.fail(f"Failed to load configuration: {e}")
@@ -66,10 +69,10 @@ class TestSimpleFunctionality(unittest.TestCase):
         print("Testing API endpoint registration...")
         
         try:
-            from src.app import app, api
+            import app
             
             # Check if some key endpoints are registered
-            with app.test_client() as client:
+            with app.app.test_client() as client:
                 # Test a simple endpoint
                 response = client.get('/api/object-types')
                 # We expect either 200 (success) or 500 (database not initialized)

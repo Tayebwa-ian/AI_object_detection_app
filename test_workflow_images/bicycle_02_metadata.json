@@ -1,0 +1,17 @@
+{
+  "prompt": "two bicycles in a garden",
+  "object_types": [
+    "bicycle"
+  ],
+  "expected_objects": 2,
+  "background": null,
+  "transformations": {
+    "blur": false,
+    "rotate": false,
+    "noise": false
+  },
+  "image_size": [
+    800,
+    600
+  ]
+}

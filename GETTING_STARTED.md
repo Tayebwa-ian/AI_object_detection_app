@@ -34,7 +34,7 @@ npm run dev
 
 Run the simple test to make sure everything is working:
 ```bash
-python tests/test_simple.py
+python tests/test_basic.py
 ```
 
 Or run all tests:

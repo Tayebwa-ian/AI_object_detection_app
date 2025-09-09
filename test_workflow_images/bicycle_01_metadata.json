@@ -1,0 +1,17 @@
+{
+  "prompt": "A single bicycle on a street",
+  "object_types": [
+    "bicycle"
+  ],
+  "expected_objects": 1,
+  "background": null,
+  "transformations": {
+    "blur": false,
+    "rotate": false,
+    "noise": false
+  },
+  "image_size": [
+    800,
+    600
+  ]
+}
