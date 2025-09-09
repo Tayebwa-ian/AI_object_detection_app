@@ -3,54 +3,19 @@ stages:
 
 variables:
   APP_ENV: ai_env
-  # Force PyTorch to use CPU only
-  CUDA_VISIBLE_DEVICES: ""
-  # Disable GUI for matplotlib
-  MPLBACKEND: Agg
-  # Set Python path
-  PYTHONPATH: $CI_PROJECT_DIR/src
 
 run_tests:
-  image: python:3.11
+  image: python:3.11  # use latest stable python version
   stage: test
-  before_script:
-    - echo "Setting up test environment"
+  script:
+    - echo "Running tests"
     - apt update
-    - apt install -y libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender-dev libgomp1 libgcc-s1 libmysqlclient-dev pkg-config
-    - python -m venv $APP_ENV
-    - source $APP_ENV/bin/activate
+    - apt install -y libgl1
+    - python -m venv $APP_ENV        # Create virtual environment
+    - source $APP_ENV/bin/activate   # Activate environment
     - pip install --upgrade pip
     - pip install -r requirements.txt
-  script:
-    - echo "Running comprehensive tests"
-    # Test 1: Basic imports and setup
-    - python -c "from src.app import app; print('✅ App imports successfully')"
-    - python -c "from tools.image_generation_scripts import ImageGenerator, APITester, CSVLogger; print('✅ Package imports successfully')"
-    # Test 2: Run basic unit tests (without external dependencies)
-    - python tests/test_basic.py
-    # Test 3: Run configuration tests
-    - python tests/test_config.py
-    # Test 4: Run simple CI tests (minimal dependencies)
-    - python tests/test_ci_minimal.py
-    # Test 5: Test the refactored image generation package (without ML models)
-    - python -c "
-        from tools.image_generation_scripts import ImageGenerator, APITester, CSVLogger;
-        from pathlib import Path;
-        import tempfile;
-        with tempfile.TemporaryDirectory() as tmpdir:
-            generator = ImageGenerator(800, 600, tmpdir);
-            tester = APITester('http://localhost:5000');
-            logger = CSVLogger(Path(tmpdir));
-            print('✅ All classes instantiated successfully');
-        print('✅ Package functionality test passed');
-      "
-    - echo "✅ All tests completed successfully"
-  after_script:
+    - chmod +x test_complete_workflow.py
+    - ./test_complete_workflow.py
     - deactivate
-  artifacts:
-    when: always
-    paths:
-      - "*.log"
-      - "test_*.json"
-      - "test_*.csv"
-    expire_in: 1 week
+
