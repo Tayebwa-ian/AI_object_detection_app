@@ -1,22 +1,20 @@
-# AI Object Counting Application - Docker Compose Configuration
-version: '3.8'
 
 services:
-  # Main Application
+  # Backend API
   ai-object-counter:
     build: .
     ports:
       - "5000:5000"
     environment:
-      - OBJ_DETECT_ENV=production
-      - DATABASE_TYPE=mysql
-      - MYSQL_HOST=mysql
-      - MYSQL_PORT=3306
-      - MYSQL_USER=obj_detect_user
-      - MYSQL_PASSWORD=secure_password_123
-      - MYSQL_DATABASE=obj_detect_db
-      - SECRET_KEY=your-production-secret-key-here
-      - LOG_LEVEL=INFO
+      OBJ_DETECT_ENV: development
+      DATABASE_TYPE: mysql
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: obj_detect_user
+      MYSQL_PASSWORD: secure_password_123
+      MYSQL_DATABASE: obj_detect_dev_db
+      SECRET_KEY: your-development-secret-key-here
+      LOG_LEVEL: INFO
     volumes:
       - ./media:/app/media
       - ./logs:/app/logs
@@ -35,10 +33,10 @@ services:
   mysql:
     image: mysql:8.0
     environment:
-      - MYSQL_ROOT_PASSWORD=root_password_123
-      - MYSQL_DATABASE=obj_detect_db
-      - MYSQL_USER=obj_detect_user
-      - MYSQL_PASSWORD=secure_password_123
+      MYSQL_ROOT_PASSWORD: root_password_123
+      MYSQL_DATABASE: obj_detect_db
+      MYSQL_USER: obj_detect_user
+      MYSQL_PASSWORD: secure_password_123
     volumes:
       - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -53,21 +51,7 @@ services:
     networks:
       - app-network
 
-  # Frontend (if needed)
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        - VITE_API_BASE_URL=http://localhost:5000
-    ports:
-      - "3000:3000"
-    depends_on:
-      - ai-object-counter
-    restart: unless-stopped
-    networks:
-      - app-network
-
+  # Prometheus
   prometheus:
     image: prom/prometheus:v2.37.0
     volumes:
@@ -80,6 +64,7 @@ services:
     networks:
       - app-network
 
+  # Grafana
   grafana:
     image: grafana/grafana:8.5.9
     ports:
@@ -90,8 +75,8 @@ services:
     depends_on:
       - prometheus
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=adminpassword
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: adminpassword
     networks:
       - app-network
 

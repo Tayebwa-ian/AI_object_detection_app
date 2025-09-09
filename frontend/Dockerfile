@@ -1,9 +1,21 @@
-FROM node:20-alpine AS build
+# Frontend Dev Dockerfile (Vite + React)
+FROM node:20-alpine
+
+# Set working directory
 WORKDIR /app
+
+# Install dependencies first (cached layer)
 COPY package*.json ./
-RUN npm ci
+RUN npm install --legacy-peer-deps
+
+# Copy source code
 COPY . .
-# Vite reads VITE_* at build time
-ARG VITE_API_BASE_URL
-ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
-RUN npm run build
+
+# Vite uses VITE_* env vars at runtime in dev mode
+ENV VITE_API_BASE_URL=http://localhost:5000
+
+# Expose dev server port
+EXPOSE 5173
+
+# Run vite in dev mode
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
