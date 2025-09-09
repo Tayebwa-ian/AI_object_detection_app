@@ -66,12 +66,12 @@ The `image_generation_scripts` package provides a modular approach to image gene
 
 ## Features
 
-- ✅ **AI Image Generation**: Uses the university AI endpoint to generate realistic images
-- ✅ **PIL Transformations**: Applies blur, rotation, noise, and size adjustments
-- ✅ **API Integration**: Automatically tests images against the AI Object Counter API
-- ✅ **CSV Logging**: Logs results with all required columns
-- ✅ **Error Handling**: Robust error handling and logging
-- ✅ **Modular Design**: Clean separation of concerns with dedicated classes
+- **AI Image Generation**: Uses the university AI endpoint to generate realistic images
+- **PIL Transformations**: Applies blur, rotation, noise, and size adjustments
+- **API Integration**: Automatically tests images against the AI Object Counter API
+- **CSV Logging**: Logs results with all required columns
+- **Error Handling**: Robust error handling and logging
+- **Modular Design**: Clean separation of concerns with dedicated classes
 
 ## Output
 

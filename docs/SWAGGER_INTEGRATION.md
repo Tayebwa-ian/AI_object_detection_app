@@ -20,7 +20,7 @@ https://your-domain.com/apidocs/
 
 ## Features
 
-### ✅ **Complete API Coverage**
+### **Complete API Coverage**
 All API endpoints are documented with:
 - **Request/Response schemas**
 - **Parameter descriptions**
@@ -28,42 +28,42 @@ All API endpoints are documented with:
 - **Error responses**
 - **HTTP status codes**
 
-### ✅ **Interactive Testing**
+### **Interactive Testing**
 - Test endpoints directly from the browser
 - Upload files for testing
 - View real-time responses
 - No need for external tools like Postman
 
-### ✅ **Comprehensive Schemas**
+### **Comprehensive Schemas**
 - Detailed data models for all request/response objects
 - Validation rules and constraints
 - Example data for all fields
 
 ## API Endpoints Documentation
 
-### 🏷️ **Inputs** - Image Upload and Processing
+### **Inputs** - Image Upload and Processing
 - `POST /api/count` - Upload image and count objects
 - `POST /api/count-all` - Auto-detect all objects in image
 - `GET /api/inputs` - List all input records
 
-### 🏷️ **Outputs** - Prediction Results and Corrections
+### **Outputs** - Prediction Results and Corrections
 - `GET /api/results` - List all prediction results
 - `GET /api/results/{id}` - Get specific result
 - `PUT /api/correct/{id}` - Submit correction for prediction
 - `DELETE /api/results/{id}` - Delete result
 
-### 🏷️ **Object Types** - Object Type Management
+### **Object Types** - Object Type Management
 - `GET /api/object-types` - List all object types
 - `POST /api/object-types` - Create new object type
 - `GET /api/object/{id}` - Get specific object type
 - `PUT /api/object/{id}` - Update object type
 - `DELETE /api/object/{id}` - Delete object type
 
-### 🏷️ **Batch Processing** - Batch Operations
+### **Batch Processing** - Batch Operations
 - `POST /api/batch/process` - Process multiple images
 - `GET /api/batch/status` - Get batch processing statistics
 
-### 🏷️ **Few-Shot Learning** - Custom Object Types
+### **Few-Shot Learning** - Custom Object Types
 - `POST /api/fewshot/register` - Register new object type with few-shot learning
 - `POST /api/fewshot/count` - Count objects using few-shot learning
 - `GET /api/fewshot/object-types` - List few-shot object types
@@ -71,14 +71,14 @@ All API endpoints are documented with:
 - `DELETE /api/fewshot/object-types/{name}` - Delete few-shot object type
 - `GET /api/fewshot/predictions` - Get recent few-shot predictions
 
-### 🏷️ **Performance Monitoring** - System Metrics
+### **Performance Monitoring** - System Metrics
 - `GET /api/performance/metrics` - Get performance metrics
 - `GET /api/performance/object-types` - Get object type statistics
 - `GET /api/performance/database` - Get database statistics
 - `POST /api/performance/reset` - Reset performance statistics
 - `GET /api/performance/health` - Get comprehensive system health
 
-### 🏷️ **System** - System Endpoints
+### **System** - System Endpoints
 - `GET /health` - Health check
 - `GET /metrics` - Prometheus metrics
 - `GET /media/{filename}` - Serve media files

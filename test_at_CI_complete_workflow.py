@@ -105,7 +105,7 @@ class CompleteWorkflowTest:
             'images_per_class': {k: len(v) for k, v in generated_images.items()}
         }
         
-        print(f"\n✅ AI Generation Complete:")
+        print(f"\nAI Generation Complete:")
         print(f"  Total images: {self.results['ai_generation']['images_generated']}")
         print(f"  Classes: {self.results['ai_generation']['classes']}")
         
@@ -121,7 +121,7 @@ class CompleteWorkflowTest:
         is_ci = os.getenv('CI') or os.getenv('GITLAB_CI') or os.getenv('GITHUB_ACTIONS')
         
         if is_ci or not torch.cuda.is_available():
-            print("⚠️  CI environment detected or CUDA not available. Skipping few-shot learning test.")
+            print("WARNING: CI environment detected or CUDA not available. Skipping few-shot learning test.")
             print("   This test requires GPU/CUDA support which is not available in CI.")
             
             # Return mock results for CI
@@ -172,7 +172,7 @@ class CompleteWorkflowTest:
             
             except RuntimeError as e:
                 if "could not create a primitive" in str(e) or "CUDA" in str(e):
-                    print(f"⚠️  CUDA/PyTorch error in feature extraction: {e}")
+                    print(f"WARNING: CUDA/PyTorch error in feature extraction: {e}")
                     print("   Falling back to mock features for CI compatibility")
                     # Return mock features for CI
                     return np.random.randn(2048).astype(np.float32)
@@ -273,7 +273,7 @@ class CompleteWorkflowTest:
             'total_correct': total_correct
         }
         
-        print(f"\n✅ Few-Shot Learning Results:")
+        print(f"\nFew-Shot Learning Results:")
         print(f"  Overall Accuracy: {overall_accuracy:.3f}")
         print(f"  Random Baseline: {random_baseline:.3f}")
         print(f"  Surpasses Baseline: {'✓' if overall_accuracy > random_baseline else '✗'}")
@@ -294,7 +294,7 @@ class CompleteWorkflowTest:
             import requests
             response = requests.get("http://localhost:5000/health", timeout=5)
             if response.status_code != 200:
-                print("⚠️  API health check failed. Skipping API integration test.")
+                print("WARNING: API health check failed. Skipping API integration test.")
                 return {
                     'total_tests': 0,
                     'successful_posts': 0,
@@ -306,7 +306,7 @@ class CompleteWorkflowTest:
                     'reason': 'API not available'
                 }
         except Exception as e:
-            print(f"⚠️  API not available ({e}). Skipping API integration test.")
+            print(f"WARNING: API not available ({e}). Skipping API integration test.")
             return {
                 'total_tests': 0,
                 'successful_posts': 0,
@@ -401,7 +401,7 @@ class CompleteWorkflowTest:
             'class_results': class_results
         }
         
-        print(f"\n✅ API Integration Results:")
+        print(f"\nAPI Integration Results:")
         print(f"  Total Tests: {total_tests}")
         print(f"  Success Rate: {success_rate:.3f}")
         print(f"  Correction Rate: {correction_rate:.3f}")
@@ -422,14 +422,14 @@ class CompleteWorkflowTest:
         # Handle skipped few-shot learning
         if fewshot_results.get('skipped', False):
             fewshot_score = 0.5  # Neutral score for skipped tests
-            print(f"⚠️  Few-shot learning was skipped: {fewshot_results.get('reason', 'Unknown reason')}")
+            print(f"WARNING: Few-shot learning was skipped: {fewshot_results.get('reason', 'Unknown reason')}")
         else:
             fewshot_score = fewshot_results.get('overall_accuracy', 0.0)
         
         # Handle skipped API tests
         if api_results.get('skipped', False):
             api_score = 0.5  # Neutral score for skipped tests
-            print(f"⚠️  API integration was skipped: {api_results.get('reason', 'Unknown reason')}")
+            print(f"WARNING: API integration was skipped: {api_results.get('reason', 'Unknown reason')}")
         else:
             api_score = api_results.get('success_rate', 0.0)
         
@@ -472,7 +472,7 @@ class CompleteWorkflowTest:
             writer.writerow(['API Integration', api_score, 'Skipped' if api_results.get('skipped') else 'Completed'])
             writer.writerow(['Overall', overall_score, 'Completed'])
         
-        print(f"\n✅ Performance Report Generated:")
+        print(f"\nPerformance Report Generated:")
         print(f"  JSON Report: {report_path}")
         print(f"  CSV Report: {csv_path}")
         print(f"  Overall Score: {overall_score:.3f}")
@@ -485,7 +485,7 @@ class CompleteWorkflowTest:
     
     def run_complete_test(self):
         """Run the complete workflow test"""
-        print("🚀 STARTING COMPLETE WORKFLOW TEST (FAST MODE)")
+        print("STARTING COMPLETE WORKFLOW TEST (FAST MODE)")
         print("="*60)
         print("This test demonstrates:")
         print("1. AI Image Generation using endpoint (1 image per class)")
@@ -520,7 +520,7 @@ class CompleteWorkflowTest:
             execution_time = end_time - start_time
             
             print("\n" + "="*60)
-            print("🎉 COMPLETE WORKFLOW TEST FINISHED")
+            print("COMPLETE WORKFLOW TEST FINISHED")
             print("="*60)
             print(f"Total execution time: {execution_time:.2f} seconds")
             print(f"Overall performance score: {performance_metrics['overall_score']:.3f}")
@@ -532,9 +532,9 @@ class CompleteWorkflowTest:
             
             all_tests_passed = ai_success and fewshot_ok and api_ok
             
-            print(f"All tests passed: {'✅ YES' if all_tests_passed else '❌ NO'}")
+            print(f"All tests passed: {'YES' if all_tests_passed else 'NO'}")
             
-            print(f"\n📊 Test completed successfully!")
+            print(f"\nTest completed successfully!")
             print(f"Check the generated files:")
             print(f"  - test_workflow_performance_report.json")
             print(f"  - test_workflow_results.csv")
@@ -543,7 +543,7 @@ class CompleteWorkflowTest:
             return all_tests_passed
             
         except Exception as e:
-            print(f"\n❌ Test failed with error: {e}")
+            print(f"\nTest failed with error: {e}")
             import traceback
             traceback.print_exc()
             return False
@@ -554,10 +554,10 @@ def main():
     success = test.run_complete_test()
     
     if success:
-        print("\n🎉 All tests completed successfully!")
+        print("\nAll tests completed successfully!")
         sys.exit(0)
     else:
-        print("\n❌ Some tests failed!")
+        print("\nSome tests failed!")
         sys.exit(1)
 
 if __name__ == "__main__":

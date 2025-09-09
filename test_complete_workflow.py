@@ -96,7 +96,7 @@ class CompleteWorkflowTest:
             'images_per_class': {k: len(v) for k, v in generated_images.items()}
         }
         
-        print(f"\n✅ AI Generation Complete:")
+        print(f"\nAI Generation Complete:")
         print(f"  Total images: {self.results['ai_generation']['images_generated']}")
         print(f"  Classes: {self.results['ai_generation']['classes']}")
         
@@ -239,7 +239,7 @@ class CompleteWorkflowTest:
             'total_correct': total_correct
         }
         
-        print(f"\n✅ Few-Shot Learning Results:")
+        print(f"\nFew-Shot Learning Results:")
         print(f"  Overall Accuracy: {overall_accuracy:.3f}")
         print(f"  Random Baseline: {random_baseline:.3f}")
         print(f"  Surpasses Baseline: {'✓' if overall_accuracy > random_baseline else '✗'}")
@@ -260,7 +260,7 @@ class CompleteWorkflowTest:
             import requests
             response = requests.get("http://localhost:5000/health", timeout=5)
             if response.status_code != 200:
-                print("⚠️  API health check failed. Skipping API integration test.")
+                print("WARNING: API health check failed. Skipping API integration test.")
                 return {
                     'total_tests': 0,
                     'successful_posts': 0,
@@ -272,7 +272,7 @@ class CompleteWorkflowTest:
                     'reason': 'API not available'
                 }
         except Exception as e:
-            print(f"⚠️  API not available ({e}). Skipping API integration test.")
+            print(f"WARNING: API not available ({e}). Skipping API integration test.")
             return {
                 'total_tests': 0,
                 'successful_posts': 0,
@@ -352,7 +352,7 @@ class CompleteWorkflowTest:
         
         self.results['api_integration'] = api_results
         
-        print(f"\n✅ API Integration Results:")
+        print(f"\nAPI Integration Results:")
         print(f"  Total Tests: {api_results['total_tests']}")
         print(f"  Success Rate: {api_results.get('success_rate', 0):.3f}")
         print(f"  Correction Rate: {api_results.get('correction_rate', 0):.3f}")
@@ -382,7 +382,7 @@ class CompleteWorkflowTest:
         # Handle API testing results
         if self.results['api_integration'].get('skipped', False):
             api_score = 0.5  # Neutral score if skipped
-            print(f"⚠️  API testing was skipped: {self.results['api_integration'].get('reason', 'Unknown reason')}")
+            print(f"WARNING: API testing was skipped: {self.results['api_integration'].get('reason', 'Unknown reason')}")
         else:
             api_score = self.results['api_integration'].get('success_rate', 0.0)
         
@@ -424,7 +424,7 @@ class CompleteWorkflowTest:
         
         self.results['performance_metrics'] = performance_metrics
         
-        print(f"\n✅ Performance Report Generated:")
+        print(f"\nPerformance Report Generated:")
         print(f"  JSON Report: {report_path}")
         print(f"  CSV Report: {csv_path}")
         print(f"  Overall Score: {overall_score:.3f}")
@@ -437,7 +437,7 @@ class CompleteWorkflowTest:
     
     def run_complete_test(self):
         """Run the complete workflow test"""
-        print("🚀 STARTING COMPLETE WORKFLOW TEST (FAST MODE)")
+        print("STARTING COMPLETE WORKFLOW TEST (FAST MODE)")
         print("="*60)
         print("This test demonstrates:")
         print("1. AI Image Generation using endpoint (1 image per class)")
@@ -465,7 +465,7 @@ class CompleteWorkflowTest:
             total_time = time.time() - start_time
             
             print("\n" + "="*60)
-            print("🎉 COMPLETE WORKFLOW TEST FINISHED")
+            print("COMPLETE WORKFLOW TEST FINISHED")
             print("="*60)
             print(f"Total execution time: {total_time:.2f} seconds")
             print(f"Overall performance score: {performance_metrics['overall_score']:.3f}")
@@ -482,12 +482,12 @@ class CompleteWorkflowTest:
                 api_test_passed
             )
             
-            print(f"All tests passed: {'✅ YES' if all_tests_passed else '❌ NO'}")
+            print(f"All tests passed: {'YES' if all_tests_passed else 'NO'}")
             
             return self.results
             
         except Exception as e:
-            print(f"\n❌ Test failed with error: {e}")
+            print(f"\nTest failed with error: {e}")
             import traceback
             traceback.print_exc()
             return None
@@ -498,13 +498,13 @@ def main():
     results = test.run_complete_test()
     
     if results:
-        print("\n📊 Test completed successfully!")
+        print("\nTest completed successfully!")
         print("Check the generated files:")
         print("  - test_workflow_performance_report.json")
         print("  - test_workflow_results.csv")
         print("  - test_workflow_images/ (generated images)")
     else:
-        print("\n❌ Test failed!")
+        print("\nTest failed!")
 
 if __name__ == "__main__":
     main()

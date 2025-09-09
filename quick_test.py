@@ -40,7 +40,7 @@ class QuickTest:
         
     def generate_minimal_images(self):
         """Generate only 2 images per class (6 total)"""
-        print("🚀 QUICK TEST - Generating 6 images (2 per class)")
+        print("QUICK TEST - Generating 6 images (2 per class)")
         print("="*50)
         
         generator = ImageGenerator(
@@ -73,7 +73,7 @@ class QuickTest:
             
             generated_images[obj_type] = obj_images
         
-        print(f"\n✅ Generation Complete: {sum(len(images) for images in generated_images.values())} images")
+        print(f"\nGeneration Complete: {sum(len(images) for images in generated_images.values())} images")
         return generated_images
     
     def test_few_shot_learning(self, generated_images):
@@ -212,7 +212,7 @@ class QuickTest:
             'total_correct': total_correct
         }
         
-        print(f"\n✅ Few-Shot Learning Results:")
+        print(f"\nFew-Shot Learning Results:")
         print(f"  Overall Accuracy: {overall_accuracy:.3f}")
         print(f"  Random Baseline: {random_baseline:.3f}")
         print(f"  Surpasses Baseline: {'✓ YES' if overall_accuracy > random_baseline else '✗ NO'}")
@@ -221,7 +221,7 @@ class QuickTest:
     
     def generate_performance_report(self):
         """Generate performance report"""
-        print("\n📊 PERFORMANCE REPORT")
+        print("\nPERFORMANCE REPORT")
         print("="*50)
         
         # Calculate performance metrics
@@ -263,7 +263,7 @@ class QuickTest:
             writer.writerow(['Improvement', f"{fewshot_accuracy - random_baseline:.3f}", 'SUCCESS' if surpasses_baseline else 'FAILED'])
             writer.writerow(['Performance Score', f"{performance_score:.3f}", 'SUCCESS' if performance_score > 0.5 else 'FAILED'])
         
-        print(f"✅ Performance Report Generated:")
+        print(f"Performance Report Generated:")
         print(f"  JSON Report: quick_test_report.json")
         print(f"  CSV Report: quick_test_results.csv")
         print(f"  Performance Score: {performance_score:.3f}")
@@ -275,7 +275,7 @@ class QuickTest:
     
     def run_quick_test(self):
         """Run the complete quick test"""
-        print("🚀 QUICK TEST - AI OBJECT COUNTER")
+        print("QUICK TEST - AI OBJECT COUNTER")
         print("="*50)
         print("Generating minimal test with 2 images per class")
         print("="*50)
@@ -295,16 +295,16 @@ class QuickTest:
             total_time = time.time() - start_time
             
             print("\n" + "="*50)
-            print("🎉 QUICK TEST COMPLETED")
+            print("QUICK TEST COMPLETED")
             print("="*50)
             print(f"Total time: {total_time:.1f} seconds")
             print(f"Performance score: {report['performance_score']:.3f}")
-            print(f"Surpasses baseline: {'✅ YES' if report['few_shot_learning']['surpasses_baseline'] else '❌ NO'}")
+            print(f"Surpasses baseline: {'YES' if report['few_shot_learning']['surpasses_baseline'] else 'NO'}")
             
             return report
             
         except Exception as e:
-            print(f"\n❌ Test failed: {e}")
+            print(f"\nTest failed: {e}")
             import traceback
             traceback.print_exc()
             return None
@@ -315,13 +315,13 @@ def main():
     results = test.run_quick_test()
     
     if results:
-        print("\n📊 Quick test completed successfully!")
+        print("\nQuick test completed successfully!")
         print("Check the generated files:")
         print("  - quick_test_report.json")
         print("  - quick_test_results.csv")
         print("  - quick_test_images/ (generated images)")
     else:
-        print("\n❌ Quick test failed!")
+        print("\nQuick test failed!")
 
 if __name__ == "__main__":
     main()
