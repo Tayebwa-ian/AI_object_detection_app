@@ -10,6 +10,7 @@ from flask import request, jsonify, make_response
 from ..utils.error_handlers import (
     create_error_response, handle_database_error, NotFoundAPIError
 )
+from ...monitoring.metrics import update_quality_metrics
 
 
 output_schema = OutputSchema(unknown=EXCLUDE)
@@ -312,6 +313,28 @@ class OutputSingle(Resource):
             # Update only the corrected count
             output.corrected_count = corrected_count
             output.save()
+            
+            # Update quality metrics based on the correction
+            try:
+                # Get object type name for metrics
+                object_type_name = 'unknown'
+                if hasattr(output, 'object_type') and output.object_type:
+                    object_type_name = output.object_type.name
+                elif hasattr(output, 'object_type_id') and output.object_type_id:
+                    # Fallback: get object type from database
+                    object_type = database.get(ObjectType, output.object_type_id)
+                    if object_type:
+                        object_type_name = object_type.name
+                
+                # Update quality metrics
+                update_quality_metrics(
+                    object_type=object_type_name,
+                    predicted_count=output.predicted_count or 0,
+                    corrected_count=corrected_count
+                )
+                
+            except Exception as e:
+                print(f"Warning: Failed to update quality metrics: {e}")
             
             # Prepare response
             response_data = {

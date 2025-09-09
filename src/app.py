@@ -13,7 +13,7 @@ from .config import config
 import logging
 from flask import send_from_directory
 import os
-from .monitoring.metrics import get_metrics, get_metrics_content_type
+from .monitoring.metrics import get_metrics, get_metrics_content_type, refresh_quality_metrics_from_database, refresh_fewshot_metrics_from_database
 
 
 # create the app instance
@@ -59,6 +59,10 @@ def health_check():
 def metrics():
     """OpenMetrics compatible metrics endpoint for Prometheus"""
     try:
+        # Refresh metrics from database before serving
+        refresh_quality_metrics_from_database()
+        refresh_fewshot_metrics_from_database()
+        
         metrics_data = get_metrics()
         return Response(
             metrics_data,
@@ -79,6 +83,7 @@ from .api.views.object_types import *
 from .api.views.outputs import *
 from .api.views.monitoring import PerformanceMetrics, ObjectTypeStats, DatabaseStats, ResetStats, SystemHealth
 from .api.views.batch_processing import BatchProcessing, BatchStatus
+from .api.views.fewshot import FewShotRegister, FewShotCount, FewShotObjectTypes, FewShotObjectTypeSingle, FewShotPredictions
 
 api.add_resource(InputList, '/api/count')
 # Add count-all endpoint for auto-detection
@@ -105,6 +110,13 @@ api.add_resource(SystemHealth, '/api/performance/health')
 # Batch processing endpoints
 api.add_resource(BatchProcessing, '/api/batch/process')
 api.add_resource(BatchStatus, '/api/batch/status')
+
+# Few-shot learning endpoints
+api.add_resource(FewShotRegister, '/api/fewshot/register')
+api.add_resource(FewShotCount, '/api/fewshot/count')
+api.add_resource(FewShotObjectTypes, '/api/fewshot/object-types')
+api.add_resource(FewShotObjectTypeSingle, '/api/fewshot/object-types/<string:object_name>')
+api.add_resource(FewShotPredictions, '/api/fewshot/predictions')
 
 # Serve media files
 @app.route('/media/<path:filename>')

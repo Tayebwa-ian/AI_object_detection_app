@@ -1,0 +1,49 @@
+# Prometheus Configuration for AI Object Counting Application
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# Alertmanager configuration (optional for now)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # AI Object Counting Backend
+  - job_name: 'ai-object-counter-backend'
+    static_configs:
+      - targets: ['host.docker.internal:5000']  # Use host.docker.internal for Docker Desktop
+      - targets: ['localhost:5000']  # Fallback for direct access
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    honor_labels: true
+    
+    # Optional: Add custom labels
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'ai-object-counter-backend'
+      - target_label: service
+        replacement: 'ai-object-counter'
+      - target_label: environment
+        replacement: 'development'
+
+  # Grafana (optional - for monitoring Grafana itself)
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s

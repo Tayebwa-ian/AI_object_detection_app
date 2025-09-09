@@ -22,6 +22,7 @@ warnings.filterwarnings("ignore")
 from .postprocess import filter_segments, apply_nms, aggregate_results
 from .mapping import map_labels, get_synonyms
 from .mapping import get_candidate_set
+from ..monitoring.decorators import track_model_inference
 
 
 class LightweightPipeline:
@@ -118,6 +119,7 @@ class LightweightPipeline:
             print(f"Classifier loading failed: {e}")
             raise
     
+    @track_model_inference('sam')
     def segment_image(self, image_path):
         """Generate segments using SAM with memory optimization"""
         start_time = time.time()
@@ -178,10 +180,12 @@ class LightweightPipeline:
             print(f"Segmentation failed: {e}")
             return [], [], None
     
+    @track_model_inference('resnet')
     def classify_segments(self, segments, bboxes=None, original_image=None):
         """Classify segments using ResNet with enhanced processing"""
         start_time = time.time()
         results = []
+        confidence_scores = []
         
         for i, segment in enumerate(segments):
             try:
@@ -191,6 +195,9 @@ class LightweightPipeline:
                 )
                 results.append(segment_result)
                 
+                # Collect confidence scores for metrics
+                confidence_scores.append(segment_result.get('calibrated_confidence', 0.0))
+                
             except Exception as e:
                 print(f"Classification failed for segment {i}: {e}")
                 results.append({
@@ -199,10 +206,27 @@ class LightweightPipeline:
                     'confidence': 0.0,
                     'calibrated_confidence': 0.0
                 })
+                confidence_scores.append(0.0)
         
         # Record timing
         duration = time.time() - start_time
         print(f"ResNet classification completed in {duration:.3f}s")
+        
+        # Record confidence metrics if we have scores
+        if confidence_scores:
+            avg_confidence = sum(confidence_scores) / len(confidence_scores)
+            max_confidence = max(confidence_scores)
+            min_confidence = min(confidence_scores)
+            
+            # Store confidence statistics in results for later use
+            results.append({
+                'confidence_stats': {
+                    'avg_confidence': avg_confidence,
+                    'max_confidence': max_confidence,
+                    'min_confidence': min_confidence,
+                    'total_segments': len(confidence_scores)
+                }
+            })
         
         return results
     
@@ -348,6 +372,13 @@ def run_pipeline(image_path,
         final_results = aggregate_results(mapped_results)
         mapper_time = time.time() - mapper_start
         
+        # Extract confidence statistics from classifications
+        confidence_stats = None
+        for result in classifications:
+            if isinstance(result, dict) and 'confidence_stats' in result:
+                confidence_stats = result['confidence_stats']
+                break
+        
         processing_time = time.time() - start_time
         
         return {
@@ -369,7 +400,13 @@ def run_pipeline(image_path,
             'segments_count': len(segments),
             'object_types_found': len(set(d.get('mapped_label', d.get('raw_label', 'unknown')) for d in final_results)),
             'avg_segment_area': sum(d.get('area', 0) for d in final_results) / max(len(final_results), 1),
-            'models_used': ['sam', 'resnet', 'mapper']
+            'models_used': ['sam', 'resnet', 'mapper'],
+            'confidence_stats': confidence_stats or {
+                'avg_confidence': 0.0,
+                'max_confidence': 0.0,
+                'min_confidence': 0.0,
+                'total_segments': 0
+            }
         }
         
     except Exception as e:
@@ -463,7 +500,13 @@ class _PipelineCompatibilityAdapter:
             'segments_count': result.get('segments_count', 0),
             'object_types_found': result.get('object_types_found', 1),
             'avg_segment_area': result.get('avg_segment_area', 0),
-            'models_used': result.get('models_used', ['sam', 'resnet', 'mapper'])
+            'models_used': result.get('models_used', ['sam', 'resnet', 'mapper']),
+            'confidence_stats': result.get('confidence_stats', {
+                'avg_confidence': float(stats['avg_conf']),
+                'max_confidence': 0.0,
+                'min_confidence': 0.0,
+                'total_segments': result.get('segments_count', 0)
+            })
         }
 
     def process_image_auto(self, image_path: str) -> Dict[str, Any]:

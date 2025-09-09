@@ -222,6 +222,22 @@ class InputList(Resource):
                 if 'model_times' in ai_result:
                     for model_name, duration in ai_result['model_times'].items():
                         record_model_inference(model_name, object_type, duration)
+                
+                # Record confidence metrics if available
+                if 'confidence_stats' in ai_result:
+                    confidence_stats = ai_result['confidence_stats']
+                    avg_confidence = confidence_stats.get('avg_confidence', 0.0)
+                    max_confidence = confidence_stats.get('max_confidence', 0.0)
+                    min_confidence = confidence_stats.get('min_confidence', 0.0)
+                    
+                    # Record average confidence
+                    record_model_inference('resnet', object_type, 0.0, avg_confidence)
+                    
+                    # Record max confidence
+                    record_model_inference('resnet_max', object_type, 0.0, max_confidence)
+                    
+                    # Record min confidence  
+                    record_model_inference('resnet_min', object_type, 0.0, min_confidence)
                         
             except Exception as e:
                 print(f"Warning: Failed to record metadata: {e}")

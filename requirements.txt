@@ -66,6 +66,7 @@ pexpect==4.9.0
 pillow==11.3.0
 platformdirs==4.4.0
 prometheus-client==0.21.1
+pandas==2.2.3
 prompt_toolkit==3.0.52
 psutil==7.0.0
 ptyprocess==0.7.0

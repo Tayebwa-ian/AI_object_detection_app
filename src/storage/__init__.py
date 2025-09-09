@@ -5,6 +5,7 @@ from .base_model import BaseModel
 from .inputs import Input
 from .object_types import ObjectType
 from .outputs import Output
+from .fewshot_models import FewShotObjectType, FewShotSupportImage, FewShotPrediction, FewShotLearningSession
 from os import getenv, environ
 
 

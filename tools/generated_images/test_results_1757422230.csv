@@ -1,0 +1,2 @@
+image_path,object_type,truth,predicted,confidence,time_ms,segments
+tools\generated_images\test_image_001.jpg,car,2,0,0.0,0,0
