@@ -1,0 +1,33 @@
+apiVersion: 1
+
+# Optional: Delete existing datasources (uncomment if needed).
+# deleteDatasources:
+#   - name: Prometheus
+#     orgId: 1
+
+datasources:
+  # Prometheus datasource.
+  - name: Prometheus
+    type: prometheus  # Built-in type.
+    uid: prometheus-ds  # Unique ID (use in dashboards).
+    orgId: 1  # Default organization.
+    access: proxy  # Grafana proxies requests (secure; avoids CORS).
+    url: http://prometheus:9090  # Internal service URL.
+    isDefault: true  # Set as default datasource.
+    editable: false  # Prevent UI edits (provisioned configs are read-only).
+    version: 1  # Increment for updates.
+
+    # Optional JSON data (e.g., for advanced Prometheus features).
+    jsonData:
+      httpMethod: POST  # Use POST for queries (default: GET).
+      manageAlerts: true  # Enable alert management in Grafana.
+      timeInterval: 15s  # Match Prometheus scrape interval.
+      exemplarTraceIdDestinations:  # Link to tracing (if using Tempo/Jaeger).
+        - datasourceUid: tracing-ds  # Replace with your tracing DS UID.
+          name: traceID
+
+    # Optional: Basic auth (uncomment if Prometheus has auth).
+    # basicAuth: true
+    # basicAuthUser: admin
+    # secureJsonData:
+    #   basicAuthPassword: your-password

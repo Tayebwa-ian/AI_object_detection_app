@@ -28,6 +28,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - app-network
 
   # MySQL Database
   mysql:
@@ -48,6 +50,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - app-network
 
   # Frontend (if needed)
   frontend:
@@ -57,13 +61,45 @@ services:
       args:
         - VITE_API_BASE_URL=http://localhost:5000
     ports:
-      - "3000:80"
+      - "3000:3000"
     depends_on:
       - ai-object-counter
     restart: unless-stopped
+    networks:
+      - app-network
 
-  # Nginx Reverse Proxy (optional)
-  # nginx reverse proxy not required for local dev; frontend calls backend via VITE_API_BASE_URL
+  prometheus:
+    image: prom/prometheus:v2.37.0
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - ai-object-counter
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana:8.5.9
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=adminpassword
+    networks:
+      - app-network
 
 volumes:
   mysql_data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  app-network:
+    driver: bridge
