@@ -15,7 +15,7 @@ run_tests:
     - source $APP_ENV/bin/activate   # Activate environment
     - pip install --upgrade pip
     - pip install -r requirements.txt
-    - chmod +x test_complete_workflow.py
-    - ./test_complete_workflow.py
+    - chmod +x test_at_CI_complete_workflow.py
+    - ./test_at_CI_complete_workflow.py
     - deactivate
 
