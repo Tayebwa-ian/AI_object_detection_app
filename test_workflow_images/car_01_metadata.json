@@ -1,9 +1,9 @@
 {
-  "prompt": "3 cars in a park",
+  "prompt": "two cars in a parking lot",
   "object_types": [
     "car"
   ],
-  "expected_objects": 3,
+  "expected_objects": 2,
   "background": null,
   "transformations": {
     "blur": false,
