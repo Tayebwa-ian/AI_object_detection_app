@@ -13,7 +13,8 @@ from .config import config
 import logging
 from flask import send_from_directory
 import os
-from .monitoring.metrics import get_metrics, get_metrics_content_type
+from datetime import datetime
+from .monitoring.metrics import get_metrics, get_metrics_content_type, refresh_quality_metrics_from_database, refresh_fewshot_metrics_from_database
 
 
 # create the app instance
@@ -47,18 +48,56 @@ def handle_bad_request(e):
 
 @app.route('/health')
 def health_check():
-    """Health check endpoint for frontend"""
+    """
+    Health check endpoint
+    ---
+    tags:
+      - System
+    summary: Check API health status
+    description: Returns the current health status of the API and its components
+    responses:
+      200:
+        description: API is healthy
+        schema:
+          $ref: '#/definitions/HealthResponse'
+    """
     return jsonify({
         'status': 'healthy',
         'message': 'AI Object Counting API is running',
         'pipeline_available': True,
-        'database': 'connected'
+        'database': 'connected',
+        'timestamp': datetime.now().isoformat()
     })
 
 @app.route('/metrics')
 def metrics():
-    """OpenMetrics compatible metrics endpoint for Prometheus"""
+    """
+    Prometheus metrics endpoint
+    ---
+    tags:
+      - System
+    summary: Get Prometheus-compatible metrics
+    description: Returns OpenMetrics-compatible metrics for Prometheus monitoring
+    responses:
+      200:
+        description: Metrics data in OpenMetrics format
+        schema:
+          type: string
+          example: |
+            # HELP api_requests_total Total number of API requests
+            # TYPE api_requests_total counter
+            api_requests_total 150
+      500:
+        description: Error generating metrics
+        schema:
+          type: string
+          example: "# Error generating metrics"
+    """
     try:
+        # Refresh metrics from database before serving
+        refresh_quality_metrics_from_database()
+        refresh_fewshot_metrics_from_database()
+        
         metrics_data = get_metrics()
         return Response(
             metrics_data,
@@ -79,6 +118,7 @@ from .api.views.object_types import *
 from .api.views.outputs import *
 from .api.views.monitoring import PerformanceMetrics, ObjectTypeStats, DatabaseStats, ResetStats, SystemHealth
 from .api.views.batch_processing import BatchProcessing, BatchStatus
+from .api.views.fewshot import FewShotRegister, FewShotCount, FewShotObjectTypes, FewShotObjectTypeSingle, FewShotPredictions
 
 api.add_resource(InputList, '/api/count')
 # Add count-all endpoint for auto-detection
@@ -106,9 +146,37 @@ api.add_resource(SystemHealth, '/api/performance/health')
 api.add_resource(BatchProcessing, '/api/batch/process')
 api.add_resource(BatchStatus, '/api/batch/status')
 
+# Few-shot learning endpoints
+api.add_resource(FewShotRegister, '/api/fewshot/register')
+api.add_resource(FewShotCount, '/api/fewshot/count')
+api.add_resource(FewShotObjectTypes, '/api/fewshot/object-types')
+api.add_resource(FewShotObjectTypeSingle, '/api/fewshot/object-types/<string:object_name>')
+api.add_resource(FewShotPredictions, '/api/fewshot/predictions')
+
 # Serve media files
 @app.route('/media/<path:filename>')
 def serve_media(filename):
+    """
+    Serve media files
+    ---
+    tags:
+      - System
+    summary: Serve uploaded media files
+    description: Serves uploaded image files from the media directory
+    parameters:
+      - in: path
+        name: filename
+        type: string
+        required: true
+        description: Path to the media file
+    responses:
+      200:
+        description: Media file served successfully
+        schema:
+          type: file
+      404:
+        description: Media file not found
+    """
     media_dir = config.MEDIA_DIRECTORY if os.path.isabs(config.MEDIA_DIRECTORY) else os.path.join(os.getcwd(), config.MEDIA_DIRECTORY)
     return send_from_directory(media_dir, filename)
 

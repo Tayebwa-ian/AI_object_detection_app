@@ -1,0 +1,16 @@
+image_path,object_type,truth,predicted,confidence,time_ms,segments
+tools\fewshot_test_images\test_image_001.jpg,bicycle,1,0,0.0,0,0
+tools\fewshot_test_images\test_image_002.jpg,person,3,0,0.0,0,0
+tools\fewshot_test_images\test_image_003.jpg,bicycle,2,0,0.0,0,0
+tools\fewshot_test_images\test_image_004.jpg,person,1,0,0.0,0,0
+tools\fewshot_test_images\test_image_005.jpg,bicycle,3,0,0.0,0,0
+tools\fewshot_test_images\test_image_006.jpg,person,2,0,0.0,0,0
+tools\fewshot_test_images\test_image_007.jpg,person,3,0,0.0,0,0
+tools\fewshot_test_images\test_image_008.jpg,person,2,0,0.0,0,0
+tools\fewshot_test_images\test_image_009.jpg,bicycle,3,0,0.0,0,0
+tools\fewshot_test_images\test_image_010.jpg,car,3,0,0.0,0,0
+tools\fewshot_test_images\test_image_011.jpg,person,3,0,0.0,0,0
+tools\fewshot_test_images\test_image_012.jpg,car,1,0,0.0,0,0
+tools\fewshot_test_images\test_image_013.jpg,bicycle,2,0,0.0,0,0
+tools\fewshot_test_images\test_image_014.jpg,bicycle,1,0,0.0,0,0
+tools\fewshot_test_images\test_image_015.jpg,person,1,0,0.0,0,0

@@ -1,144 +1,221 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """
-Unit tests for BatchProcessing API endpoints
+Test Batch Processing API Views
 """
-import io
 import unittest
 from unittest.mock import patch, MagicMock
 from flask import Flask
-from werkzeug.datastructures import FileStorage
+from flask_restful import Api
+from marshmallow import ValidationError
 
-# Import the module with corrected path
 from src.api.views.batch_processing import BatchProcessing, BatchStatus
 
-class TestBatchProcessing(unittest.TestCase):
-    """Tests for BatchProcessing endpoint"""
 
+class TestBatchProcessingViews(unittest.TestCase):
+    """Test Batch Processing API endpoints"""
+    
     def setUp(self):
-        self.app = Flask(__name__)
-        self.client = self.app.test_client()
-        self.bp = BatchProcessing()
-        self.app.add_url_rule(
-            "/api/batch/process",
-            view_func=BatchProcessing.as_view("batch_process")
-        )
+        """Set up test environment"""
+        app = Flask(__name__)
+        api = Api(app)
+        api.add_resource(BatchProcessing, '/api/batch/process')
+        api.add_resource(BatchStatus, '/api/batch/status')
 
-    @patch("src.api.views.batch_processing.BatchProcessing._process_single_image")
-    @patch("src.api.views.batch_processing.validate_object_type", return_value="car")
-    @patch("src.api.views.batch_processing.monitoring")
-    def test_post_batch_success(self, mock_monitoring, mock_validate, mock_process_single):
-        """POST /batch/process should process images successfully"""
-        # Mock _process_single_image to always return success
-        mock_process_single.return_value = {
-            'image_name': 'test.jpg',
-            'success': True,
-            'result_id': 'output-1',
-            'object_type': 'car',
+        self.app = app
+        self.client = app.test_client()
+
+        # Patch dependencies
+        self.pipeline_patcher = patch('src.api.views.batch_processing.pipeline')
+        self.db_patcher = patch('src.api.views.batch_processing.database')
+        self.input_schema_patcher = patch('src.api.views.batch_processing.input_schema')
+        self.output_schema_patcher = patch('src.api.views.batch_processing.output_schema')
+
+        self.mock_pipeline = self.pipeline_patcher.start()
+        self.mock_db = self.db_patcher.start()
+        self.mock_input_schema = self.input_schema_patcher.start()
+        self.mock_output_schema = self.output_schema_patcher.start()
+
+        # Setup mock methods
+        self.mock_input_schema.load = MagicMock()
+        self.mock_output_schema.dump = MagicMock()
+
+    def tearDown(self):
+        """Clean up patches"""
+        patch.stopall()
+
+    def test_batch_process_success(self):
+        """Test successful batch processing"""
+        payload = {
+            'images': [
+                {'image_path': '/test/image1.jpg', 'description': 'Test image 1'},
+                {'image_path': '/test/image2.jpg', 'description': 'Test image 2'}
+            ]
+        }
+        
+        # Mock pipeline processing
+        self.mock_pipeline.process_image.return_value = {
+            'objects': [{'type': 'car', 'confidence': 0.9}],
+            'counts': {'car': 2}
+        }
+        
+        # Mock database operations
+        mock_input = MagicMock()
+        mock_input.id = 'input_123'
+        self.mock_db.save.return_value = mock_input
+        
+        mock_output = MagicMock()
+        self.mock_output_schema.dump.return_value = {
+            'id': 'output_123',
             'predicted_count': 2,
-            'confidence': 0.95,
-            'processing_time': 0.1,
-            'created_at': '2025-01-01T00:00:00'
+            'pred_confidence': 0.9
         }
 
-        # Create a fake file upload
-        data = {
-            "object_type": "car",
-            "images[]": (io.BytesIO(b"fake image data"), "test.jpg")
+        resp = self.client.post('/api/batch/process', json=payload)
+        
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+        self.assertIn('results', data)
+        self.assertIn('summary', data)
+        self.assertEqual(len(data['results']), 2)
+
+    def test_batch_process_validation_error(self):
+        """Test batch processing with validation error"""
+        payload = {'images': []}  # Empty images list
+        self.mock_input_schema.load.side_effect = ValidationError({'images': ['required']})
+
+        resp = self.client.post('/api/batch/process', json=payload)
+        
+        self.assertEqual(resp.status_code, 400)
+        data = resp.get_json()
+        self.assertEqual(data['status'], 'fail')
+
+    def test_batch_process_pipeline_error(self):
+        """Test batch processing with pipeline error"""
+        payload = {
+            'images': [
+                {'image_path': '/test/image1.jpg', 'description': 'Test image 1'}
+            ]
+        }
+        
+        # Mock pipeline to raise an error
+        self.mock_pipeline.process_image.side_effect = Exception('Processing failed')
+
+        resp = self.client.post('/api/batch/process', json=payload)
+        
+        self.assertEqual(resp.status_code, 500)
+        data = resp.get_json()
+        self.assertEqual(data['status'], 'error')
+        self.assertIn('Processing failed', data['message'])
+
+    def test_batch_process_partial_success(self):
+        """Test batch processing with partial success"""
+        payload = {
+            'images': [
+                {'image_path': '/test/image1.jpg', 'description': 'Test image 1'},
+                {'image_path': '/test/image2.jpg', 'description': 'Test image 2'}
+            ]
+        }
+        
+        # Mock pipeline to succeed for first image, fail for second
+        def mock_process_side_effect(image_path, *args, **kwargs):
+            if 'image1' in image_path:
+                return {
+                    'objects': [{'type': 'car', 'confidence': 0.9}],
+                    'counts': {'car': 1}
+                }
+            else:
+                raise Exception('Processing failed for image2')
+        
+        self.mock_pipeline.process_image.side_effect = mock_process_side_effect
+        
+        # Mock database operations
+        mock_input = MagicMock()
+        mock_input.id = 'input_123'
+        self.mock_db.save.return_value = mock_input
+
+        resp = self.client.post('/api/batch/process', json=payload)
+        
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+        self.assertIn('results', data)
+        self.assertIn('errors', data)
+        self.assertEqual(len(data['results']), 1)
+        self.assertEqual(len(data['errors']), 1)
+
+    def test_batch_status_success(self):
+        """Test getting batch processing status"""
+        # Mock database to return batch statistics
+        self.mock_db.get_batch_stats.return_value = {
+            'total_batches': 10,
+            'successful_batches': 8,
+            'failed_batches': 2,
+            'total_images_processed': 50,
+            'average_processing_time': 2.5
         }
 
-        with self.app.test_request_context(
-            "/api/batch/process",
-            method="POST",
-            content_type="multipart/form-data",
-            data=data
-        ):
-            response = self.bp.post()
-            status_code = response.status_code if hasattr(response, "status_code") else response[1]
-            json_data = response.get_json() if hasattr(response, "get_json") else response[0]
+        resp = self.client.get('/api/batch/status')
+        
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+        self.assertIn('total_batches', data)
+        self.assertIn('successful_batches', data)
+        self.assertIn('failed_batches', data)
+        self.assertEqual(data['total_batches'], 10)
+        self.assertEqual(data['successful_batches'], 8)
 
-        self.assertEqual(status_code, 200)
-        self.assertTrue(json_data["success"])
-        self.assertEqual(json_data["total_images"], 1)
-        self.assertEqual(json_data["successful_images"], 1)
-        self.assertEqual(len(json_data["results"]), 1)
-        self.assertTrue(json_data["results"][0]["success"])
+    def test_batch_status_database_error(self):
+        """Test batch status with database error"""
+        self.mock_db.get_batch_stats.side_effect = Exception('Database error')
 
-    @patch("src.api.views.batch_processing.database")
-    @patch("src.api.views.batch_processing.monitoring")
-    def test_get_batch_status_success(self, mock_monitoring, mock_db):
-        """GET /batch/status should return batch statistics"""
-        # Mock database.all to return empty list
-        mock_db.all.return_value = []
+        resp = self.client.get('/api/batch/status')
+        
+        self.assertEqual(resp.status_code, 500)
+        data = resp.get_json()
+        self.assertEqual(data['status'], 'error')
+        self.assertIn('Database error', data['message'])
 
-        # Mock monitoring.get_metrics
-        mock_monitoring.get_metrics.return_value = {
-            'average_processing_time': 0.12,
-            'success_rate_percent': 100,
-            'total_requests': 10,
-            'uptime_seconds': 3600
+    def test_batch_process_large_batch(self):
+        """Test batch processing with large number of images"""
+        # Create a large batch of images
+        images = []
+        for i in range(100):
+            images.append({
+                'image_path': f'/test/image{i}.jpg',
+                'description': f'Test image {i}'
+            })
+        
+        payload = {'images': images}
+        
+        # Mock pipeline processing
+        self.mock_pipeline.process_image.return_value = {
+            'objects': [{'type': 'car', 'confidence': 0.9}],
+            'counts': {'car': 1}
         }
+        
+        # Mock database operations
+        mock_input = MagicMock()
+        mock_input.id = 'input_123'
+        self.mock_db.save.return_value = mock_input
 
-        bp_status = BatchStatus()
-        with self.app.test_request_context("/api/batch/status", method="GET"):
-            response = bp_status.get()
-            status_code = response[1]
-            json_data = response[0]
+        resp = self.client.post('/api/batch/process', json=payload)
+        
+        self.assertEqual(resp.status_code, 200)
+        data = resp.get_json()
+        self.assertIn('results', data)
+        self.assertEqual(len(data['results']), 100)
 
-        self.assertEqual(status_code, 200)
-        self.assertIn("total_processed_today", json_data)
-        self.assertIn("average_processing_time", json_data)
-        self.assertIn("success_rate", json_data)
-        self.assertIn("total_requests", json_data)
-        self.assertIn("system_uptime", json_data)
-        self.assertIn("last_updated", json_data)
+    def test_batch_process_no_images(self):
+        """Test batch processing with no images"""
+        payload = {'images': []}
 
-    @patch("src.api.views.batch_processing.create_error_response")
-    def test_post_batch_no_images(self, mock_create_error):
-        """POST /batch/process with no images should return validation error"""
-        mock_create_error.return_value = ("error_response", 400)
-
-        bp = BatchProcessing()
-        with self.app.test_request_context("/api/batch/process", method="POST", data={}):
-            response = bp.post()
-
-        self.assertEqual(response, ("error_response", 400))
-
-    @patch("src.api.views.batch_processing.BatchProcessing._process_single_image")
-    @patch("src.api.views.batch_processing.validate_object_type", return_value="car")
-    def test_post_batch_too_many_images(self, mock_validate, mock_process_single):
-        """POST /batch/process with >10 images should return validation error"""
-        mock_process_single.return_value = {
-            'image_name': 'test.jpg',
-            'success': True,
-            'result_id': 'output-1',
-            'object_type': 'car',
-            'predicted_count': 2,
-            'confidence': 0.95,
-            'processing_time': 0.1,
-            'created_at': '2025-01-01T00:00:00'
-        }
-
-        # Create 11 fake files
-        data = {
-            "object_type": "car",
-            "images[]": [(io.BytesIO(b"data"), f"file{i}.jpg") for i in range(11)]
-        }
-
-        bp = BatchProcessing()
-        with self.app.test_request_context(
-            "/api/batch/process",
-            method="POST",
-            content_type="multipart/form-data",
-            data=data
-        ):
-            response = bp.post()
-
-        # Assert Flask Response object and status code
-        self.assertEqual(response.status_code, 400)
-        json_data = response.get_json()
-        self.assertIn("error", json_data)
-        self.assertIn("Too many images", json_data["error"]["message"])
+        resp = self.client.post('/api/batch/process', json=payload)
+        
+        self.assertEqual(resp.status_code, 400)
+        data = resp.get_json()
+        self.assertEqual(data['status'], 'fail')
+        self.assertIn('No images provided', data['message'])
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()
+

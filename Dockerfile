@@ -17,7 +17,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     libgl1 \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    wget \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Upgrade pip and install wheel
+RUN pip install --upgrade pip setuptools wheel
 
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
@@ -32,20 +37,23 @@ COPY create_db.sql .
 COPY start_development.py .
 COPY environment_config.example .env.example
 
-# Create necessary directories
-RUN mkdir -p media logs models
+# Create necessary directories with proper permissions
+RUN mkdir -p media logs models && \
+    chmod 755 media logs models
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash app && \
     chown -R app:app /app
+
+# Switch to non-root user
 USER app
 
 # Expose port
 EXPOSE 5000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:5000/api/performance/health || exit 1
 
 # Start command
 CMD ["python", "start_development.py"]

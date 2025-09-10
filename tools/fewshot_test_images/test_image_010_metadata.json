@@ -1,0 +1,19 @@
+{
+  "prompt": "A scene with car, person and bicycle in a garden",
+  "object_types": [
+    "car",
+    "person",
+    "bicycle"
+  ],
+  "expected_objects": 3,
+  "background": "none",
+  "transformations": {
+    "blur": false,
+    "rotate": false,
+    "noise": false
+  },
+  "image_size": [
+    800,
+    600
+  ]
+}

@@ -12,7 +12,9 @@ from .metrics import (
     quality_metrics,
     metadata_metrics,
     update_quality_metrics,
-    record_request_metadata
+    record_request_metadata,
+    compute_quality_metrics_from_database,
+    refresh_quality_metrics_from_database
 )
 
 __all__ = [
@@ -22,5 +24,7 @@ __all__ = [
     'quality_metrics',
     'metadata_metrics',
     'update_quality_metrics',
-    'record_request_metadata'
+    'record_request_metadata',
+    'compute_quality_metrics_from_database',
+    'refresh_quality_metrics_from_database'
 ]
