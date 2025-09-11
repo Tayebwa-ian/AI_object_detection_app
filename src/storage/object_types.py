@@ -14,6 +14,7 @@ class ObjectType(BaseModel, Base):
     name = Column(String(128), nullable=False, unique=True)
     description = Column(String(128), nullable=False)
     outputs = relationship("Output", backref="object_output", cascade="all, delete-orphan")
+    metrics = relationship("Metric", backref="object_metric", cascade="all, delete-orphan")
 
     def __init__(self):
         """initializes Object_type class"""

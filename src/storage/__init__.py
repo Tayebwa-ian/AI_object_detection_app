@@ -5,11 +5,14 @@ from .base_model import BaseModel
 from .inputs import Input
 from .object_types import ObjectType
 from .ouputs import Output
+from .metrics import Metric
 from os import getenv
 
 
 # load from database
 db = getenv('OBJ_DETECT_MYSQL_DB')
-if db:
+if db and getenv('OBJ_DETECT_ENV') != 'test':
     database = engine.Engine()
     database.reload()
+else:
+    database = engine.Engine()

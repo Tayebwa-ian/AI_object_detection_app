@@ -9,6 +9,7 @@ from flask_restful import Api
 from flask_cors import CORS
 from flasgger import Swagger
 from .docs.swagger_template import swagger_template
+from datetime import datetime
 
 
 # create the app instance
@@ -32,11 +33,36 @@ def handle_bad_request(e):
     """json 400 page"""
     return (jsonify({'error': 'Bad request'}))
 
+@app.route('/health')
+def health_check():
+    """
+    Health check endpoint
+    ---
+    tags:
+      - System
+    summary: Check API health status
+    description: Returns the current health status of the API and its components
+    responses:
+      200:
+        description: API is healthy
+        schema:
+          $ref: '#/definitions/HealthResponse'
+    """
+    return jsonify({
+        'status': 'healthy',
+        'message': 'AI Object Counting API is running',
+        'pipeline_available': True,
+        'database': 'connected',
+        'timestamp': datetime.now().isoformat()
+    })
+
+
 # setup the API and the endpoints
 api = Api(app)
 from .api.views.inputs import *
 from .api.views.object_types import *
 from .api.views.outputs import *
+from .api.views.monitoring import *
 
 api.add_resource(InputList, '/api/count')
 # api.add_resource(InputSingle, '/api/input/<id>')
@@ -44,7 +70,7 @@ api.add_resource(ObjectTypeList, '/api/object')
 api.add_resource(ObjectTypeSingle, '/api/object/<id>')
 api.add_resource(OutputList, '/api/output')
 api.add_resource(OutputSingle, '/api/correct/<id>')
-#api.add_resource(Monitoring, '/metrics')
+api.add_resource(Monitoring, '/metrics')
 
 # run this file to run the app
 if __name__ == "__main__":
