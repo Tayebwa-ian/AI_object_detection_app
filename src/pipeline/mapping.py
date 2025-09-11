@@ -155,7 +155,7 @@ class LabelMapper:
             return mapping_result
             
         except Exception as e:
-            print(f"Zero-shot mapping failed for '{raw_label}': {e}")
+            print(f"⚠️ Zero-shot mapping failed for '{raw_label}': {e}")
             return {'mapped_label': raw_label, 'mapping_confidence': 1.0}
     
     def map_label(self, raw_label: str, 

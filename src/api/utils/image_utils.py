@@ -5,15 +5,12 @@ from werkzeug.utils import secure_filename
 import secrets
 import os
 from marshmallow import EXCLUDE
-from ...config import config
 
 
-# Determine upload directory
-# Priority: explicit UPLOAD_FOLDER env var -> configured MEDIA_DIRECTORY
-upload_folder = os.getenv("UPLOAD_FOLDER") or config.MEDIA_DIRECTORY or 'media'
-
-# Ensure directory exists
-os.makedirs(upload_folder, exist_ok=True)
+if os.getenv("UPLOAD_FOLDER"):
+    upload_folder = os.getenv("UPLOAD_FOLDER")
+else:
+    upload_folder = 'media'
 
 
 def upload_image(request=None):
@@ -38,7 +35,7 @@ def upload_image(request=None):
         return make_response(jsonify(responseObject), 400)
     
     try:
-        # Save the image into configured upload folder
+        # Save the image
         file.save(os.path.join(upload_folder, new_filename))
         return new_filename
     except Exception as e:

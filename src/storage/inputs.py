@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3"
 """Input Model - Module"""
 from sqlalchemy import String, Column, Text
 from sqlalchemy.orm import relationship
@@ -15,10 +15,6 @@ class Input(BaseModel, Base):
     image_path = Column(String(200), nullable=False, unique=True)
     outputs = relationship("Output", backref="input_output", cascade="all, delete-orphan")
 
-    def __init__(self, **kwargs):
+    def __init__(self):
         """initializes Input class"""
         super().__init__()
-        if kwargs:
-            for key, value in kwargs.items():
-                if hasattr(self, key):
-                    setattr(self, key, value)

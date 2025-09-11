@@ -3,25 +3,10 @@
 Input Views module
 """
 from flask_restful import Resource
-from ...storage import database, Input, Output, ObjectType
+from ...storage import database, Input
 from ..serializers.inputs import InputSchema
 from marshmallow import ValidationError, EXCLUDE
 from flask import request, jsonify, make_response
-from ..utils.image_utils import upload_image
-from ...config import config
-from ...pipeline.pipeline import pipeline
-from .monitoring import monitoring
-from ..utils.error_handlers import (
-    create_error_response, handle_file_upload_error, handle_ai_processing_error,
-    handle_database_error, validate_file_upload, validate_object_type,
-    ValidationAPIError, ProcessingAPIError, DatabaseAPIError
-)
-from ...monitoring.decorators import track_response_time
-from ...monitoring.metrics import record_request_metadata, record_model_inference
-import os
-import uuid
-import time
-from PIL import Image
 
 
 input_schema = InputSchema(unknown=EXCLUDE)
@@ -57,336 +42,39 @@ class InputList(Resource):
             return make_response(jsonify(response), 400)
         return inputs_schema.dump(inputs), 200
 
-    @track_response_time('api_count')
     def post(self):
         """
-        Upload image and process with AI pipeline
+        Create a new input
         ---
         tags:
           - Inputs
         parameters:
-          - in: formData
-            name: image
-            type: file
+          - in: body
+            name: body
             required: true
-            description: Image file to process
-          - in: formData
-            name: object_type
-            type: string
-            required: true
-            description: Type of object to count
-          - in: formData
-            name: description
-            type: string
-            required: false
-            description: Optional description
+            schema:
+              $ref: '#/definitions/Input'
         responses:
           201:
-            description: Image processed successfully
+            description: Input created successfully
             schema:
-              type: object
-              properties:
-                success:
-                  type: boolean
-                result_id:
-                  type: string
-                object_type:
-                  type: string
-                predicted_count:
-                  type: integer
-                confidence:
-                  type: number
-                processing_time:
-                  type: number
-                image_path:
-                  type: string
-                created_at:
-                  type: string
-          400:
-            description: Bad request or processing error
-          500:
-            description: Internal server error
+              $ref: '#/definitions/Input'
+          403:
+            description: Validation error
         """
+        data = request.get_json()
         try:
-            # Validate file upload
-            try:
-                file = validate_file_upload(request)
-            except ValidationAPIError as e:
-                return create_error_response(e)
-            
-            # Get and validate form data
-            object_type = request.form.get('object_type')
-            description = request.form.get('description', f'Count {object_type} objects')
-            
-            try:
-                object_type = validate_object_type(object_type)
-            except ValidationAPIError as e:
-                return create_error_response(e)
-            
-            # Upload image
-            try:
-                image_result = upload_image(request)
-                if isinstance(image_result, tuple):  # Error response
-                    return handle_file_upload_error(image_result[0].get_json().get('error', 'Upload failed'))
-            except Exception as e:
-                return handle_file_upload_error(e)
-            
-            image_filename = image_result
-            # Logical path for frontend/API
-            image_path = os.path.join('media', image_filename)
-            # Filesystem path for pipeline processing
-            fs_image_path = os.path.join(config.MEDIA_DIRECTORY, image_filename)
-            
-            # Process image with AI pipeline
-            print(f"Processing image: {image_path} for object type: {object_type}")
-            try:
-                ai_result = pipeline.process_image(fs_image_path, object_type)
-                
-                if not ai_result.get('success', False):
-                    return handle_ai_processing_error(
-                        Exception(ai_result.get("error", "Unknown AI processing error"))
-                    )
-            except Exception as e:
-                return handle_ai_processing_error(e)
-            
-            # Create input record
-            input_data = {
-                'description': description,
-                'image_path': image_path
+            data = input_schema.load(data)
+        except ValidationError as e:
+            responseobject = {
+                "status": "fail",
+                "message": e.messages
             }
-            new_input = Input(**input_data)
-            new_input.save()
-            
-            # Get or create object type
-            object_type_record = database.get(ObjectType, name=object_type)
-            if not object_type_record:
-                object_type_record = ObjectType(
-                    name=object_type,
-                    description=f'Object type for {object_type}'
-                )
-                object_type_record.save()
-            
-            # Create output record
-            output_data = {
-                'predicted_count': ai_result.get('predicted_count', 0),
-                'pred_confidence': ai_result.get('confidence', 0.0),
-                'object_type_id': object_type_record.id,
-                'input_id': new_input.id
-            }
-            new_output = Output(**output_data)
-            new_output.save()
-            
-            # Prepare response
-            response_data = {
-                'success': True,
-                'result_id': str(new_output.id),
-                'object_type': object_type,
-                'predicted_count': ai_result.get('predicted_count', 0),
-                'confidence': ai_result.get('confidence', 0.0),
-                'processing_time': ai_result.get('processing_time', 0.0),
-                'image_path': image_path,
-                'created_at': new_output.created_at.isoformat() if hasattr(new_output, 'created_at') else None
-            }
-            
-            # Record performance metrics
-            processing_time = ai_result.get('processing_time', 0.0)
-            success = ai_result.get('success', True)
-            monitoring.record_request(object_type, processing_time, success)
-            
-            # Record metadata metrics
-            try:
-                # Get image dimensions
-                with Image.open(fs_image_path) as img:
-                    image_width, image_height = img.size
-                
-                # Extract metadata from AI result
-                predicted_count = ai_result.get('predicted_count', 0)
-                segments_count = ai_result.get('segments_count', 0)
-                object_types_found = ai_result.get('object_types_found', 1)
-                avg_segment_area = ai_result.get('avg_segment_area', 0)
-                models_used = ai_result.get('models_used', ['sam', 'resnet', 'mapper'])
-                
-                # Record metadata
-                record_request_metadata(
-                    image_width=image_width,
-                    image_height=image_height,
-                    predicted_count=predicted_count,
-                    object_type=object_type,
-                    segments_count=segments_count,
-                    object_types_found=object_types_found,
-                    avg_segment_area=avg_segment_area,
-                    models_used=models_used
-                )
-                
-                # Record model inference times if available
-                if 'model_times' in ai_result:
-                    for model_name, duration in ai_result['model_times'].items():
-                        record_model_inference(model_name, object_type, duration)
-                
-                # Record confidence metrics if available
-                if 'confidence_stats' in ai_result:
-                    confidence_stats = ai_result['confidence_stats']
-                    avg_confidence = confidence_stats.get('avg_confidence', 0.0)
-                    max_confidence = confidence_stats.get('max_confidence', 0.0)
-                    min_confidence = confidence_stats.get('min_confidence', 0.0)
-                    
-                    # Record average confidence
-                    record_model_inference('resnet', object_type, 0.0, avg_confidence)
-                    
-                    # Record max confidence
-                    record_model_inference('resnet_max', object_type, 0.0, max_confidence)
-                    
-                    # Record min confidence  
-                    record_model_inference('resnet_min', object_type, 0.0, min_confidence)
-                        
-            except Exception as e:
-                print(f"Warning: Failed to record metadata: {e}")
-            
-            print(f"Successfully processed image: {ai_result.get('predicted_count', 0)} {object_type}s detected")
-            return make_response(jsonify(response_data), 201)
-            
-        except Exception as e:
-            # Record failed request
-            monitoring.record_request(object_type, 0.0, False)
-            print(f"Error processing image: {str(e)}")
-            return create_error_response(e, include_details=True)
+            return make_response(jsonify(responseobject), 403)
 
-    @track_response_time('api_count_all')
-    def count_all_objects(self):
-        """
-        Upload image and detect all objects (auto-detection)
-        ---
-        tags:
-          - Inputs
-        parameters:
-          - in: formData
-            name: image
-            type: file
-            required: true
-            description: Image file to process
-          - in: formData
-            name: object_type
-            type: string
-            required: true
-            description: Primary object type to focus on
-          - in: formData
-            name: description
-            type: string
-            required: false
-            description: Optional description
-        responses:
-          201:
-            description: Image processed successfully with all objects detected
-            schema:
-              type: object
-              properties:
-                success:
-                  type: boolean
-                result_id:
-                  type: string
-                object_type:
-                  type: string
-                predicted_count:
-                  type: integer
-                confidence:
-                  type: number
-                processing_time:
-                  type: number
-                image_path:
-                  type: string
-                created_at:
-                  type: string
-          400:
-            description: Bad request or processing error
-          500:
-            description: Internal server error
-        """
-        try:
-            # Check if image file is present
-            if 'image' not in request.files:
-                return make_response(jsonify({
-                    'error': 'No image file provided'
-                }), 400)
-            
-            # Get form data
-            object_type = request.form.get('object_type')
-            description = request.form.get('description', f'Detect and count all objects in this image')
-            
-            if not object_type:
-                return make_response(jsonify({
-                    'error': 'object_type is required'
-                }), 400)
-            
-            # Upload image
-            image_result = upload_image(request)
-            if isinstance(image_result, tuple):  # Error response
-                return image_result
-            
-            image_filename = image_result
-            image_path = os.path.join('media', image_filename)
-            fs_image_path = os.path.join(config.MEDIA_DIRECTORY, image_filename)
-            
-            # Process image with AI pipeline (auto-detection)
-            print(f"Auto-detecting objects in image: {image_path}")
-            ai_result = pipeline.process_image_auto(fs_image_path)
-            
-            if not ai_result.get('success', False):
-                return make_response(jsonify({
-                    'error': f'AI processing failed: {ai_result.get("error", "Unknown error")}'
-                }), 500)
-            
-            # Create input record
-            input_data = {
-                'description': description,
-                'image_path': image_path
-            }
-            new_input = Input(**input_data)
-            new_input.save()
-            
-            # Get or create object type
-            object_type_record = database.get(ObjectType, name=object_type)
-            if not object_type_record:
-                object_type_record = ObjectType(
-                    name=object_type,
-                    description=f'Object type for {object_type}'
-                )
-                object_type_record.save()
-            
-            # Create output record
-            output_data = {
-                'predicted_count': ai_result.get('predicted_count', 0),
-                'pred_confidence': ai_result.get('confidence', 0.0),
-                'object_type_id': object_type_record.id,
-                'input_id': new_input.id
-            }
-            new_output = Output(**output_data)
-            new_output.save()
-            
-            # Prepare response
-            response_data = {
-                'success': True,
-                'result_id': str(new_output.id),
-                'object_type': object_type,
-                'predicted_count': ai_result.get('predicted_count', 0),
-                'confidence': ai_result.get('confidence', 0.0),
-                'processing_time': ai_result.get('processing_time', 0.0),
-                'image_path': image_path,
-                'created_at': new_output.created_at.isoformat() if hasattr(new_output, 'created_at') else None
-            }
-            
-            # Record performance metrics
-            processing_time = ai_result.get('processing_time', 0.0)
-            success = ai_result.get('success', True)
-            monitoring.record_request(f"{object_type}_auto", processing_time, success)
-            
-            print(f"Successfully auto-detected objects: {ai_result.get('predicted_count', 0)} total objects")
-            return make_response(jsonify(response_data), 201)
-            
-        except Exception as e:
-            # Record failed request
-            monitoring.record_request(f"{object_type}_auto", 0.0, False)
-            print(f"Error auto-detecting objects: {str(e)}")
-            return create_error_response(e, include_details=True)
+        new_input = Input(**data)
+        new_input.save()
+        return input_schema.dump(new_input), 201
 
 
 class InputSingle(Resource):

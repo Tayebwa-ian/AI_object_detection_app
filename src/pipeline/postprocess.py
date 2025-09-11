@@ -612,7 +612,7 @@ def generate_histograms(detections: List[Dict],
     # Save if requested
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
-        print(f"Histograms saved to: {save_path}")
+        print(f"📊 Histograms saved to: {save_path}")
     
     # Show if requested
     if show_plots:
