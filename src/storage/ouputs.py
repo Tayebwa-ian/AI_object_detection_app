@@ -19,7 +19,6 @@ class Output(BaseModel, Base):
     pred_confidence = Column(Float(), nullable=False)
     object_type_id = Column(String(60), ForeignKey("object_types.id"), nullable=False)
     input_id = Column(String(60), ForeignKey("inputs.id"), nullable=False)
-    metrics = relationship("Metric", backref="output_metric", cascade="all, delete-orphan")
 
     def __init__(self):
         """initializes Output class"""
