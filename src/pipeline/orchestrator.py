@@ -234,15 +234,15 @@ def orchestrate(
 if __name__ == "__main__":
     # Example: run zero-shot with CLIP only
     results = orchestrate(
-        mode="zero_shot",
+        mode="few_shot",
         generate_images_fn=generate_images,
-        labels=["car", "phone"],
+        labels=["car", "phone", "person", "computer", "bag", "jacket"],
+        n_per_label_train=20,
         n_per_label_test=6,
-        candidate_labels=["car", "phone", "person"],
-        use_prototypes=False,
-        use_clip=True,
-        zero_shot_kwargs={"sam": None, "clip_model_name": CLIP_MODEL, "device": DEVICE},
+        store_root=DEFAULT_OUTPUT_ROOT,
+        classifier_path=DEFAULT_CLASSIFIER_PATH,
+        zero_shot_kwargs={"sam": None},
         verbose=True
     )
-    print("-------------- Zero Shot Results: -----------------------\n")
-    print(results["metrics"])
+    print("-------------- Synthetic Few Shot Results: -----------------------\n")
+    print(results)

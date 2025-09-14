@@ -1,0 +1,7 @@
+{
+  "label": "bag",
+  "prototype_path": "src/pipeline/store/data/prototypes/bag/prototype.npy",
+  "count": 30,
+  "feature_dim": 3072,
+  "created_at": 1757865945.2022674
+}

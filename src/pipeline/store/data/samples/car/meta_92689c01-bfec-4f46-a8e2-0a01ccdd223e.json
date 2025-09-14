@@ -1,0 +1,16 @@
+{
+  "sample_id": "92689c01-bfec-4f46-a8e2-0a01ccdd223e",
+  "sample_path": "src/pipeline/store/data/samples/car/sample_92689c01-bfec-4f46-a8e2-0a01ccdd223e.npy",
+  "source_image": "/home/passwd/AI_object_detection_app/src/synthimage/generated_images/car/car_0004.png",
+  "label": "car",
+  "feature_dim": 3072,
+  "timestamp": 1757864650.4098372,
+  "extract_meta": {
+    "model_name": "resnet50",
+    "device": "cpu",
+    "feature_dim": 3072,
+    "tta": true,
+    "tta_augments": 2,
+    "inference_time": 0.4524376392364502
+  }
+}

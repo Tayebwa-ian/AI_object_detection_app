@@ -1,0 +1,16 @@
+{
+  "sample_id": "286b0bcd-0b91-4888-ab8e-5d4db1201ba3",
+  "sample_path": "src/pipeline/store/data/samples/bag/sample_286b0bcd-0b91-4888-ab8e-5d4db1201ba3.npy",
+  "source_image": "/home/passwd/AI_object_detection_app/src/synthimage/generated_images/bag/bag_0019.png",
+  "label": "bag",
+  "feature_dim": 3072,
+  "timestamp": 1757865681.3471339,
+  "extract_meta": {
+    "model_name": "resnet50",
+    "device": "cpu",
+    "feature_dim": 3072,
+    "tta": true,
+    "tta_augments": 2,
+    "inference_time": 0.3428521156311035
+  }
+}

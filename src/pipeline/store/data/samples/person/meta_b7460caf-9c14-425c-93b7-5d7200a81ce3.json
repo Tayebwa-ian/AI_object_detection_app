@@ -1,0 +1,16 @@
+{
+  "sample_id": "b7460caf-9c14-425c-93b7-5d7200a81ce3",
+  "sample_path": "src/pipeline/store/data/samples/person/sample_b7460caf-9c14-425c-93b7-5d7200a81ce3.npy",
+  "source_image": "/home/passwd/AI_object_detection_app/src/synthimage/generated_images/person/person_0003.png",
+  "label": "person",
+  "feature_dim": 3072,
+  "timestamp": 1757865156.907712,
+  "extract_meta": {
+    "model_name": "resnet50",
+    "device": "cpu",
+    "feature_dim": 3072,
+    "tta": true,
+    "tta_augments": 2,
+    "inference_time": 0.3878519535064697
+  }
+}

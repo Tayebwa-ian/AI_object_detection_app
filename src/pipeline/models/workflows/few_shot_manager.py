@@ -96,16 +96,22 @@ class FewShotManager:
 
     Parameters
     ----------
-    resnet_wrapper: ResNetWrapper instance (if None, created internally)
-    sam_wrapper: SAMWrapper instance (if None, created internally)
+    resnet_wrapper: ResNetWrapper instance (if True, created internally)
+    sam_wrapper: True creates the sam_wrapper object internally
     classifier_class: sklearn-like estimator class (default LogisticRegression)
     """
     def __init__(self,
-                 resnet_wrapper: Optional[ResNetWrapper] = None,
-                 sam_wrapper: Optional[SAMWrapper] = None,
+                 resnet_wrapper: bool = True,
+                 sam_wrapper: bool = True,
                  classifier_class = LogisticRegression):
-        self.resnet = resnet_wrapper or ResNetWrapper()
-        self.sam = sam_wrapper or SAMWrapper()
+        if sam_wrapper:
+            self.sam = SAMWrapper()
+        else:
+            self.sam = None
+        if resnet_wrapper:
+            self.resnet = ResNetWrapper()
+        else:
+            self.resnet = None
         self.classifier_class = classifier_class
 
     # ----------------------------
@@ -333,16 +339,8 @@ class FewShotManager:
         overall_start = time.time()
         gen_kwargs = dict(gen_kwargs or {})
 
-        # Training dataset
+        # store training data
         train_summary = {}
-        for label in labels:
-            out = self.generate_and_build_dataset(label=label, num_images=n_per_label_train,
-                                                  image_generator_fn=generate_images_fn,
-                                                  store_root=store_root, gen_kwargs=gen_kwargs, verbose=verbose)
-            train_summary[label] = out["summary"]
-
-        # Prototypes
-        proto_info = self.resnet.finalize_prototypes(store_root)
 
         # Classifier
         if use_existing_classifier and os.path.exists(classifier_path):
@@ -350,10 +348,21 @@ class FewShotManager:
                 print("[test] Using existing classifier")
             clf_info = {"classifier_path": os.path.abspath(classifier_path), "note": "loaded existing"}
         else:
+            # Build Training dataset
+            print("[Build] Build test dataset")
+            for label in labels:
+                out = self.generate_and_build_dataset(label=label, num_images=n_per_label_train,
+                                                    image_generator_fn=generate_images_fn,
+                                                    store_root=store_root, gen_kwargs=gen_kwargs, verbose=verbose)
+                train_summary[label] = out["summary"]
+
+            # Prototypes
+            proto_info = self.resnet.finalize_prototypes(store_root)
             clf_info = self.train_classifier(store_root=store_root, classifier_path=classifier_path,
                                              classifier_params=classifier_params)
 
         # Evaluation
+        print("[Evaluation] evaluating the classifier")
         y_true, y_pred = [], []
         per_sample_results, times = [], []
         classifier_obj = self.load_classifier(classifier_path)

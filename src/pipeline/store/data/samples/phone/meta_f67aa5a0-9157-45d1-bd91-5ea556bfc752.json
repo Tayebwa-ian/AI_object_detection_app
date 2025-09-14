@@ -1,0 +1,16 @@
+{
+  "sample_id": "f67aa5a0-9157-45d1-bd91-5ea556bfc752",
+  "sample_path": "src/pipeline/store/data/samples/phone/sample_f67aa5a0-9157-45d1-bd91-5ea556bfc752.npy",
+  "source_image": "/home/passwd/AI_object_detection_app/src/synthimage/generated_images/phone/phone_0013.png",
+  "label": "phone",
+  "feature_dim": 3072,
+  "timestamp": 1757864914.765283,
+  "extract_meta": {
+    "model_name": "resnet50",
+    "device": "cpu",
+    "feature_dim": 3072,
+    "tta": true,
+    "tta_augments": 2,
+    "inference_time": 0.7564313411712646
+  }
+}

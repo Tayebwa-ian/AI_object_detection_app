@@ -66,18 +66,22 @@ class ZeroShotManager:
     Manager for zero-shot classification at the segment level.
 
     Args:
-        sam (SAMWrapper | None): SAM wrapper instance; created if None.
+        sam (True | False): True creates the sam_wrapper object internally.
         resnet (ResNetWrapper | None): ResNet wrapper instance; created if None.
         clip_model_name (str | None): CLIP model name (e.g., "ViT-B/32"). Used when loading CLIP.
         device (str | None): Torch device if using CLIP (defaults to ResNetWrapper device).
     """
 
     def __init__(self,
-                 sam: Optional[SAMWrapper] = None,
+                 sam: bool = True,
                  resnet: Optional[ResNetWrapper] = None,
                  clip_model_name: Optional[str] = None,
                  device: Optional[str] = None):
-        self.sam = sam or SAMWrapper()
+        if sam:
+            self.sam = SAMWrapper()
+        else:
+            self.sam = None
+
         self.resnet = resnet or ResNetWrapper()
         self.clip_model_name = clip_model_name or None
         # CLIP model will be lazily loaded when needed
@@ -401,8 +405,8 @@ class ZeroShotManager:
 
                 if use_clip:
                     img = Image.open(img_path).convert("RGB")
-                    image_input = self._clip_preprocess(img).unsqueeze(0).to(self.device)
-                    text_tokens = clip.tokenize([f"a photo of a {lab}" for lab in candidate_labels]).to(self.device)
+                    image_input = self._clip_preprocess(img).unsqueeze(0).to(self._clip_device)
+                    text_tokens = clip.tokenize([f"a photo of a {lab}" for lab in candidate_labels]).to(self._clip_device)
                     with torch.no_grad():
                         im_feat = self._clip_model.encode_image(image_input)
                         txt_feat = self._clip_model.encode_text(text_tokens)

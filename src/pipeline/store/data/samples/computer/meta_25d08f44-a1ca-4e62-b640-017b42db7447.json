@@ -1,0 +1,16 @@
+{
+  "sample_id": "25d08f44-a1ca-4e62-b640-017b42db7447",
+  "sample_path": "src/pipeline/store/data/samples/computer/sample_25d08f44-a1ca-4e62-b640-017b42db7447.npy",
+  "source_image": "/home/passwd/AI_object_detection_app/src/synthimage/generated_images/computer/computer_0006.png",
+  "label": "computer",
+  "feature_dim": 3072,
+  "timestamp": 1757865415.8672295,
+  "extract_meta": {
+    "model_name": "resnet50",
+    "device": "cpu",
+    "feature_dim": 3072,
+    "tta": true,
+    "tta_augments": 2,
+    "inference_time": 0.49572277069091797
+  }
+}

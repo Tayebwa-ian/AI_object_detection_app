@@ -1,0 +1,860 @@
+{
+  "labels": {
+    "bag": {
+      "samples": [
+        {
+          "sample_id": "1c6a238a-98af-4f7b-bae7-73d95dd6a878",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_1c6a238a-98af-4f7b-bae7-73d95dd6a878.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_1c6a238a-98af-4f7b-bae7-73d95dd6a878.json"
+        },
+        {
+          "sample_id": "cfd4686b-e672-4972-a520-499a34c1c51b",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_cfd4686b-e672-4972-a520-499a34c1c51b.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_cfd4686b-e672-4972-a520-499a34c1c51b.json"
+        },
+        {
+          "sample_id": "3714c9eb-c3c4-4d6b-9fc0-6189b3e93d84",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_3714c9eb-c3c4-4d6b-9fc0-6189b3e93d84.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_3714c9eb-c3c4-4d6b-9fc0-6189b3e93d84.json"
+        },
+        {
+          "sample_id": "54b57734-216d-4336-a505-1720eed3f4d1",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_54b57734-216d-4336-a505-1720eed3f4d1.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_54b57734-216d-4336-a505-1720eed3f4d1.json"
+        },
+        {
+          "sample_id": "505dbb06-db91-4ad8-bfe9-f59b20a2317f",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_505dbb06-db91-4ad8-bfe9-f59b20a2317f.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_505dbb06-db91-4ad8-bfe9-f59b20a2317f.json"
+        },
+        {
+          "sample_id": "4fc4cbc1-0353-4724-932a-36519d9551c1",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_4fc4cbc1-0353-4724-932a-36519d9551c1.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_4fc4cbc1-0353-4724-932a-36519d9551c1.json"
+        },
+        {
+          "sample_id": "d9861a6f-e822-4e6a-96c0-7eecfef41aa6",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_d9861a6f-e822-4e6a-96c0-7eecfef41aa6.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_d9861a6f-e822-4e6a-96c0-7eecfef41aa6.json"
+        },
+        {
+          "sample_id": "bd036ec9-a98f-4a17-9102-69f47073c535",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_bd036ec9-a98f-4a17-9102-69f47073c535.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_bd036ec9-a98f-4a17-9102-69f47073c535.json"
+        },
+        {
+          "sample_id": "1c6d07b2-5c58-4d8b-b44b-7c611f12b787",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_1c6d07b2-5c58-4d8b-b44b-7c611f12b787.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_1c6d07b2-5c58-4d8b-b44b-7c611f12b787.json"
+        },
+        {
+          "sample_id": "a20cbb5a-e589-42f0-b8f0-5d45f739e2f0",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_a20cbb5a-e589-42f0-b8f0-5d45f739e2f0.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_a20cbb5a-e589-42f0-b8f0-5d45f739e2f0.json"
+        },
+        {
+          "sample_id": "a677a07a-3eda-41b8-92f0-63e493ac8b18",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_a677a07a-3eda-41b8-92f0-63e493ac8b18.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_a677a07a-3eda-41b8-92f0-63e493ac8b18.json"
+        },
+        {
+          "sample_id": "772459b9-9a1c-4e6f-8702-72a0304d2f2a",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_772459b9-9a1c-4e6f-8702-72a0304d2f2a.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_772459b9-9a1c-4e6f-8702-72a0304d2f2a.json"
+        },
+        {
+          "sample_id": "e37e3a26-76ac-48cd-9ea6-2be9f111570f",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_e37e3a26-76ac-48cd-9ea6-2be9f111570f.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_e37e3a26-76ac-48cd-9ea6-2be9f111570f.json"
+        },
+        {
+          "sample_id": "75046e42-9725-4502-ba03-5b48efae3c3d",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_75046e42-9725-4502-ba03-5b48efae3c3d.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_75046e42-9725-4502-ba03-5b48efae3c3d.json"
+        },
+        {
+          "sample_id": "ee588f84-32c1-4e6d-9154-4e0330e45c72",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_ee588f84-32c1-4e6d-9154-4e0330e45c72.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_ee588f84-32c1-4e6d-9154-4e0330e45c72.json"
+        },
+        {
+          "sample_id": "ca5608e1-c986-48eb-af6b-5ba56738995b",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_ca5608e1-c986-48eb-af6b-5ba56738995b.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_ca5608e1-c986-48eb-af6b-5ba56738995b.json"
+        },
+        {
+          "sample_id": "4f6eec0f-42f5-4366-89f4-4db738369428",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_4f6eec0f-42f5-4366-89f4-4db738369428.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_4f6eec0f-42f5-4366-89f4-4db738369428.json"
+        },
+        {
+          "sample_id": "98f38f10-3a85-4538-9114-5b43d7bbde52",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_98f38f10-3a85-4538-9114-5b43d7bbde52.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_98f38f10-3a85-4538-9114-5b43d7bbde52.json"
+        },
+        {
+          "sample_id": "d0e299cf-62eb-4a3a-a8c8-54dfe6dfbecd",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_d0e299cf-62eb-4a3a-a8c8-54dfe6dfbecd.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_d0e299cf-62eb-4a3a-a8c8-54dfe6dfbecd.json"
+        },
+        {
+          "sample_id": "558ac63b-3e54-4f86-950b-42debe8dcced",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_558ac63b-3e54-4f86-950b-42debe8dcced.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_558ac63b-3e54-4f86-950b-42debe8dcced.json"
+        },
+        {
+          "sample_id": "49075462-9259-4fd6-bd15-5e7aed4598bd",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_49075462-9259-4fd6-bd15-5e7aed4598bd.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_49075462-9259-4fd6-bd15-5e7aed4598bd.json"
+        },
+        {
+          "sample_id": "4a8f621d-cd69-4fd3-b486-969f052f51da",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_4a8f621d-cd69-4fd3-b486-969f052f51da.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_4a8f621d-cd69-4fd3-b486-969f052f51da.json"
+        },
+        {
+          "sample_id": "f4b9fc25-276a-458d-8dbf-52853b027d66",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_f4b9fc25-276a-458d-8dbf-52853b027d66.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_f4b9fc25-276a-458d-8dbf-52853b027d66.json"
+        },
+        {
+          "sample_id": "6c66c866-29a7-4a0c-bf76-4485c44fd33f",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_6c66c866-29a7-4a0c-bf76-4485c44fd33f.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_6c66c866-29a7-4a0c-bf76-4485c44fd33f.json"
+        },
+        {
+          "sample_id": "31d07c52-e4d5-439c-aa3d-88f2ebe5b1f7",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_31d07c52-e4d5-439c-aa3d-88f2ebe5b1f7.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_31d07c52-e4d5-439c-aa3d-88f2ebe5b1f7.json"
+        },
+        {
+          "sample_id": "733c4800-a83f-4549-bbae-363892ed915a",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_733c4800-a83f-4549-bbae-363892ed915a.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_733c4800-a83f-4549-bbae-363892ed915a.json"
+        },
+        {
+          "sample_id": "d128f28d-0ecc-49db-87e2-b0b11a8896b3",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_d128f28d-0ecc-49db-87e2-b0b11a8896b3.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_d128f28d-0ecc-49db-87e2-b0b11a8896b3.json"
+        },
+        {
+          "sample_id": "f8f9434e-1118-40be-ad30-e966307ef746",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_f8f9434e-1118-40be-ad30-e966307ef746.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_f8f9434e-1118-40be-ad30-e966307ef746.json"
+        },
+        {
+          "sample_id": "286b0bcd-0b91-4888-ab8e-5d4db1201ba3",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_286b0bcd-0b91-4888-ab8e-5d4db1201ba3.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_286b0bcd-0b91-4888-ab8e-5d4db1201ba3.json"
+        },
+        {
+          "sample_id": "ba78708d-52bd-430c-95af-2164508474ce",
+          "sample_path": "src/pipeline/store/data/samples/bag/sample_ba78708d-52bd-430c-95af-2164508474ce.npy",
+          "meta_path": "src/pipeline/store/data/samples/bag/meta_ba78708d-52bd-430c-95af-2164508474ce.json"
+        }
+      ],
+      "prototype": {
+        "prototype_path": "src/pipeline/store/data/prototypes/bag/prototype.npy",
+        "count": 30
+      }
+    },
+    "jacket": {
+      "samples": [
+        {
+          "sample_id": "9881b2e6-eb05-48fd-b946-13c941d521f4",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_9881b2e6-eb05-48fd-b946-13c941d521f4.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_9881b2e6-eb05-48fd-b946-13c941d521f4.json"
+        },
+        {
+          "sample_id": "25f7ea81-c2a5-404f-8e91-b84b72957698",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_25f7ea81-c2a5-404f-8e91-b84b72957698.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_25f7ea81-c2a5-404f-8e91-b84b72957698.json"
+        },
+        {
+          "sample_id": "8c6932c0-fa8f-48cf-bd9d-51655ae07666",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_8c6932c0-fa8f-48cf-bd9d-51655ae07666.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_8c6932c0-fa8f-48cf-bd9d-51655ae07666.json"
+        },
+        {
+          "sample_id": "68012838-3664-4408-af4b-5c33280baabb",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_68012838-3664-4408-af4b-5c33280baabb.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_68012838-3664-4408-af4b-5c33280baabb.json"
+        },
+        {
+          "sample_id": "c9bfb8b8-5fd8-4157-9802-d8c0d0f06797",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_c9bfb8b8-5fd8-4157-9802-d8c0d0f06797.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_c9bfb8b8-5fd8-4157-9802-d8c0d0f06797.json"
+        },
+        {
+          "sample_id": "beb574e3-e04a-467e-957e-d53157acc45b",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_beb574e3-e04a-467e-957e-d53157acc45b.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_beb574e3-e04a-467e-957e-d53157acc45b.json"
+        },
+        {
+          "sample_id": "2c8a08b5-34f3-4f58-a1b2-34ba2fef557e",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_2c8a08b5-34f3-4f58-a1b2-34ba2fef557e.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_2c8a08b5-34f3-4f58-a1b2-34ba2fef557e.json"
+        },
+        {
+          "sample_id": "3f342f76-e583-4c7c-96e9-eeb74ea42959",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_3f342f76-e583-4c7c-96e9-eeb74ea42959.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_3f342f76-e583-4c7c-96e9-eeb74ea42959.json"
+        },
+        {
+          "sample_id": "b8f79c40-f429-4e26-87ac-d67b511e4efd",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_b8f79c40-f429-4e26-87ac-d67b511e4efd.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_b8f79c40-f429-4e26-87ac-d67b511e4efd.json"
+        },
+        {
+          "sample_id": "709c3d17-a63c-4ae1-a462-a97abd76c555",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_709c3d17-a63c-4ae1-a462-a97abd76c555.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_709c3d17-a63c-4ae1-a462-a97abd76c555.json"
+        },
+        {
+          "sample_id": "0c30f0c6-68dd-4857-83ba-ed4dd8c4816d",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_0c30f0c6-68dd-4857-83ba-ed4dd8c4816d.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_0c30f0c6-68dd-4857-83ba-ed4dd8c4816d.json"
+        },
+        {
+          "sample_id": "f6104033-8375-42ea-a614-479804b88e31",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_f6104033-8375-42ea-a614-479804b88e31.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_f6104033-8375-42ea-a614-479804b88e31.json"
+        },
+        {
+          "sample_id": "4786e475-5a2c-4083-9068-ab4e0f0ece4a",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_4786e475-5a2c-4083-9068-ab4e0f0ece4a.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_4786e475-5a2c-4083-9068-ab4e0f0ece4a.json"
+        },
+        {
+          "sample_id": "684c224c-ff29-4f6d-96a6-05442943062e",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_684c224c-ff29-4f6d-96a6-05442943062e.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_684c224c-ff29-4f6d-96a6-05442943062e.json"
+        },
+        {
+          "sample_id": "86cfc3d9-2057-48c8-b0fe-08ebfe4c2346",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_86cfc3d9-2057-48c8-b0fe-08ebfe4c2346.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_86cfc3d9-2057-48c8-b0fe-08ebfe4c2346.json"
+        },
+        {
+          "sample_id": "db11d051-f6c4-4ad4-8040-bfc203d5d53f",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_db11d051-f6c4-4ad4-8040-bfc203d5d53f.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_db11d051-f6c4-4ad4-8040-bfc203d5d53f.json"
+        },
+        {
+          "sample_id": "75288afc-89e3-4c73-86d6-08e0d4ec160f",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_75288afc-89e3-4c73-86d6-08e0d4ec160f.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_75288afc-89e3-4c73-86d6-08e0d4ec160f.json"
+        },
+        {
+          "sample_id": "6cd7cf4b-e64d-4ea0-b909-2cdddd7d7cc3",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_6cd7cf4b-e64d-4ea0-b909-2cdddd7d7cc3.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_6cd7cf4b-e64d-4ea0-b909-2cdddd7d7cc3.json"
+        },
+        {
+          "sample_id": "0fb7e101-4457-4330-9bc2-a53070e9697f",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_0fb7e101-4457-4330-9bc2-a53070e9697f.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_0fb7e101-4457-4330-9bc2-a53070e9697f.json"
+        },
+        {
+          "sample_id": "51c8ebe1-966a-47cb-95c0-4ae02031eb11",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_51c8ebe1-966a-47cb-95c0-4ae02031eb11.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_51c8ebe1-966a-47cb-95c0-4ae02031eb11.json"
+        },
+        {
+          "sample_id": "f6d91c8d-53c3-4722-95a5-293ef14fd639",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_f6d91c8d-53c3-4722-95a5-293ef14fd639.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_f6d91c8d-53c3-4722-95a5-293ef14fd639.json"
+        },
+        {
+          "sample_id": "eefb4f60-b488-44ee-b1f9-118960b65788",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_eefb4f60-b488-44ee-b1f9-118960b65788.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_eefb4f60-b488-44ee-b1f9-118960b65788.json"
+        },
+        {
+          "sample_id": "e13b6a39-8de2-4de0-a8de-c464f4e87c80",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_e13b6a39-8de2-4de0-a8de-c464f4e87c80.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_e13b6a39-8de2-4de0-a8de-c464f4e87c80.json"
+        },
+        {
+          "sample_id": "0ced9b85-f4c2-4fbd-abd2-b858a18ec1e9",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_0ced9b85-f4c2-4fbd-abd2-b858a18ec1e9.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_0ced9b85-f4c2-4fbd-abd2-b858a18ec1e9.json"
+        },
+        {
+          "sample_id": "2e8b38bc-e192-4f3c-bffb-54afba70a4cf",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_2e8b38bc-e192-4f3c-bffb-54afba70a4cf.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_2e8b38bc-e192-4f3c-bffb-54afba70a4cf.json"
+        },
+        {
+          "sample_id": "a7ec133d-5231-48c2-8d20-3c5036b486db",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_a7ec133d-5231-48c2-8d20-3c5036b486db.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_a7ec133d-5231-48c2-8d20-3c5036b486db.json"
+        },
+        {
+          "sample_id": "9712288c-b26a-432d-b4c6-da47da325014",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_9712288c-b26a-432d-b4c6-da47da325014.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_9712288c-b26a-432d-b4c6-da47da325014.json"
+        },
+        {
+          "sample_id": "af9fc7c3-9b25-413b-8d64-430bdec083e0",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_af9fc7c3-9b25-413b-8d64-430bdec083e0.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_af9fc7c3-9b25-413b-8d64-430bdec083e0.json"
+        },
+        {
+          "sample_id": "d262e532-a394-436b-a5ee-81f3afbe579b",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_d262e532-a394-436b-a5ee-81f3afbe579b.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_d262e532-a394-436b-a5ee-81f3afbe579b.json"
+        },
+        {
+          "sample_id": "761ee30c-9266-4c10-a8f7-9c6d3b6555b4",
+          "sample_path": "src/pipeline/store/data/samples/jacket/sample_761ee30c-9266-4c10-a8f7-9c6d3b6555b4.npy",
+          "meta_path": "src/pipeline/store/data/samples/jacket/meta_761ee30c-9266-4c10-a8f7-9c6d3b6555b4.json"
+        }
+      ],
+      "prototype": {
+        "prototype_path": "src/pipeline/store/data/prototypes/jacket/prototype.npy",
+        "count": 30
+      }
+    },
+    "computer": {
+      "samples": [
+        {
+          "sample_id": "f2e17685-c48a-4adf-a46c-7da811f0987e",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_f2e17685-c48a-4adf-a46c-7da811f0987e.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_f2e17685-c48a-4adf-a46c-7da811f0987e.json"
+        },
+        {
+          "sample_id": "fd88543d-2be2-4dce-bfae-f6d0dd5fc3d2",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_fd88543d-2be2-4dce-bfae-f6d0dd5fc3d2.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_fd88543d-2be2-4dce-bfae-f6d0dd5fc3d2.json"
+        },
+        {
+          "sample_id": "bc5f3397-ceba-4171-8207-16a063e4d5b4",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_bc5f3397-ceba-4171-8207-16a063e4d5b4.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_bc5f3397-ceba-4171-8207-16a063e4d5b4.json"
+        },
+        {
+          "sample_id": "c82c0ceb-95c8-4c52-b80a-7ab6f696b8a5",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_c82c0ceb-95c8-4c52-b80a-7ab6f696b8a5.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_c82c0ceb-95c8-4c52-b80a-7ab6f696b8a5.json"
+        },
+        {
+          "sample_id": "8956a28f-41dc-4a64-9c36-9b4f805d94f7",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_8956a28f-41dc-4a64-9c36-9b4f805d94f7.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_8956a28f-41dc-4a64-9c36-9b4f805d94f7.json"
+        },
+        {
+          "sample_id": "51f94a07-2236-4fb8-897e-fecd67d109da",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_51f94a07-2236-4fb8-897e-fecd67d109da.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_51f94a07-2236-4fb8-897e-fecd67d109da.json"
+        },
+        {
+          "sample_id": "af764108-32b9-4cb2-ba60-d3b29d276a6d",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_af764108-32b9-4cb2-ba60-d3b29d276a6d.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_af764108-32b9-4cb2-ba60-d3b29d276a6d.json"
+        },
+        {
+          "sample_id": "c2fa80b3-ca8e-461d-b538-b70f3f584e34",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_c2fa80b3-ca8e-461d-b538-b70f3f584e34.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_c2fa80b3-ca8e-461d-b538-b70f3f584e34.json"
+        },
+        {
+          "sample_id": "3f034008-d5df-4054-85a5-8df643277123",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_3f034008-d5df-4054-85a5-8df643277123.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_3f034008-d5df-4054-85a5-8df643277123.json"
+        },
+        {
+          "sample_id": "2bc42da9-7f46-4c90-8d59-8ec81a7b1caa",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_2bc42da9-7f46-4c90-8d59-8ec81a7b1caa.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_2bc42da9-7f46-4c90-8d59-8ec81a7b1caa.json"
+        },
+        {
+          "sample_id": "33f0f329-1367-4c6c-8822-47e97102ea47",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_33f0f329-1367-4c6c-8822-47e97102ea47.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_33f0f329-1367-4c6c-8822-47e97102ea47.json"
+        },
+        {
+          "sample_id": "469fe973-dbe4-4db7-af8c-d774ccff1b5e",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_469fe973-dbe4-4db7-af8c-d774ccff1b5e.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_469fe973-dbe4-4db7-af8c-d774ccff1b5e.json"
+        },
+        {
+          "sample_id": "b58c030e-b55d-4c4f-b4b3-f0022f0289ba",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_b58c030e-b55d-4c4f-b4b3-f0022f0289ba.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_b58c030e-b55d-4c4f-b4b3-f0022f0289ba.json"
+        },
+        {
+          "sample_id": "cea50f5d-0839-415a-a987-b8c520a353a9",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_cea50f5d-0839-415a-a987-b8c520a353a9.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_cea50f5d-0839-415a-a987-b8c520a353a9.json"
+        },
+        {
+          "sample_id": "43ca9dec-53e6-4322-bb41-319597a6861b",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_43ca9dec-53e6-4322-bb41-319597a6861b.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_43ca9dec-53e6-4322-bb41-319597a6861b.json"
+        },
+        {
+          "sample_id": "25d08f44-a1ca-4e62-b640-017b42db7447",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_25d08f44-a1ca-4e62-b640-017b42db7447.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_25d08f44-a1ca-4e62-b640-017b42db7447.json"
+        },
+        {
+          "sample_id": "1cb63f0a-d56e-4351-b5d1-4ace0d736aac",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_1cb63f0a-d56e-4351-b5d1-4ace0d736aac.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_1cb63f0a-d56e-4351-b5d1-4ace0d736aac.json"
+        },
+        {
+          "sample_id": "0672547a-b487-4894-98ac-57276d2ecbac",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_0672547a-b487-4894-98ac-57276d2ecbac.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_0672547a-b487-4894-98ac-57276d2ecbac.json"
+        },
+        {
+          "sample_id": "d6d4a8ba-ddf0-4d65-8256-1352e6c61f47",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_d6d4a8ba-ddf0-4d65-8256-1352e6c61f47.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_d6d4a8ba-ddf0-4d65-8256-1352e6c61f47.json"
+        },
+        {
+          "sample_id": "1a05c9d3-2045-4e2d-9388-503892a5de42",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_1a05c9d3-2045-4e2d-9388-503892a5de42.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_1a05c9d3-2045-4e2d-9388-503892a5de42.json"
+        },
+        {
+          "sample_id": "b4983640-08d2-444e-9725-a7916143c199",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_b4983640-08d2-444e-9725-a7916143c199.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_b4983640-08d2-444e-9725-a7916143c199.json"
+        },
+        {
+          "sample_id": "bc3518de-ebaa-44f2-9f04-c0474f5fe6b9",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_bc3518de-ebaa-44f2-9f04-c0474f5fe6b9.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_bc3518de-ebaa-44f2-9f04-c0474f5fe6b9.json"
+        },
+        {
+          "sample_id": "254dcab2-1afd-4896-acff-033e72df1bed",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_254dcab2-1afd-4896-acff-033e72df1bed.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_254dcab2-1afd-4896-acff-033e72df1bed.json"
+        },
+        {
+          "sample_id": "4ef5d07d-53ce-402d-a0e4-7f1f459826f1",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_4ef5d07d-53ce-402d-a0e4-7f1f459826f1.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_4ef5d07d-53ce-402d-a0e4-7f1f459826f1.json"
+        },
+        {
+          "sample_id": "ae060114-e021-418f-9184-478dc9de957b",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_ae060114-e021-418f-9184-478dc9de957b.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_ae060114-e021-418f-9184-478dc9de957b.json"
+        },
+        {
+          "sample_id": "fe91b6a7-77b2-47d9-8271-4c598532e11b",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_fe91b6a7-77b2-47d9-8271-4c598532e11b.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_fe91b6a7-77b2-47d9-8271-4c598532e11b.json"
+        },
+        {
+          "sample_id": "b462f2a6-376c-457d-8e94-35db93157ab9",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_b462f2a6-376c-457d-8e94-35db93157ab9.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_b462f2a6-376c-457d-8e94-35db93157ab9.json"
+        },
+        {
+          "sample_id": "ec3bb2fe-83fd-4ef9-8ee0-a4f4268503e9",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_ec3bb2fe-83fd-4ef9-8ee0-a4f4268503e9.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_ec3bb2fe-83fd-4ef9-8ee0-a4f4268503e9.json"
+        },
+        {
+          "sample_id": "9fe223ce-1cb0-4023-bea7-f331cbdfa304",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_9fe223ce-1cb0-4023-bea7-f331cbdfa304.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_9fe223ce-1cb0-4023-bea7-f331cbdfa304.json"
+        },
+        {
+          "sample_id": "fb81e3f8-0c0f-451f-9908-b233f64200bb",
+          "sample_path": "src/pipeline/store/data/samples/computer/sample_fb81e3f8-0c0f-451f-9908-b233f64200bb.npy",
+          "meta_path": "src/pipeline/store/data/samples/computer/meta_fb81e3f8-0c0f-451f-9908-b233f64200bb.json"
+        }
+      ],
+      "prototype": {
+        "prototype_path": "src/pipeline/store/data/prototypes/computer/prototype.npy",
+        "count": 30
+      }
+    },
+    "cat": {
+      "samples": [
+        {
+          "sample_id": "dc621b08-a176-4310-983f-890f7eddc218",
+          "sample_path": "src/pipeline/store/data/samples/cat/sample_dc621b08-a176-4310-983f-890f7eddc218.npy",
+          "meta_path": "src/pipeline/store/data/samples/cat/meta_dc621b08-a176-4310-983f-890f7eddc218.json"
+        },
+        {
+          "sample_id": "584a2bf8-ddb5-4577-8a2e-6b7d36d077da",
+          "sample_path": "src/pipeline/store/data/samples/cat/sample_584a2bf8-ddb5-4577-8a2e-6b7d36d077da.npy",
+          "meta_path": "src/pipeline/store/data/samples/cat/meta_584a2bf8-ddb5-4577-8a2e-6b7d36d077da.json"
+        },
+        {
+          "sample_id": "5ad50b7c-3b2f-484c-84cf-d0f19737efc1",
+          "sample_path": "src/pipeline/store/data/samples/cat/sample_5ad50b7c-3b2f-484c-84cf-d0f19737efc1.npy",
+          "meta_path": "src/pipeline/store/data/samples/cat/meta_5ad50b7c-3b2f-484c-84cf-d0f19737efc1.json"
+        },
+        {
+          "sample_id": "5e4eada4-86b4-466a-b1cd-f7d81533553a",
+          "sample_path": "src/pipeline/store/data/samples/cat/sample_5e4eada4-86b4-466a-b1cd-f7d81533553a.npy",
+          "meta_path": "src/pipeline/store/data/samples/cat/meta_5e4eada4-86b4-466a-b1cd-f7d81533553a.json"
+        },
+        {
+          "sample_id": "0bf0c401-3ae7-43c8-9887-37dfda64afc7",
+          "sample_path": "src/pipeline/store/data/samples/cat/sample_0bf0c401-3ae7-43c8-9887-37dfda64afc7.npy",
+          "meta_path": "src/pipeline/store/data/samples/cat/meta_0bf0c401-3ae7-43c8-9887-37dfda64afc7.json"
+        },
+        {
+          "sample_id": "0c13f686-0bd8-4c73-910f-902c2491fd62",
+          "sample_path": "src/pipeline/store/data/samples/cat/sample_0c13f686-0bd8-4c73-910f-902c2491fd62.npy",
+          "meta_path": "src/pipeline/store/data/samples/cat/meta_0c13f686-0bd8-4c73-910f-902c2491fd62.json"
+        },
+        {
+          "sample_id": "836df199-d7fe-48c6-80f1-df57ba7773f9",
+          "sample_path": "src/pipeline/store/data/samples/cat/sample_836df199-d7fe-48c6-80f1-df57ba7773f9.npy",
+          "meta_path": "src/pipeline/store/data/samples/cat/meta_836df199-d7fe-48c6-80f1-df57ba7773f9.json"
+        },
+        {
+          "sample_id": "eef61176-8cfd-4ccd-b60e-eb85ad61c06f",
+          "sample_path": "src/pipeline/store/data/samples/cat/sample_eef61176-8cfd-4ccd-b60e-eb85ad61c06f.npy",
+          "meta_path": "src/pipeline/store/data/samples/cat/meta_eef61176-8cfd-4ccd-b60e-eb85ad61c06f.json"
+        },
+        {
+          "sample_id": "c78837ce-10f0-4d9d-982b-bb67eff7fb2d",
+          "sample_path": "src/pipeline/store/data/samples/cat/sample_c78837ce-10f0-4d9d-982b-bb67eff7fb2d.npy",
+          "meta_path": "src/pipeline/store/data/samples/cat/meta_c78837ce-10f0-4d9d-982b-bb67eff7fb2d.json"
+        },
+        {
+          "sample_id": "5f62a526-9e68-4706-b040-258f13ff0b85",
+          "sample_path": "src/pipeline/store/data/samples/cat/sample_5f62a526-9e68-4706-b040-258f13ff0b85.npy",
+          "meta_path": "src/pipeline/store/data/samples/cat/meta_5f62a526-9e68-4706-b040-258f13ff0b85.json"
+        }
+      ],
+      "prototype": {
+        "prototype_path": "src/pipeline/store/data/prototypes/cat/prototype.npy",
+        "count": 10
+      }
+    },
+    "car": {
+      "samples": [
+        {
+          "sample_id": "fb4eb618-5e63-4de3-9ef2-294f556f59f2",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_fb4eb618-5e63-4de3-9ef2-294f556f59f2.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_fb4eb618-5e63-4de3-9ef2-294f556f59f2.json"
+        },
+        {
+          "sample_id": "ec4c3f72-a118-4f94-a35e-ea859bbc668a",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_ec4c3f72-a118-4f94-a35e-ea859bbc668a.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_ec4c3f72-a118-4f94-a35e-ea859bbc668a.json"
+        },
+        {
+          "sample_id": "c92e7591-7fda-4ef9-b995-717da501785c",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_c92e7591-7fda-4ef9-b995-717da501785c.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_c92e7591-7fda-4ef9-b995-717da501785c.json"
+        },
+        {
+          "sample_id": "92689c01-bfec-4f46-a8e2-0a01ccdd223e",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_92689c01-bfec-4f46-a8e2-0a01ccdd223e.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_92689c01-bfec-4f46-a8e2-0a01ccdd223e.json"
+        },
+        {
+          "sample_id": "9f76df7e-7aa3-44e9-bd61-88175aabf5df",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_9f76df7e-7aa3-44e9-bd61-88175aabf5df.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_9f76df7e-7aa3-44e9-bd61-88175aabf5df.json"
+        },
+        {
+          "sample_id": "1e537d8a-06ef-4d96-a412-28ef6682bf35",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_1e537d8a-06ef-4d96-a412-28ef6682bf35.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_1e537d8a-06ef-4d96-a412-28ef6682bf35.json"
+        },
+        {
+          "sample_id": "d8a17d56-33e3-41ce-b01b-4cd3ef1fa7a5",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_d8a17d56-33e3-41ce-b01b-4cd3ef1fa7a5.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_d8a17d56-33e3-41ce-b01b-4cd3ef1fa7a5.json"
+        },
+        {
+          "sample_id": "71a50f20-9a9a-4161-9bc0-2d421e1de37c",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_71a50f20-9a9a-4161-9bc0-2d421e1de37c.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_71a50f20-9a9a-4161-9bc0-2d421e1de37c.json"
+        },
+        {
+          "sample_id": "3e23c41b-209a-4f99-a083-60a81e1d5200",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_3e23c41b-209a-4f99-a083-60a81e1d5200.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_3e23c41b-209a-4f99-a083-60a81e1d5200.json"
+        },
+        {
+          "sample_id": "a09e1cc3-ee62-47c7-abf6-7606329ddaeb",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_a09e1cc3-ee62-47c7-abf6-7606329ddaeb.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_a09e1cc3-ee62-47c7-abf6-7606329ddaeb.json"
+        },
+        {
+          "sample_id": "41bf6639-24d7-4057-a9ac-e1acc4993b42",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_41bf6639-24d7-4057-a9ac-e1acc4993b42.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_41bf6639-24d7-4057-a9ac-e1acc4993b42.json"
+        },
+        {
+          "sample_id": "b38815c7-9434-41bd-bc1d-daad58882bf4",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_b38815c7-9434-41bd-bc1d-daad58882bf4.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_b38815c7-9434-41bd-bc1d-daad58882bf4.json"
+        },
+        {
+          "sample_id": "2ffb1810-d11b-4602-9197-ab2c1f68a9e1",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_2ffb1810-d11b-4602-9197-ab2c1f68a9e1.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_2ffb1810-d11b-4602-9197-ab2c1f68a9e1.json"
+        },
+        {
+          "sample_id": "07f79679-ccc3-44ab-9b87-a6fbd867b284",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_07f79679-ccc3-44ab-9b87-a6fbd867b284.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_07f79679-ccc3-44ab-9b87-a6fbd867b284.json"
+        },
+        {
+          "sample_id": "26241fa9-7d97-4c2e-a201-6f505feb802f",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_26241fa9-7d97-4c2e-a201-6f505feb802f.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_26241fa9-7d97-4c2e-a201-6f505feb802f.json"
+        },
+        {
+          "sample_id": "75da9970-17f6-4b2a-9582-7a5334471a68",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_75da9970-17f6-4b2a-9582-7a5334471a68.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_75da9970-17f6-4b2a-9582-7a5334471a68.json"
+        },
+        {
+          "sample_id": "22a7729c-574d-47c2-8423-38ec1e055555",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_22a7729c-574d-47c2-8423-38ec1e055555.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_22a7729c-574d-47c2-8423-38ec1e055555.json"
+        },
+        {
+          "sample_id": "e8e0b964-dd75-43b4-9712-9f365521f26f",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_e8e0b964-dd75-43b4-9712-9f365521f26f.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_e8e0b964-dd75-43b4-9712-9f365521f26f.json"
+        },
+        {
+          "sample_id": "3b3f66ea-5f8a-4efb-810d-22151275fe26",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_3b3f66ea-5f8a-4efb-810d-22151275fe26.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_3b3f66ea-5f8a-4efb-810d-22151275fe26.json"
+        },
+        {
+          "sample_id": "cbb4ba13-8b70-4caa-8f60-8a0eb5f03373",
+          "sample_path": "src/pipeline/store/data/samples/car/sample_cbb4ba13-8b70-4caa-8f60-8a0eb5f03373.npy",
+          "meta_path": "src/pipeline/store/data/samples/car/meta_cbb4ba13-8b70-4caa-8f60-8a0eb5f03373.json"
+        }
+      ],
+      "prototype": {
+        "prototype_path": "src/pipeline/store/data/prototypes/car/prototype.npy",
+        "count": 20
+      }
+    },
+    "phone": {
+      "samples": [
+        {
+          "sample_id": "7ff4282e-4896-4469-8947-ff6a162c84d7",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_7ff4282e-4896-4469-8947-ff6a162c84d7.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_7ff4282e-4896-4469-8947-ff6a162c84d7.json"
+        },
+        {
+          "sample_id": "fe8cbd53-d56c-411b-a984-568e9f77c9cb",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_fe8cbd53-d56c-411b-a984-568e9f77c9cb.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_fe8cbd53-d56c-411b-a984-568e9f77c9cb.json"
+        },
+        {
+          "sample_id": "b6601457-e782-4ea4-b101-0930197b39a5",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_b6601457-e782-4ea4-b101-0930197b39a5.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_b6601457-e782-4ea4-b101-0930197b39a5.json"
+        },
+        {
+          "sample_id": "03426ef2-68a3-4660-a0f1-b2b13298ce45",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_03426ef2-68a3-4660-a0f1-b2b13298ce45.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_03426ef2-68a3-4660-a0f1-b2b13298ce45.json"
+        },
+        {
+          "sample_id": "41b7279e-b61f-409d-b221-a215cc4d7f52",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_41b7279e-b61f-409d-b221-a215cc4d7f52.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_41b7279e-b61f-409d-b221-a215cc4d7f52.json"
+        },
+        {
+          "sample_id": "37fa5791-a2ea-45b9-b961-02b18a0a58fd",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_37fa5791-a2ea-45b9-b961-02b18a0a58fd.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_37fa5791-a2ea-45b9-b961-02b18a0a58fd.json"
+        },
+        {
+          "sample_id": "ea2b6011-6c1c-4527-a111-2f2aa96b423c",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_ea2b6011-6c1c-4527-a111-2f2aa96b423c.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_ea2b6011-6c1c-4527-a111-2f2aa96b423c.json"
+        },
+        {
+          "sample_id": "7c7f30c4-2ed5-439c-b5ff-783d6a36aa5f",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_7c7f30c4-2ed5-439c-b5ff-783d6a36aa5f.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_7c7f30c4-2ed5-439c-b5ff-783d6a36aa5f.json"
+        },
+        {
+          "sample_id": "2a7693b5-bf97-4923-b26a-116b79941e6a",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_2a7693b5-bf97-4923-b26a-116b79941e6a.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_2a7693b5-bf97-4923-b26a-116b79941e6a.json"
+        },
+        {
+          "sample_id": "746caeb4-0bfb-4c7f-aeed-ad5fe082e933",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_746caeb4-0bfb-4c7f-aeed-ad5fe082e933.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_746caeb4-0bfb-4c7f-aeed-ad5fe082e933.json"
+        },
+        {
+          "sample_id": "3d35fb9d-0ded-4b85-a34a-5c8f70102982",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_3d35fb9d-0ded-4b85-a34a-5c8f70102982.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_3d35fb9d-0ded-4b85-a34a-5c8f70102982.json"
+        },
+        {
+          "sample_id": "5284ad21-644f-4302-b5be-e5b280fbcbaa",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_5284ad21-644f-4302-b5be-e5b280fbcbaa.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_5284ad21-644f-4302-b5be-e5b280fbcbaa.json"
+        },
+        {
+          "sample_id": "f67aa5a0-9157-45d1-bd91-5ea556bfc752",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_f67aa5a0-9157-45d1-bd91-5ea556bfc752.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_f67aa5a0-9157-45d1-bd91-5ea556bfc752.json"
+        },
+        {
+          "sample_id": "c1541b01-dee8-4387-a4b6-a1a36a30064f",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_c1541b01-dee8-4387-a4b6-a1a36a30064f.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_c1541b01-dee8-4387-a4b6-a1a36a30064f.json"
+        },
+        {
+          "sample_id": "ce0d008e-d5c5-4ac2-a575-fc8d16f90fcc",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_ce0d008e-d5c5-4ac2-a575-fc8d16f90fcc.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_ce0d008e-d5c5-4ac2-a575-fc8d16f90fcc.json"
+        },
+        {
+          "sample_id": "7e3f36bb-3d93-4ade-a4bf-e5613292a71b",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_7e3f36bb-3d93-4ade-a4bf-e5613292a71b.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_7e3f36bb-3d93-4ade-a4bf-e5613292a71b.json"
+        },
+        {
+          "sample_id": "5b860ec9-935f-457f-b29b-2f18e6378f03",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_5b860ec9-935f-457f-b29b-2f18e6378f03.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_5b860ec9-935f-457f-b29b-2f18e6378f03.json"
+        },
+        {
+          "sample_id": "04c0cb3c-55ff-473e-8ada-973b2b32fbe6",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_04c0cb3c-55ff-473e-8ada-973b2b32fbe6.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_04c0cb3c-55ff-473e-8ada-973b2b32fbe6.json"
+        },
+        {
+          "sample_id": "206a7628-142c-4e84-8815-38efa9e09360",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_206a7628-142c-4e84-8815-38efa9e09360.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_206a7628-142c-4e84-8815-38efa9e09360.json"
+        },
+        {
+          "sample_id": "57d327fa-e7e6-4b45-8ad1-16a29c3d9e17",
+          "sample_path": "src/pipeline/store/data/samples/phone/sample_57d327fa-e7e6-4b45-8ad1-16a29c3d9e17.npy",
+          "meta_path": "src/pipeline/store/data/samples/phone/meta_57d327fa-e7e6-4b45-8ad1-16a29c3d9e17.json"
+        }
+      ],
+      "prototype": {
+        "prototype_path": "src/pipeline/store/data/prototypes/phone/prototype.npy",
+        "count": 20
+      }
+    },
+    "person": {
+      "samples": [
+        {
+          "sample_id": "def5f8c9-cad0-43a3-8daf-93a36b56263a",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_def5f8c9-cad0-43a3-8daf-93a36b56263a.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_def5f8c9-cad0-43a3-8daf-93a36b56263a.json"
+        },
+        {
+          "sample_id": "8d3eb391-3f54-4376-9891-b70e2ad542f2",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_8d3eb391-3f54-4376-9891-b70e2ad542f2.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_8d3eb391-3f54-4376-9891-b70e2ad542f2.json"
+        },
+        {
+          "sample_id": "b7460caf-9c14-425c-93b7-5d7200a81ce3",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_b7460caf-9c14-425c-93b7-5d7200a81ce3.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_b7460caf-9c14-425c-93b7-5d7200a81ce3.json"
+        },
+        {
+          "sample_id": "f9519125-e167-4881-8742-dad8d706a791",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_f9519125-e167-4881-8742-dad8d706a791.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_f9519125-e167-4881-8742-dad8d706a791.json"
+        },
+        {
+          "sample_id": "27067eb6-8f96-4ae0-8c18-74138c0fa791",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_27067eb6-8f96-4ae0-8c18-74138c0fa791.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_27067eb6-8f96-4ae0-8c18-74138c0fa791.json"
+        },
+        {
+          "sample_id": "b8095ca5-60d9-467c-99e4-a8a04716d272",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_b8095ca5-60d9-467c-99e4-a8a04716d272.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_b8095ca5-60d9-467c-99e4-a8a04716d272.json"
+        },
+        {
+          "sample_id": "ee2106a3-88d0-4f15-84e6-bd894ca7f198",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_ee2106a3-88d0-4f15-84e6-bd894ca7f198.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_ee2106a3-88d0-4f15-84e6-bd894ca7f198.json"
+        },
+        {
+          "sample_id": "679e00b5-64fa-439a-ab34-8e757a9ed33b",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_679e00b5-64fa-439a-ab34-8e757a9ed33b.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_679e00b5-64fa-439a-ab34-8e757a9ed33b.json"
+        },
+        {
+          "sample_id": "d141c3ac-b1d9-45e7-8cb8-1b1f854f787c",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_d141c3ac-b1d9-45e7-8cb8-1b1f854f787c.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_d141c3ac-b1d9-45e7-8cb8-1b1f854f787c.json"
+        },
+        {
+          "sample_id": "c38ecec2-da66-4e28-a337-5aa603b6fac0",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_c38ecec2-da66-4e28-a337-5aa603b6fac0.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_c38ecec2-da66-4e28-a337-5aa603b6fac0.json"
+        },
+        {
+          "sample_id": "c951f62d-df6d-40b3-9b10-695f5d36c0ca",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_c951f62d-df6d-40b3-9b10-695f5d36c0ca.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_c951f62d-df6d-40b3-9b10-695f5d36c0ca.json"
+        },
+        {
+          "sample_id": "5fa4e337-20b7-434d-824c-905a6e2d788a",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_5fa4e337-20b7-434d-824c-905a6e2d788a.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_5fa4e337-20b7-434d-824c-905a6e2d788a.json"
+        },
+        {
+          "sample_id": "f8680f77-b173-47e6-a5a5-ce1cb3950f4e",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_f8680f77-b173-47e6-a5a5-ce1cb3950f4e.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_f8680f77-b173-47e6-a5a5-ce1cb3950f4e.json"
+        },
+        {
+          "sample_id": "6c304f3d-0cfa-4639-9020-9022f3c5acdf",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_6c304f3d-0cfa-4639-9020-9022f3c5acdf.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_6c304f3d-0cfa-4639-9020-9022f3c5acdf.json"
+        },
+        {
+          "sample_id": "bad1d629-20f7-4476-abac-937fcac43e54",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_bad1d629-20f7-4476-abac-937fcac43e54.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_bad1d629-20f7-4476-abac-937fcac43e54.json"
+        },
+        {
+          "sample_id": "47b596c9-ce41-4524-909d-821e2053bdd4",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_47b596c9-ce41-4524-909d-821e2053bdd4.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_47b596c9-ce41-4524-909d-821e2053bdd4.json"
+        },
+        {
+          "sample_id": "6b01ee08-17f4-4b0f-bf49-7d198f9112d6",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_6b01ee08-17f4-4b0f-bf49-7d198f9112d6.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_6b01ee08-17f4-4b0f-bf49-7d198f9112d6.json"
+        },
+        {
+          "sample_id": "6150c7bc-17f6-48ce-9f04-17f1bd95caaf",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_6150c7bc-17f6-48ce-9f04-17f1bd95caaf.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_6150c7bc-17f6-48ce-9f04-17f1bd95caaf.json"
+        },
+        {
+          "sample_id": "34146fbf-1261-4e80-bae1-4c7e186ace45",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_34146fbf-1261-4e80-bae1-4c7e186ace45.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_34146fbf-1261-4e80-bae1-4c7e186ace45.json"
+        },
+        {
+          "sample_id": "7024accc-0a9a-4d0c-9d4b-66a6e1437f4f",
+          "sample_path": "src/pipeline/store/data/samples/person/sample_7024accc-0a9a-4d0c-9d4b-66a6e1437f4f.npy",
+          "meta_path": "src/pipeline/store/data/samples/person/meta_7024accc-0a9a-4d0c-9d4b-66a6e1437f4f.json"
+        }
+      ],
+      "prototype": {
+        "prototype_path": "src/pipeline/store/data/prototypes/person/prototype.npy",
+        "count": 20
+      }
+    }
+  }
+}

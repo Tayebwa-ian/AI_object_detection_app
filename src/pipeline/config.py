@@ -21,4 +21,4 @@ RESNET_TYPE = "resnet50"  # torchvision name for resnet50
 IMAGE_SIZE = (224, 224)   # default transform size for ResNet features
 
 # CLIP model name (will attempt to load via the 'clip' package)
-CLIP_MODEL = "vit_b"
+CLIP_MODEL = "ViT-B/32"

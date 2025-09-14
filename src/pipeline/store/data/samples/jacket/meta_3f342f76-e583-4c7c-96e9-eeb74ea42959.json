@@ -1,0 +1,16 @@
+{
+  "sample_id": "3f342f76-e583-4c7c-96e9-eeb74ea42959",
+  "sample_path": "src/pipeline/store/data/samples/jacket/sample_3f342f76-e583-4c7c-96e9-eeb74ea42959.npy",
+  "source_image": "/home/passwd/AI_object_detection_app/src/synthimage/generated_images/jacket/jacket_0008.png",
+  "label": "jacket",
+  "feature_dim": 3072,
+  "timestamp": 1757863069.5271986,
+  "extract_meta": {
+    "model_name": "resnet50",
+    "device": "cpu",
+    "feature_dim": 3072,
+    "tta": true,
+    "tta_augments": 2,
+    "inference_time": 0.3973524570465088
+  }
+}
