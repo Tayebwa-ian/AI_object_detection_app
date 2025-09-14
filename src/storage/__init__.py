@@ -5,7 +5,6 @@ from .base_model import BaseModel
 from .inputs import Input
 from .object_types import ObjectType
 from .ouputs import Output
-from .metrics import Metric
 from os import getenv
 
 
