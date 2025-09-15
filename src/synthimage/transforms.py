@@ -46,28 +46,28 @@ class ImageAugmentor:
         img = ensure_rgb(img)
 
         # Random flip
-        if random.random() < 0.3:
+        if random.random() < 0.2:
             img = ImageOps.mirror(img)
 
         # Random rotation
-        if random.random() < 0.5:
+        if random.random() < 0.4:
             angle = random.uniform(-25, 25)
             img = img.rotate(angle, resample=Image.BICUBIC, expand=False, fillcolor=(127,127,127))
 
         # Decide whether to blur background or whole image
-        if random.random() < 0.4:
+        if random.random() < 0.3:
             img = self._blur_background_with_center_object(img)
         else:
-            if random.random() < 0.5:
+            if random.random() < 0.3:
                 radius = random.uniform(0.5, 2.5)
                 img = img.filter(ImageFilter.GaussianBlur(radius=radius))
 
         # Add gaussian noise
-        if random.random() < 0.4:
+        if random.random() < 0.3:
             img = self._add_gaussian_noise(img, sigma=random.uniform(3, 15))
 
         # Random resolution change
-        if random.random() < 0.4:
+        if random.random() < 0.2:
             downscale = random.choice([0.5, 0.6, 0.75, 0.9])
             w, h = img.size
             new_w, new_h = max(1, int(w * downscale)), max(1, int(h * downscale))
@@ -75,10 +75,10 @@ class ImageAugmentor:
             img = img.resize((w, h), Image.LANCZOS)
 
         # Random brightness/contrast jitter
-        if random.random() < 0.3:
+        if random.random() < 0.2:
             enhancer = ImageEnhance.Contrast(img)
             img = enhancer.enhance(random.uniform(0.85, 1.2))
-        if random.random() < 0.3:
+        if random.random() < 0.2:
             enhancer = ImageEnhance.Brightness(img)
             img = enhancer.enhance(random.uniform(0.9, 1.15))
 

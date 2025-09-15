@@ -6,37 +6,12 @@
 ```
 results = orchestrate(
     mode="few_shot",
-    generate_images_fn=generate_images,
-    labels=["car", "phone", "person", "computer", "bag", "jacket"],
+    labels=["car", "phone", "person", "computer", "bag", "jacket", "cat", "bottle"],
     n_per_label_train=20,
     n_per_label_test=6,
-    store_root=DEFAULT_OUTPUT_ROOT,
-    classifier_path=DEFAULT_CLASSIFIER_PATH,
-    zero_shot_kwargs={"sam": None},
-    verbose=True
 )
-print("-------------- Synthetic Few Shot Results: -----------------------\n")
-print(results)
 
 ```  
-#### Synthetic Few Shot with an existing classifier
-```
-results = orchestrate(
-    mode="few_shot",
-    generate_images_fn=generate_images,
-    labels=["car", "phone", "person", "computer", "bag", "jacket"],
-    n_per_label_train=20,
-    n_per_label_test=6,
-    store_root=DEFAULT_OUTPUT_ROOT,
-    classifier_path=DEFAULT_CLASSIFIER_PATH,
-    use_existing_classifier=True,
-    zero_shot_kwargs={"sam": None},
-    verbose=True
-)
-print("-------------- Synthetic Few Shot Results: -----------------------\n")
-print(results)
-
-```
   
 ### Synthetic Few-Shot Test Results:  
 ```
@@ -50,16 +25,12 @@ results = orchestrate(
     mode="zero_shot",
     generate_images_fn=generate_images,
     labels=["car", "phone"],
-    n_per_label_test=6,
-    candidate_labels=["car", "phone", "person"],
-    use_prototypes=False,
-    use_clip=True,
-    zero_shot_kwargs={"sam": None, "clip_model_name": CLIP_MODEL, "device": DEVICE},
-    verbose=True
+    n_per_label_test=10,
+    candidate_labels=["car", "phone", "person", "cat", "jacket"],
+    use_prototypes=True,
 )
 print("-------------- Zero Shot Results: -----------------------\n")
-print(results["metrics"])
-
+print(results)
 
 ```  
 
@@ -67,7 +38,7 @@ print(results["metrics"])
 ```
 -------------- Synthetic Zero Shot Results: -----------------------
 
-{'clip': {'overall': {'accuracy': 0.8333333333333334, 'precision': 0.6111111111111112, 'recall': 0.5555555555555556, 'f1': 0.5808080808080808}, 'per_label': {'car': {'precision': 1.0, 'recall': 0.8333333333333334, 'f1': 0.9090909090909091, 'support': 6}, 'person': {'precision': 0.0, 'recall': 0.0, 'f1': 0.0, 'support': 0}, 'phone': {'precision': 0.8333333333333334, 'recall': 0.8333333333333334, 'f1': 0.8333333333333334, 'support': 6}, 'macro avg': {'precision': 0.6111111111111112, 'recall': 0.5555555555555556, 'f1': 0.5808080808080808, 'support': 12}, 'weighted avg': {'precision': 0.9166666666666666, 'recall': 0.8333333333333334, 'f1': 0.8712121212121211, 'support': 12}}}}
+{'run_id': '06523663-6c78-464e-8ccf-da737e75a744', 'mode': 'zero_shot', 'result': {'run_id': 'ef053046-2e15-42a4-88d3-053fb2dec83f', 'metrics': {'prototype': {'overall': {'accuracy': 1.0, 'precision': 1.0, 'recall': 1.0, 'f1': 1.0}, 'per_label': {'car': {'precision': 1.0, 'recall': 1.0, 'f1': 1.0, 'support': 10}, 'phone': {'precision': 1.0, 'recall': 1.0, 'f1': 1.0, 'support': 10}, 'macro avg': {'precision': 1.0, 'recall': 1.0, 'f1': 1.0, 'support': 20}, 'weighted avg': {'precision': 1.0, 'recall': 1.0, 'f1': 1.0, 'support': 20}}}}, 'per_sample_results': [{'image': 'src/synthimage/generated_images/car/car_0001_1_2_3.png', 'true_label': 'car', 'preds': [('prototype', 'car', 0.8946150541305542)], 'final': 'car'}, {'image': 'src/synthimage/generated_images/car/car_0002_1_2_3.png', 'true_label': 'car', 'preds': [('prototype', 'car', 0.8994942307472229)], 'final': 'car'}, {'image': 'src/synthimage/generated_images/car/car_0003_1_2_3.png', 'true_label': 'car', 'preds': [('prototype', 'car', 0.8796019554138184)], 'final': 'car'}, {'image': 'src/synthimage/generated_images/car/car_0004_1_2_3.png', 'true_label': 'car', 'preds': [('prototype', 'car', 0.8709462881088257)], 'final': 'car'}, {'image': 'src/synthimage/generated_images/car/car_0005_1_2_3.png', 'true_label': 'car', 'preds': [('prototype', 'car', 0.8559418320655823)], 'final': 'car'}, {'image': 'src/synthimage/generated_images/car/car_0006_1_2_3.png', 'true_label': 'car', 'preds': [('prototype', 'car', 0.8914822340011597)], 'final': 'car'}, {'image': 'src/synthimage/generated_images/car/car_0007_1_2.png', 'true_label': 'car', 'preds': [('prototype', 'car', 0.8751156330108643)], 'final': 'car'}, {'image': 'src/synthimage/generated_images/car/car_0008_1_2.png', 'true_label': 'car', 'preds': [('prototype', 'car', 0.8970515727996826)], 'final': 'car'}, {'image': 'src/synthimage/generated_images/car/car_0009_1_2.png', 'true_label': 'car', 'preds': [('prototype', 'car', 0.8645849823951721)], 'final': 'car'}, {'image': 'src/synthimage/generated_images/car/car_0010_1_2.png', 'true_label': 'car', 'preds': [('prototype', 'car', 0.8849431276321411)], 'final': 'car'}, {'image': 'src/synthimage/generated_images/phone/phone_0001_1_2_3.png', 'true_label': 'phone', 'preds': [('prototype', 'phone', 0.8638726472854614)], 'final': 'phone'}, {'image': 'src/synthimage/generated_images/phone/phone_0002_1_2_3.png', 'true_label': 'phone', 'preds': [('prototype', 'phone', 0.8679571151733398)], 'final': 'phone'}, {'image': 'src/synthimage/generated_images/phone/phone_0003_1_2_3.png', 'true_label': 'phone', 'preds': [('prototype', 'phone', 0.8056907653808594)], 'final': 'phone'}, {'image': 'src/synthimage/generated_images/phone/phone_0004_1_2_3.png', 'true_label': 'phone', 'preds': [('prototype', 'phone', 0.8768419623374939)], 'final': 'phone'}, {'image': 'src/synthimage/generated_images/phone/phone_0005_1_2_3.png', 'true_label': 'phone', 'preds': [('prototype', 'phone', 0.8826332092285156)], 'final': 'phone'}, {'image': 'src/synthimage/generated_images/phone/phone_0006_1_2_3.png', 'true_label': 'phone', 'preds': [('prototype', 'phone', 0.8478988409042358)], 'final': 'phone'}, {'image': 'src/synthimage/generated_images/phone/phone_0007_1_2.png', 'true_label': 'phone', 'preds': [('prototype', 'phone', 0.8552548885345459)], 'final': 'phone'}, {'image': 'src/synthimage/generated_images/phone/phone_0008_1_2.png', 'true_label': 'phone', 'preds': [('prototype', 'phone', 0.8587465286254883)], 'final': 'phone'}, {'image': 'src/synthimage/generated_images/phone/phone_0009_1_2.png', 'true_label': 'phone', 'preds': [('prototype', 'phone', 0.8612636923789978)], 'final': 'phone'}, {'image': 'src/synthimage/generated_images/phone/phone_0010_1_2.png', 'true_label': 'phone', 'preds': [('prototype', 'phone', 0.802675724029541)], 'final': 'phone'}]}}
 ```
   
 ### User Few-Shot (segmentation applied)  

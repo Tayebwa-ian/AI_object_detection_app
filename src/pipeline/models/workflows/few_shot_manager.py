@@ -1,422 +1,461 @@
 """
 few_shot_manager.py
 
-Updated FewShotManager that integrates with an image generator having signature:
+FewShotManager (final version)
 
-def generate_images(
-    num_images: int = DEFAULT_NUM_IMAGES,
-    label: str = DEFAULT_LABEL,
-    model: str = DEFAULT_MODEL,
-    sampling_steps: int = DEFAULT_SAMPLING_STEPS,
-    sample_method: str = DEFAULT_SAMPLE_METHOD,
-    cfg_scale: float = DEFAULT_CFG_SCALE,
-    guidance: float = DEFAULT_GUIDANCE,
-    strength: float = DEFAULT_STRENGTH,
-    output_root: str = DEFAULT_OUTPUT_ROOT,
-    example_image_path: Optional[str] = DEFAULT_EXAMPLE_IMAGE_PATH,
-) -> List[Path]:
+Capabilities:
+- Build dataset from a generator (the generator signature you provided).
+- Extract features using a provided feature_extractor (ResNetWrapper or EfficientNetWrapper).
+- Build prototypes (cosine) and save them under store_root/prototypes/<label>/prototype.npy
+- Train classifiers:
+    - logistic regression (sklearn) via `train_logistic_regression`
+    - linear probe (PyTorch) via `train_linear_probe`
+- Classify segments or whole images with:
+    - prototypes (cosine similarity)
+    - logistic regression
+    - linear probe
+- Full test_pipeline (generate train set, build prototypes/train classifier, evaluate on generated test set)
+- classify_image for user images (segment with given segmenter, extract features for segments, classify each segment)
+- count_objects_in_image (returns counts for requested labels)
+- clear_store (safe deletion)
 
-This manager:
- - builds dataset using the provided generator
- - extracts segments with SAM and features with ResNetWrapper
- - stores per-sample features for later prototype/few-shot use
- - trains/loads classifiers (sklearn-style)
- - classifies segments using classifier and/or prototype cosine similarity
- - provides testing and counting utilities
-
-Important:
- - If a classifier_path is provided to classification/testing functions,
-   the manager will load the classifier from disk (so you can provide a pre-trained classifier).
+Design notes:
+- This manager does NOT auto-create the feature_extractor: you must pass an instance (ResNetWrapper or EfficientNetWrapper).
+- The segmentation model may be passed (SAMWrapper or DeepLabV3Wrapper) and will only be used for user image classification.
+- Standard docstrings and debug prints are included.
 """
-from typing import Callable, Dict, Any, List, Optional, Tuple
+
 import os
 import time
+import uuid
+import json
+import shutil
+import logging
+from typing import Callable, Dict, Any, List, Optional, Tuple
 from pathlib import Path
 from collections import defaultdict
 
 import numpy as np
 import joblib
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import LabelEncoder
 
-from ..feature_extractor.resnet_model import ResNetWrapper
-from ..segmentation.sam_model import SAMWrapper
-from ...utils.metrics import classification_metrics, per_label_metrics
 
-import logging
-import shutil
+# Expected external modules / wrappers (adjust import paths if your structure differs)
+from src.pipeline.models.segmentation.sam_model import SAMWrapper
+from src.pipeline.models.segmentation.deeplabv3_model import DeepLabV3Wrapper
+from src.pipeline.models.feature_extractor.resnet_model import ResNetWrapper
+from src.pipeline.models.feature_extractor.efficientnet import EfficientNetWrapper
 
-# ----------------------------
-# Internal helpers
-# ----------------------------
+from src.pipeline.models.classifier.classifiers import *
+
+from src.pipeline.utils.metrics import classification_metrics, per_label_metrics
+
+
+# -------------------------
+# Helpers / I/O utilities
+# -------------------------
 def _ensure_dir(path: str):
     Path(path).mkdir(parents=True, exist_ok=True)
 
+
+def _save_json(obj: Dict, path: str):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(obj, f, indent=2)
+
+
 def _load_feature_samples_from_store(store_root: str) -> Tuple[np.ndarray, List[str], List[Dict]]:
     """
-    Load all feature samples saved by ResNetWrapper under store_root/samples/<label>/sample_*.npy.
-
+    Load stored features saved under store_root/samples/<label>/sample_*.npy
     Returns:
-        X: np.ndarray shape (N, D)
-        y: list of labels length N
-        metas: list of metadata dicts for each sample
+        X: (N,D) array, y: list of labels length N, metas: list of dicts
     """
     samples_root = os.path.join(store_root, "samples")
     if not os.path.exists(samples_root):
         return np.zeros((0,)), [], []
-    X_list = []
-    y_list = []
-    metas = []
+    X_list, y_list, metas = [], [], []
     for label in os.listdir(samples_root):
         lab_dir = os.path.join(samples_root, label)
         if not os.path.isdir(lab_dir):
             continue
-        for f in os.listdir(lab_dir):
-            if f.startswith("sample_") and f.endswith(".npy"):
-                p = os.path.join(lab_dir, f)
+        for fname in os.listdir(lab_dir):
+            if fname.startswith("sample_") and fname.endswith(".npy"):
+                path = os.path.join(lab_dir, fname)
                 try:
-                    arr = np.load(p)
+                    arr = np.load(path)
                 except Exception:
                     continue
                 X_list.append(arr.astype(np.float32))
                 y_list.append(label)
-                meta_path = p.replace(".npy", ".json").replace("sample_", "meta_")
-                metas.append({"sample_path": p, "meta_path": meta_path if os.path.exists(meta_path) else None, "label": label})
+                meta_path = path.replace(".npy", ".json").replace("sample_", "meta_")
+                metas.append({"feature_path": path, "meta_path": meta_path if os.path.exists(meta_path) else None, "label": label})
     if not X_list:
         return np.zeros((0,)), [], []
-    X = np.vstack(X_list)
-    return X, y_list, metas
+    return np.vstack(X_list), y_list, metas
 
-# ----------------------------
-# FewShotManager
-# ----------------------------
+
+# -------------------------
+# FewShotManager class
+# -------------------------
 class FewShotManager:
     """
-    Manager for few-shot dataset generation, training, classification, testing and counting.
+    Final FewShotManager.
 
-    Parameters
-    ----------
-    resnet_wrapper: ResNetWrapper instance (if True, created internally)
-    sam_wrapper: True creates the sam_wrapper object internally
-    classifier_class: sklearn-like estimator class (default LogisticRegression)
+    Args:
+        feature_extractor: an instance implementing extract_features_from_path(path)->(feat, meta),
+                           and load_prototypes(store_root)->Dict[label, np.ndarray] and finalize_prototypes(store_root)
+                           (e.g., ResNetWrapper or EfficientNetWrapper).
+        segmentation_model: segmentation wrapper (SAMWrapper or DeepLabV3Wrapper) for user image classification; optional.
+        classifier_type: "prototypes", "logistic", or "linear_probe"
+        classifier_params: optional dict passed to training functions (e.g., epochs, lr)
     """
-    def __init__(self,
-                 resnet_wrapper: bool = True,
-                 sam_wrapper: bool = True,
-                 classifier_class = LogisticRegression):
-        if sam_wrapper:
-            self.sam = SAMWrapper()
-        else:
-            self.sam = None
-        if resnet_wrapper:
-            self.resnet = ResNetWrapper()
-        else:
-            self.resnet = None
-        self.classifier_class = classifier_class
 
-    # ----------------------------
-    # Dataset generation (no segmentation)
-    # ----------------------------
+    def __init__(self,
+                 feature_extractor: Any,
+                 segmentation_model: Optional[Any] = None,
+                 classifier_type: str = "prototypes",
+                 classifier_params: Optional[Dict[str, Any]] = None):
+        if feature_extractor is None:
+            raise ValueError("feature_extractor instance required (ResNetWrapper or EfficientNetWrapper).")
+        self.feature_extractor = feature_extractor
+        self.segmentation_model = segmentation_model
+        self.classifier_type = classifier_type.lower()
+        self.classifier_params = classifier_params or {}
+
+        # state holders
+        self.classifier_obj: Optional[Dict] = None
+        self.prototypes: Optional[Dict[str, np.ndarray]] = None
+
+        print(f"[FewShotManager] initialized with feature_extractor={getattr(self.feature_extractor,'model_name',None)}, "
+              f"classifier_type={self.classifier_type}, segmentation={type(self.segmentation_model).__name__ if self.segmentation_model else None}")
+
+    # -------------------------
+    # Dataset build (synthetic) - extracts features for whole images and saves them
+    # -------------------------
     def generate_and_build_dataset(self,
                                    label: str,
                                    num_images: int,
-                                   image_generator_fn: Callable[..., List[Path]],
+                                   image_generator_fn: Callable[..., List[str]],
                                    store_root: str,
                                    gen_kwargs: Optional[Dict[str, Any]] = None,
                                    verbose: bool = True) -> Dict[str, Any]:
         """
-        Generate synthetic images and build dataset by extracting features (no segmentation).
+        Use provided generator to create images, extract features (whole image) and save under store_root/samples/<label>.
         """
-        t0 = time.time()
-        _ensure_dir(store_root)
         gen_kwargs = dict(gen_kwargs or {})
+        _ensure_dir(store_root)
+        samples_dir = os.path.join(store_root, "samples", label)
+        _ensure_dir(samples_dir)
 
+        print(f"[FewShot] Generating {num_images} images for label '{label}'")
         generated_paths = image_generator_fn(num_images=num_images, label=label, **gen_kwargs)
 
-        stored_samples = []
-        for img_path in generated_paths:
+        stored = []
+        for p in generated_paths:
+            feat, meta = self.feature_extractor.extract_features_from_path(str(p))
+            sid = str(uuid.uuid4())
+            feat_path = os.path.join(samples_dir, f"sample_{sid}.npy")
+            meta_path = os.path.join(samples_dir, f"meta_{sid}.json")
+            np.save(feat_path, feat.astype(np.float32))
+            _save_json({"source_image": str(p), "feature_meta": meta}, meta_path)
+            stored.append({"sample_id": sid, "feature_path": feat_path, "meta_path": meta_path, "label": label})
             if verbose:
-                print(f"[dataset] processing generated image: {img_path}")
-            sample_meta = self.resnet.add_prototype(label=label, image_path=str(img_path), store_root=store_root)
-            stored_samples.append(sample_meta)
+                print(f"[FewShot] saved sample {feat_path}")
+        return {"stored_samples": stored, "num_generated": len(generated_paths)}
 
-        elapsed = time.time() - t0
-        summary = {"generated_images": len(generated_paths), "stored_samples": len(stored_samples),
-                   "store_root": os.path.abspath(store_root), "elapsed_time": elapsed}
-        return {"summary": summary, "stored_samples": stored_samples}
-
-    # ----------------------------
-    # Train & Save classifier
-    # ----------------------------
-    def train_classifier(self,
-                         store_root: str,
-                         classifier_path: str,
-                         classifier_params: Optional[Dict[str, Any]] = None,
-                         overwrite: bool = True) -> Dict[str, Any]:
+    # -------------------------
+    # Build and save prototypes (cosine)
+    # -------------------------
+    def finalize_prototypes(self, store_root: str) -> Dict[str, Any]:
         """
-        Train a classifier (sklearn-style) on stored features under store_root and save it.
-
-        Returns:
-            dict with metadata about the trained classifier.
+        Build prototypes from stored samples and save them under store_root/prototypes/<label>/prototype.npy
         """
-        X, y, _ = _load_feature_samples_from_store(store_root)
+        X, y, metas = _load_feature_samples_from_store(store_root)
         if X.size == 0:
-            raise ValueError("No samples found under store_root. Generate dataset first.")
+            print("[FewShot] No samples found to build prototypes.")
+            return {}
+        prototypes = build_prototypes_from_samples(X, y)
+        prot_root = os.path.join(store_root, "prototypes")
+        _ensure_dir(prot_root)
+        info = {}
+        for lab, proto in prototypes.items():
+            lab_dir = os.path.join(prot_root, lab)
+            _ensure_dir(lab_dir)
+            ppath = os.path.join(lab_dir, "prototype.npy")
+            np.save(ppath, proto.astype(np.float32))
+            info[lab] = {"prototype_path": ppath, "dim": int(proto.shape[0])}
+            print(f"[FewShot] saved prototype for '{lab}' -> {ppath}")
+        self.prototypes = prototypes
+        return info
 
-        le = LabelEncoder()
-        y_enc = le.fit_transform(y)
-
-        params = classifier_params or {}
-        clf = self.classifier_class(**params)
-        clf.fit(X, y_enc)
-
-        # save classifier + label encoder + model_name
-        os.makedirs(os.path.dirname(classifier_path) or ".", exist_ok=True)
-        if os.path.exists(classifier_path) and not overwrite:
-            raise FileExistsError(f"{classifier_path} exists and overwrite=False")
-
-        joblib.dump({"classifier": clf, "label_encoder": le, "model_name": getattr(self.resnet, "model_name", "resnet")}, classifier_path)
-
-        return {"num_samples": int(X.shape[0]), "classes": list(le.classes_), "classifier_path": os.path.abspath(classifier_path)}
-
-    # ----------------------------
-    # Load classifier
-    # ----------------------------
-    def load_classifier(self, classifier_path: str) -> Dict[str, Any]:
+    # -------------------------
+    # Train classifier (logistic or linear_probe)
+    # -------------------------
+    def train_classifier(self, store_root: str, classifier_store_path: str) -> Dict[str, Any]:
         """
-        Load a saved classifier file previously created by train_classifier.
-        Returns a dict with keys: classifier, label_encoder, model_name
+        Train classifier according to self.classifier_type.
+        Returns metadata and saved paths.
         """
-        obj = joblib.load(classifier_path)
+        X, y, metas = _load_feature_samples_from_store(store_root)
+        if X.size == 0:
+            raise ValueError("No training samples found in store_root.")
+
+        if self.classifier_type == "prototypes":
+            proto_info = self.finalize_prototypes(store_root)
+            return {"method": "prototypes", "prototypes": proto_info}
+
+        elif self.classifier_type == "logistic":
+            print("[FewShot] training logistic regression...")
+            trained = train_logistic_regression(X, y, **self.classifier_params)
+            os.makedirs(os.path.dirname(classifier_store_path) or ".", exist_ok=True)
+            joblib.dump(trained, classifier_store_path)
+            self.classifier_obj = trained
+            print(f"[FewShot] logistic saved at {classifier_store_path}")
+            return {"method": "logistic", "path": os.path.abspath(classifier_store_path), "meta": trained["meta"]}
+
+        elif self.classifier_type == "linear_probe":
+            print("[FewShot] training linear probe...")
+            weight_path = self.classifier_params.get("weight_path")
+            device = self.classifier_params.get("device", "cpu")
+            probe = train_linear_probe(X, y,
+                                      epochs=int(self.classifier_params.get("epochs", 20)),
+                                      lr=float(self.classifier_params.get("lr", 1e-2)),
+                                      batch_size=int(self.classifier_params.get("batch_size", 32)),
+                                      weight_path=weight_path,
+                                      device=device)
+            # store probe to joblib for convenience
+            os.makedirs(os.path.dirname(classifier_store_path) or ".", exist_ok=True)
+            joblib.dump(probe, classifier_store_path)
+            self.classifier_obj = probe
+            print(f"[FewShot] linear probe saved at {classifier_store_path}")
+            return {"method": "linear_probe", "path": os.path.abspath(classifier_store_path), "meta": probe["meta"]}
+
+        else:
+            raise ValueError(f"Unsupported classifier_type: {self.classifier_type}")
+
+    # -------------------------
+    # Load classifier / prototypes
+    # -------------------------
+    def load_classifier(self, classifier_store_path: str) -> Any:
+        if not os.path.exists(classifier_store_path):
+            raise FileNotFoundError(classifier_store_path)
+        obj = joblib.load(classifier_store_path)
+        self.classifier_obj = obj
+        print(f"[FewShot] loaded classifier/probe from {classifier_store_path}")
         return obj
 
-    # ----------------------------
-    # Internal classify helpers
-    # ----------------------------
-    def _classify_feature_with_classifier(self, feature: np.ndarray, classifier_obj: Dict[str, Any]) -> Tuple[Optional[str], float]:
-        """
-        Predict label and confidence for a single feature with the provided classifier object (loaded).
-        Returns (pred_label or None, score).
-        """
-        clf = classifier_obj["classifier"]
-        le = classifier_obj["label_encoder"]
-        if not hasattr(clf, "predict_proba"):
-            pred_idx = int(clf.predict(feature.reshape(1, -1))[0])
-            pred_label = le.inverse_transform([pred_idx])[0]
-            return pred_label, 1.0
-        probs = clf.predict_proba(feature.reshape(1, -1))[0]
-        top_idx = int(np.argmax(probs))
-        pred_label = le.inverse_transform([top_idx])[0]
-        return pred_label, float(probs[top_idx])
+    def load_prototypes(self, store_root: str) -> Dict[str, np.ndarray]:
+        prot_root = os.path.join(store_root, "prototypes")
+        proxies: Dict[str, np.ndarray] = {}
+        if not os.path.exists(prot_root):
+            return proxies
+        for lab in os.listdir(prot_root):
+            ppth = os.path.join(prot_root, lab, "prototype.npy")
+            if os.path.exists(ppth):
+                proxies[lab] = np.load(ppth)
+        self.prototypes = proxies
+        return proxies
 
-    def _classify_with_prototypes_for_feature(self, feature: np.ndarray, store_root: str, top_k: int = 1) -> List[Tuple[str, float]]:
-        """
-        Return top_k (label, similarity) pairs between feature and prototypes stored in store_root.
-        """
-        protos = self.resnet.load_prototypes(store_root)
-        if not protos:
-            return []
-        labels = list(protos.keys())
-        proto_mat = np.vstack([protos[l] for l in labels]).astype(np.float32)
-        f = feature.astype(np.float32)
-        if np.linalg.norm(f) > 0:
-            f = f / np.linalg.norm(f)
-        sims = np.dot(proto_mat, f)
-        order = np.argsort(-sims)
-        return [(labels[i], float(sims[i])) for i in order[:top_k]]
-
-    # ----------------------------
-    # classify_image: uses pre-trained classifier if provided (loads it)
-    # ----------------------------
+    # -------------------------
+    # classify_image (user image -> segmentation -> features -> classify segments)
+    # -------------------------
     def classify_image(self,
                        image_path: str,
                        store_root: str,
-                       classifier_path: Optional[str] = None,
+                       classifier_store_path: Optional[str] = None,
                        top_k: int = 1,
                        min_confidence: float = 0.0) -> Dict[str, Any]:
         """
-        Segment input image with SAM, extract ResNet features for segments, classify with:
-         - loaded classifier (if classifier_path provided)
-         - prototypes (if prototypes exist under store_root)
+        Classify an image with segmentation + chosen classification method.
 
         Returns:
-            dict with segments list (each entry contains classifier and prototype predictions),
-            counts aggregated by chosen label, and metadata with timing info.
+            dict with segments list, counts, metadata (incl. timings and model names).
         """
-        t0 = time.time()
+        if self.segmentation_model is None:
+            raise RuntimeError("segmentation_model not provided to FewShotManager for classify_image.")
 
-        # Run segmentation (sam wrapper saves segments to disk)
-        seg_result, seg_meta = self.sam.segment_image(image_path)
-        seg_paths = seg_result.get("segments", [])
+        run_id = str(uuid.uuid4())
+        tstart = time.time()
 
-        classifier_obj = None
-        if classifier_path:
-            classifier_obj = self.load_classifier(classifier_path)
+        seg_res, seg_meta = self.segmentation_model.segment_image(image_path)
+        seg_paths = seg_res.get("segments", [])
+        seg_model_name = seg_res.get("model_name") if isinstance(seg_res, dict) else type(self.segmentation_model).__name__
+
+        # load classifier/prototypes if necessary
+        if classifier_store_path and os.path.exists(classifier_store_path):
+            self.load_classifier(classifier_store_path)
+
+        prototypes = self.load_prototypes(store_root) if os.path.exists(os.path.join(store_root, "prototypes")) else {}
 
         segments_out = []
         counts = defaultdict(int)
-        times = {"per_segment_feat": [], "per_segment_classifier": [], "per_segment_prototype": []}
+        feature_times, cls_times, proto_times = [], [], []
 
-        for seg_path in seg_paths:
-            # Extract features for segment
-            t_feat0 = time.time()
-            feat, feat_meta = self.resnet.extract_features_from_path(seg_path)
-            t_feat = time.time() - t_feat0
-            times["per_segment_feat"].append(t_feat)
+        for sp in seg_paths:
+            tf0 = time.time()
+            feat, feat_meta = self.feature_extractor.extract_features_from_path(sp)
+            feature_times.append(time.time() - tf0)
 
-            # classifier prediction (if available)
-            classifier_pred = None
-            tcls0 = time.time()
-            if classifier_obj:
-                try:
-                    lab, score = self._classify_feature_with_classifier(feat, classifier_obj)
-                    classifier_pred = {"label": lab, "score": float(score)}
-                except Exception as e:
-                    classifier_pred = {"label": None, "score": 0.0, "error": str(e)}
-            tcls = time.time() - tcls0
-            times["per_segment_classifier"].append(tcls)
-
-            # prototype predictions
-            tproto0 = time.time()
-            prot_preds = self._classify_with_prototypes_for_feature(feat, store_root, top_k=top_k)
-            tproto = time.time() - tproto0
-            times["per_segment_prototype"].append(tproto)
-
-            # choose label: classifier if meets confidence else prototype top-1 if meets confidence
             chosen_label = None
             chosen_score = 0.0
-            if classifier_pred and classifier_pred.get("label") is not None and classifier_pred.get("score", 0.0) >= min_confidence:
-                chosen_label = classifier_pred["label"]
-                chosen_score = classifier_pred["score"]
-            elif prot_preds and prot_preds[0][1] >= min_confidence:
-                chosen_label = prot_preds[0][0]
-                chosen_score = prot_preds[0][1]
+            chosen_source = None
+
+            # classifier priority: classifier (logistic/linear_probe) > prototypes
+            if self.classifier_type == "logistic" and self.classifier_obj:
+                tc0 = time.time()
+                lab, prob = predict_with_logistic(self.classifier_obj, feat)[0]
+                cls_times.append(time.time() - tc0)
+                if prob >= min_confidence:
+                    chosen_label, chosen_score, chosen_source = lab, prob, "logistic"
+
+            elif self.classifier_type == "linear_probe" and self.classifier_obj:
+                tc0 = time.time()
+                try:
+                    lab, prob = predict_with_linear_probe(self.classifier_obj, feat)
+                    cls_times.append(time.time() - tc0)
+                    if prob >= min_confidence:
+                        chosen_label, chosen_score, chosen_source = lab, prob, "linear_probe"
+                except Exception:
+                    cls_times.append(time.time() - tc0)
+
+            # prototypes fallback if no classifier label accepted
+            proto_preds = None
+            if (chosen_label is None) and prototypes:
+                tp0 = time.time()
+                proto_preds = classify_with_prototypes(feat, prototypes, top_k=top_k)
+                proto_times.append(time.time() - tp0)
+                if proto_preds and proto_preds[0][1] >= min_confidence:
+                    chosen_label, chosen_score, chosen_source = proto_preds[0][0], proto_preds[0][1], "prototype"
 
             if chosen_label:
                 counts[chosen_label] += 1
 
             segments_out.append({
-                "segment_path": seg_path,
-                "classifier_pred": classifier_pred,
-                "prototype_preds": prot_preds,
-                "chosen_label": chosen_label,
-                "chosen_score": chosen_score,
-                "segment_meta": feat_meta
+                "segment_path": sp,
+                "feature_meta": feat_meta,
+                "classifier_pred": {"label": chosen_label, "score": float(chosen_score), "source": chosen_source},
+                "prototype_preds": proto_preds
             })
 
-        total_time = time.time() - t0
         metadata = {
-            "model_sam": seg_result.get("model_name"),
+            "run_id": run_id,
+            "segmentation_model": seg_model_name,
+            "feature_model": getattr(self.feature_extractor, "model_name", None),
             "num_segments": len(seg_paths),
-            "elapsed_time": total_time,
-            "avg_time_per_segment_feat": float(np.mean(times["per_segment_feat"])) if times["per_segment_feat"] else None,
-            "avg_time_per_segment_classifier": float(np.mean(times["per_segment_classifier"])) if times["per_segment_classifier"] else None,
-            "avg_time_per_segment_prototype": float(np.mean(times["per_segment_prototype"])) if times["per_segment_prototype"] else None
+            "elapsed_time": time.time() - tstart,
+            "avg_feature_time": float(np.mean(feature_times)) if feature_times else None,
+            "avg_classifier_time": float(np.mean(cls_times)) if cls_times else None,
+            "avg_prototype_time": float(np.mean(proto_times)) if proto_times else None
         }
-
+        print(f"[FewShot] classify_image done run_id={run_id} segments={len(seg_paths)} elapsed={metadata['elapsed_time']:.3f}s")
         return {"segments": segments_out, "counts": dict(counts), "metadata": metadata}
 
-    # ----------------------------
-    # Testing pipeline (no segmentation)
-    # ----------------------------
+    # -------------------------
+    # test_pipeline (complete training + evaluation on synthetic data)
+    # -------------------------
     def test_pipeline(self,
-                      generate_images_fn: Callable[..., List[Path]],
+                      generate_images_fn: Callable[..., List[str]],
                       labels: List[str],
                       n_per_label_train: int,
                       n_per_label_test: int,
                       store_root: str,
-                      classifier_path: str,
-                      classifier_params: Optional[Dict[str, Any]] = None,
+                      classifier_store_path: str,
                       gen_kwargs: Optional[Dict[str, Any]] = None,
                       use_existing_classifier: bool = False,
                       verbose: bool = True) -> Dict[str, Any]:
         """
-        Training/testing pipeline:
-        - Build dataset with generated images (no segmentation).
-        - Train or load classifier.
-        - Evaluate on new generated images.
+        Full test pipeline:
+         - generate train set (features)
+         - build prototypes OR train classifier
+         - evaluate on generated test images
+        Returns structured summary with metrics and run_id.
         """
-        overall_start = time.time()
+        run_id = str(uuid.uuid4())
+        start_all = time.time()
         gen_kwargs = dict(gen_kwargs or {})
 
-        # store training data
+        print(f"[FewShot] test_pipeline start run_id={run_id}")
         train_summary = {}
+        # build training dataset
+        for lab in labels:
+            out = self.generate_and_build_dataset(label=lab, num_images=n_per_label_train,
+                                                  image_generator_fn=generate_images_fn,
+                                                  store_root=store_root, gen_kwargs=gen_kwargs, verbose=verbose)
+            train_summary[lab] = out
 
-        # Classifier
-        if use_existing_classifier and os.path.exists(classifier_path):
-            if verbose:
-                print("[test] Using existing classifier")
-            clf_info = {"classifier_path": os.path.abspath(classifier_path), "note": "loaded existing"}
+        # train or build prototypes
+        if use_existing_classifier and os.path.exists(classifier_store_path):
+            print("[FewShot] using existing classifier/probe")
+            clf_info = {"note": "loaded existing", "path": classifier_store_path}
+            self.load_classifier(classifier_store_path)
         else:
-            # Build Training dataset
-            print("[Build] Build test dataset")
-            for label in labels:
-                out = self.generate_and_build_dataset(label=label, num_images=n_per_label_train,
-                                                    image_generator_fn=generate_images_fn,
-                                                    store_root=store_root, gen_kwargs=gen_kwargs, verbose=verbose)
-                train_summary[label] = out["summary"]
+            clf_info = self.train_classifier(store_root=store_root, classifier_store_path=classifier_store_path)  # type: ignore
 
-            # Prototypes
-            proto_info = self.resnet.finalize_prototypes(store_root)
-            clf_info = self.train_classifier(store_root=store_root, classifier_path=classifier_path,
-                                             classifier_params=classifier_params)
-
-        # Evaluation
-        print("[Evaluation] evaluating the classifier")
+        # evaluate
         y_true, y_pred = [], []
-        per_sample_results, times = [], []
-        classifier_obj = self.load_classifier(classifier_path)
+        per_sample = []
+        times = []
 
-        for label in labels:
-            test_images = generate_images_fn(num_images=n_per_label_test, label=label, **gen_kwargs)
-            for img_path in test_images:
-                feat, feat_meta = self.resnet.extract_features_from_path(str(img_path))
+        for lab in labels:
+            test_images = generate_images_fn(num_images=n_per_label_test, label=lab, **gen_kwargs)
+            for img in test_images:
                 t0 = time.time()
-                pred_idx = classifier_obj["classifier"].predict(feat.reshape(1, -1))[0]
-                pred_label = classifier_obj["label_encoder"].inverse_transform([pred_idx])[0]
-                times.append(time.time() - t0)
+                # if classifier exists and is parametric -> use it; else use prototypes
+                pred_label = None
+                if self.classifier_type in ("logistic", "linear_probe") and self.classifier_obj:
+                    if self.classifier_type == "logistic":
+                        labp, score = predict_with_logistic(self.classifier_obj, self.feature_extractor.extract_features_from_path(str(img))[0])[0]
+                        pred_label = labp
+                    else:
+                        try:
+                            labp, score = predict_with_linear_probe(self.classifier_obj, self.feature_extractor.extract_features_from_path(str(img))[0])
+                            pred_label = labp
+                        except Exception:
+                            pred_label = None
+                else:
+                    # prototypes
+                    protos = self.load_prototypes(store_root)
+                    feat, _ = self.feature_extractor.extract_features_from_path(str(img))
+                    proto_preds = classify_with_prototypes(feat, protos, top_k=1)
+                    pred_label = proto_preds[0][0] if proto_preds else None
 
-                y_true.append(label)
+                times.append(time.time() - t0)
+                y_true.append(lab)
                 y_pred.append(pred_label)
-                per_sample_results.append({"test_image": str(img_path), "true_label": label,
-                                           "pred_label": pred_label, "feat_meta": feat_meta})
+                per_sample.append({"image": str(img), "true": lab, "pred": pred_label})
 
         metrics = {"overall": classification_metrics(y_true, y_pred, average="macro"),
                    "per_label": per_label_metrics(y_true, y_pred)}
-        total_elapsed = time.time() - overall_start
-        summary = {"train_summary": train_summary, "prototypes": proto_info, "classifier_info": clf_info,
-                   "metrics": metrics, "num_test_samples": len(y_true),
-                   "avg_inference_time": float(np.mean(times)) if times else None,
-                   "total_elapsed_time": total_elapsed}
-        return {"summary": summary, "per_sample_results": per_sample_results}
+        total_elapsed = time.time() - start_all
+        summary = {
+            "run_id": run_id,
+            "train_summary": train_summary,
+            "classifier_info": clf_info,
+            "metrics": metrics,
+            "num_test_samples": len(y_true),
+            "avg_inference_time": float(np.mean(times)) if times else None,
+            "total_elapsed_time": total_elapsed
+        }
+        print(f"[FewShot] test_pipeline done run_id={run_id} elapsed={total_elapsed:.3f}s")
+        return {"summary": summary, "per_sample_results": per_sample}
 
-    # ----------------------------
-    # Count objects in an image (uses classifier if provided)
-    # ----------------------------
-    def count_objects_in_image(self,
-                               image_path: str,
-                               store_root: str,
-                               classifier_path: Optional[str] = None,
-                               target_labels: Optional[List[str]] = None,
-                               min_confidence: float = 0.0) -> Dict[str, Any]:
+    # -------------------------
+    # count_objects_in_image
+    # -------------------------
+    def count_objects_in_image(self, image_path: str, store_root: str, classifier_store_path: Optional[str] = None,
+                               target_labels: Optional[List[str]] = None, min_confidence: float = 0.0) -> Dict[str, Any]:
         """
-        Count objects in image for provided target_labels (if None, count all predicted labels).
-        Uses classifier (if classifier_path provided) else prototypes.
-
-        Returns:
-            dict containing counts mapping and per-segment details.
+        Count objects in user image. Returns counts limited to target_labels if provided.
         """
-        res = self.classify_image(image_path=image_path,
+        out = self.classify_image(image_path=image_path,
                                   store_root=store_root,
-                                  classifier_path=classifier_path,
+                                  classifier_store_path=classifier_store_path,
                                   top_k=1,
                                   min_confidence=min_confidence)
-        counts = res["counts"]
-        if target_labels is not None:
+        counts = out["counts"]
+        if target_labels:
             filtered = {lab: counts.get(lab, 0) for lab in target_labels}
         else:
             filtered = counts
-        return {"counts": filtered, "segments": res["segments"], "metadata": res["metadata"]}
+        return {"counts": filtered, "segments": out["segments"], "metadata": out["metadata"]}
 
     # ----------------------------
     # Utility: delete store

@@ -1,248 +1,203 @@
-#!/usr/bin/python3
 """
-orchestrator.py
+orchestrator.py (final)
 
-Unified orchestration for few-shot and zero-shot workflows.
+Unified orchestrator for few-shot and zero-shot workflows.
 
-Improvements:
--------------
-- Allow passing constructor arguments to FewShotManager and ZeroShotManager.
-  For example, you can set custom ResNetWrapper/SAMWrapper, classifier_class,
-  CLIP model name, or device.
-- Synthetic workflows (few_shot, zero_shot) do NOT use segmentation.
-- User workflows (user_few_shot, user_zero_shot) use segmentation.
+Allows you to select:
+- segmentation model: "sam", "deeplab", or None
+- feature extractor: "resnet", "efficientnet" or None
+- few-shot classifier: "prototypes", "logistic", "linear_probe"
+- zero-shot options: use CLIP (pass clip_model & preprocess) and/or prototypes
 
-Modes:
-------
-- "few_shot": run synthetic training + evaluation with FewShotManager (no segmentation).
-- "zero_shot": run synthetic evaluation with ZeroShotManager (no segmentation).
-- "user_few_shot": classify a real user image with FewShotManager (segmentation applied).
-- "user_zero_shot": classify a real user image with ZeroShotManager (segmentation applied).
+This file instantiates the requested models and passes instances into managers.
+Each run returns a structured dict containing run_id, results, and metadata.
 """
 
-from typing import Callable, Dict, Any, List, Optional
+import os
+import uuid
+import numpy as np
+from typing import Optional, List, Callable, Dict, Any
 
-from .models.workflows.few_shot_manager import FewShotManager
-from .models.workflows.zero_shot_manager import ZeroShotManager
-from .config import DEFAULT_CLASSIFIER_PATH, DEFAULT_OUTPUT_ROOT, DEVICE, CLIP_MODEL
-from ..synthimage.generator import generate_images
+# Import wrappers
+from src.pipeline.models.segmentation.sam_model import SAMWrapper
+from src.pipeline.models.segmentation.deeplabv3_model import DeepLabV3Wrapper
+from src.pipeline.models.feature_extractor.resnet_model import ResNetWrapper
+from src.pipeline.models.feature_extractor.efficientnet import EfficientNetWrapper
 
+from src.pipeline.models.workflows.few_shot_manager import FewShotManager
+from src.pipeline.models.workflows.zero_shot_manager import ZeroShotManager
+from src.pipeline.config import DEFAULT_CLASSIFIER_PATH, DEFAULT_OUTPUT_ROOT, DEVICE, SAM_CHECKPOINT, LINEAR_SVC_CLASSIFIER_PATH, LOGISTIC_CLASSIFIER_PATH
 
-# ----------------------------
-# Few-shot synthetic workflow
-# ----------------------------
-def run_few_shot_workflow(
-    generate_images_fn: Callable[..., List],
-    labels: List[str],
-    n_per_label_train: int,
-    n_per_label_test: int,
-    store_root: str,
-    classifier_path: str,
-    gen_kwargs: Optional[Dict[str, Any]] = None,
-    use_existing_classifier: bool = False,
-    classifier_params: Optional[Dict[str, Any]] = None,
-    verbose: bool = True,
-    # NEW: pass constructor args
-    few_shot_kwargs: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
-    """
-    Run few-shot synthetic workflow (no segmentation).
-    """
-    fsm = FewShotManager(**(few_shot_kwargs or {}))
-    return fsm.test_pipeline(
-        generate_images_fn=generate_images_fn,
-        labels=labels,
-        n_per_label_train=n_per_label_train,
-        n_per_label_test=n_per_label_test,
-        store_root=store_root,
-        classifier_path=classifier_path,
-        classifier_params=classifier_params,
-        gen_kwargs=gen_kwargs,
-        use_existing_classifier=use_existing_classifier,
-        verbose=verbose
-    )
+# The image generator
+from src.synthimage.generator import generate_images
 
 
-# ----------------------------
-# Zero-shot synthetic workflow
-# ----------------------------
-def run_zero_shot_workflow(
-    generate_images_fn: Callable[..., List],
-    labels: List[str],
-    n_per_label_test: int,
-    candidate_labels: List[str],
-    use_clip: bool = True,
-    use_prototypes: bool = True,
-    prototypes_store: Optional[str] = None,
-    gen_kwargs: Optional[Dict[str, Any]] = None,
-    verbose: bool = True,
-    # NEW: pass constructor args
-    zero_shot_kwargs: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
-    """
-    Run zero-shot synthetic workflow (no segmentation).
-    """
-    zsm = ZeroShotManager(**(zero_shot_kwargs or {}))
-    if verbose:
-        print("[orchestrator] Running zero-shot workflow...")
-    return zsm.evaluate(
-        generate_images_fn=generate_images_fn,
-        labels=labels,
-        n_per_label_test=n_per_label_test,
-        candidate_labels=candidate_labels,
-        prototypes_store=prototypes_store,
-        use_clip=use_clip,
-        use_prototypes=use_prototypes,
-        gen_kwargs=gen_kwargs
-    )
+# -------------------------
+# Factories
+# -------------------------
+def _instantiate_segmentation(name: Optional[str], sam_checkpoint: Optional[str] = None):
+    if name is None:
+        return None
+    name = name.lower()
+    if name == "sam":
+        print("[orchestrator] instantiate SAMWrapper")
+        # assume SAMWrapper can accept checkpoint path (if implemented)
+        if sam_checkpoint:
+            return SAMWrapper(checkpoint=sam_checkpoint)
+        return SAMWrapper()
+    elif name == "deeplab":
+        print("[orchestrator] instantiate DeepLabV3Wrapper")
+        return DeepLabV3Wrapper()
+    else:
+        raise ValueError(f"Unknown segmentation model '{name}'")
 
 
-# ----------------------------
-# User workflows (segmentation)
-# ----------------------------
-def run_user_few_shot_workflow(
-    image_path: str,
-    store_root: str,
-    classifier_path: Optional[str] = None,
-    # NEW: pass constructor args
-    few_shot_kwargs: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
-    """
-    Classify a real user-submitted image using FewShotManager.
-    Segmentation is applied.
-    """
-    fsm = FewShotManager(**(few_shot_kwargs or {}))
-    return fsm.classify_image(
-        image_path=image_path,
-        store_root=store_root,
-        classifier_path=classifier_path
-    )
+def _instantiate_feature_extractor(name: Optional[str], device: str = "cpu"):
+    if name is None:
+        return None
+    name = name.lower()
+    if name == "resnet":
+        print("[orchestrator] instantiate ResNetWrapper")
+        return ResNetWrapper(device=device)
+    elif name == "efficientnet":
+        print("[orchestrator] instantiate EfficientNetWrapper")
+        return EfficientNetWrapper(device=device)
+    else:
+        raise ValueError(f"Unknown feature extractor '{name}'")
 
 
-def run_user_zero_shot_workflow(
-    image_path: str,
-    candidate_labels: List[str],
-    prototypes_store: Optional[str] = None,
-    use_clip: bool = True,
-    use_prototypes: bool = True,
-    # NEW: pass constructor args
-    zero_shot_kwargs: Optional[Dict[str, Any]] = None
-) -> Dict[str, Any]:
-    """
-    Classify a real user-submitted image using ZeroShotManager.
-    Segmentation is applied.
-    """
-    zsm = ZeroShotManager(**(zero_shot_kwargs or {}))
-    return zsm.classify_image(
-        image_path=image_path,
-        candidate_labels=candidate_labels,
-        prototypes_store=prototypes_store,
-        use_clip=use_clip,
-        use_prototypes=use_prototypes
-    )
-
-
-# ----------------------------
-# Unified orchestrator
-# ----------------------------
+# -------------------------
+# Orchestrate wrapper
+# -------------------------
 def orchestrate(
     mode: str,
-    # common args
-    generate_images_fn: Optional[Callable[..., List]] = None,
+    # selection args
+    segmentation_model_name: Optional[str] = None,
+    feature_extractor_name: Optional[str] = "resnet",
+    few_shot_classifier_type: str = "logistic",
+    use_existing_classifier: bool = False,
+    # SAM checkpoint (optional)
+    sam_checkpoint: Optional[str] = None,
+    # CLIP (for zero-shot) - pass clip.load() outputs if you want to use clip:
+    clip_model: Optional[Any] = None,
+    clip_preprocess: Optional[Any] = None,
+    clip_device: str = DEVICE,
+    # common runner args
+    generate_images_fn: Optional[Callable[..., List[str]]] = generate_images,
     labels: Optional[List[str]] = None,
     n_per_label_train: Optional[int] = None,
     n_per_label_test: int = 10,
     candidate_labels: Optional[List[str]] = None,
     store_root: str = DEFAULT_OUTPUT_ROOT,
-    classifier_path: str = DEFAULT_CLASSIFIER_PATH,
+    classifier_store_path: str = DEFAULT_CLASSIFIER_PATH,
     gen_kwargs: Optional[Dict[str, Any]] = None,
-    use_existing_classifier: bool = False,
     classifier_params: Optional[Dict[str, Any]] = None,
     use_clip: bool = True,
     use_prototypes: bool = True,
-    # user mode args
     image_path: Optional[str] = None,
-    # NEW: pass constructor args
-    few_shot_kwargs: Optional[Dict[str, Any]] = None,
-    zero_shot_kwargs: Optional[Dict[str, Any]] = None,
     verbose: bool = True
 ) -> Dict[str, Any]:
     """
-    Unified orchestrator entry point.
+    Top-level orchestrator.
 
     Modes:
-        - "few_shot": synthetic training/testing (no segmentation)
-        - "zero_shot": synthetic evaluation (no segmentation)
-        - "user_few_shot": classify a user image (segmentation applied)
-        - "user_zero_shot": classify a user image (segmentation applied)
+        - "few_shot" : synthetic train+test (uses generate_images_fn)
+        - "zero_shot": synthetic evaluation (uses generate_images_fn)
+        - "user_few_shot": classify one user image (segmentation applied)
+        - "user_zero_shot": classify one user image (segmentation applied)
     """
+
+    run_id = str(uuid.uuid4())
+    print(f"[orchestrator] run_id={run_id} mode={mode} seg={segmentation_model_name} feat={feature_extractor_name} clf={few_shot_classifier_type}")
+
+    # instantiate requested components
+    seg_inst = _instantiate_segmentation(segmentation_model_name, sam_checkpoint)
+    feat_inst = _instantiate_feature_extractor(feature_extractor_name, device=clip_device)
+
+    # MODE: few_shot synthetic train & test (no segmentation required)
     if mode == "few_shot":
-        if not (generate_images_fn and labels and n_per_label_train is not None):
-            raise ValueError("few_shot requires generate_images_fn, labels, n_per_label_train.")
-        return run_few_shot_workflow(
-            generate_images_fn=generate_images_fn,
-            labels=labels,
-            n_per_label_train=n_per_label_train,
-            n_per_label_test=n_per_label_test,
-            store_root=store_root,
-            classifier_path=classifier_path,
-            gen_kwargs=gen_kwargs,
-            use_existing_classifier=use_existing_classifier,
-            classifier_params=classifier_params,
-            few_shot_kwargs=few_shot_kwargs,
-            verbose=verbose
-        )
+        if generate_images_fn is None or not labels or n_per_label_train is None:
+            raise ValueError("few_shot mode requires generate_images_fn, labels and n_per_label_train")
+
+        fsm = FewShotManager(feature_extractor=feat_inst, segmentation_model=seg_inst,
+                             classifier_type=few_shot_classifier_type, classifier_params=classifier_params or {})
+        result = fsm.test_pipeline(generate_images_fn=generate_images_fn,
+                                   labels=labels,
+                                   n_per_label_train=n_per_label_train,
+                                   n_per_label_test=n_per_label_test,
+                                   store_root=store_root,
+                                   classifier_store_path=classifier_store_path,
+                                   gen_kwargs=gen_kwargs,
+                                   use_existing_classifier=use_existing_classifier,
+                                   verbose=verbose)
+        return {"run_id": run_id, "mode": mode, "result": result}
+
+    # MODE: zero_shot synthetic evaluation (no segmentation by default)
     elif mode == "zero_shot":
-        if not (generate_images_fn and labels and candidate_labels):
-            raise ValueError("zero_shot requires generate_images_fn, labels, candidate_labels.")
-        return run_zero_shot_workflow(
-            generate_images_fn=generate_images_fn,
-            labels=labels,
-            n_per_label_test=n_per_label_test,
-            candidate_labels=candidate_labels,
-            use_clip=use_clip,
-            use_prototypes=use_prototypes,
-            prototypes_store=store_root,
-            gen_kwargs=gen_kwargs,
-            zero_shot_kwargs=zero_shot_kwargs,
-            verbose=verbose
-        )
+        if generate_images_fn is None or not labels or candidate_labels is None:
+            raise ValueError("zero_shot requires generate_images_fn, labels and candidate_labels")
+        # instantiate zero-shot manager with feature_extractor (for prototypes) and CLIP if provided
+        zsm = ZeroShotManager(segmenter=None, feature_extractor=feat_inst,
+                              clip_model=clip_model, clip_preprocess=clip_preprocess, device=clip_device)
+        # if prototypes are already stored in store_root, user can pass them; otherwise ZeroShotManager will accept prototypes arg
+        # here we load prototypes if exist
+        prototypes = {}
+        prot_root = os.path.join(store_root, "prototypes")
+        if os.path.exists(prot_root):
+            for lab in os.listdir(prot_root):
+                ppth = os.path.join(prot_root, lab, "prototype.npy")
+                if os.path.exists(ppth):
+                    prototypes[lab] = np.load(ppth)
+        result = zsm.evaluate(generate_images_fn=generate_images_fn,
+                              labels=labels,
+                              n_per_label_test=n_per_label_test,
+                              candidate_labels=candidate_labels,
+                              prototypes=prototypes if prototypes else None,
+                              use_clip=use_clip and bool(clip_model),
+                              use_prototypes=use_prototypes,
+                              gen_kwargs=gen_kwargs)
+        return {"run_id": run_id, "mode": mode, "result": result}
+
+    # MODE: user_few_shot (segment user image then classify segments)
     elif mode == "user_few_shot":
-        if not image_path:
-            raise ValueError("user_few_shot requires image_path.")
-        return run_user_few_shot_workflow(
-            image_path=image_path,
-            store_root=store_root,
-            classifier_path=classifier_path,
-            few_shot_kwargs=few_shot_kwargs
-        )
+        if image_path is None:
+            raise ValueError("user_few_shot requires image_path")
+        fsm = FewShotManager(feature_extractor=feat_inst, segmentation_model=seg_inst,
+                             classifier_type=few_shot_classifier_type, classifier_params=classifier_params or {})
+        result = fsm.classify_image(image_path=image_path,
+                                    store_root=store_root,
+                                    classifier_store_path=classifier_store_path,
+                                    top_k=1,
+                                    min_confidence=0.0)
+        return {"run_id": run_id, "mode": mode, "result": result}
+
+    # MODE: user_zero_shot (segment user image then zero-shot classify segments)
     elif mode == "user_zero_shot":
-        if not (image_path and candidate_labels):
-            raise ValueError("user_zero_shot requires image_path and candidate_labels.")
-        return run_user_zero_shot_workflow(
-            image_path=image_path,
-            candidate_labels=candidate_labels,
-            prototypes_store=store_root,
-            use_clip=use_clip,
-            use_prototypes=use_prototypes,
-            zero_shot_kwargs=zero_shot_kwargs
-        )
+        if image_path is None or candidate_labels is None:
+            raise ValueError("user_zero_shot requires image_path and candidate_labels")
+        zsm = ZeroShotManager(segmenter=seg_inst, feature_extractor=feat_inst,
+                              clip_model=clip_model, clip_preprocess=clip_preprocess, device=clip_device)
+        result = zsm.classify_image(image_path=image_path,
+                                    candidate_labels=candidate_labels,
+                                    use_clip=use_clip and bool(clip_model),
+                                    use_prototypes=use_prototypes,
+                                    prototypes_store=store_root,
+                                    top_k=1,
+                                    min_confidence=0.0)
+        return {"run_id": run_id, "mode": mode, "result": result}
+
     else:
-        raise ValueError(f"Unknown mode: {mode}. Must be one of: 'few_shot', 'zero_shot', 'user_few_shot', 'user_zero_shot'.")
+        raise ValueError(f"Unknown mode '{mode}'")
 
 
 if __name__ == "__main__":
-    # Example: run zero-shot with CLIP only
     results = orchestrate(
-        mode="few_shot",
+        mode="zero_shot",
         generate_images_fn=generate_images,
-        labels=["car", "phone", "person", "computer", "bag", "jacket"],
-        n_per_label_train=20,
-        n_per_label_test=6,
-        store_root=DEFAULT_OUTPUT_ROOT,
-        classifier_path=DEFAULT_CLASSIFIER_PATH,
-        zero_shot_kwargs={"sam": None},
-        verbose=True
+        labels=["car", "phone"],
+        n_per_label_test=10,
+        candidate_labels=["car", "phone", "person", "cat", "jacket"],
+        use_prototypes=True,
     )
-    print("-------------- Synthetic Few Shot Results: -----------------------\n")
+    print("-------------- Zero Shot Results: -----------------------\n")
     print(results)
