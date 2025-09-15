@@ -1,0 +1,291 @@
+{
+  "run_id": "aacc75aa-7ad2-4f79-8006-209186a1108a",
+  "mode": "user_few_shot",
+  "result": {
+    "segments": [
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0001.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.8883664608001709
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0002.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.7718307971954346
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0003.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.4913780689239502
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0004.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.6482090950012207
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0005.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.5646312236785889
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0006.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.6795065402984619
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0007.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.4665851593017578
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0008.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.42697787284851074
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0009.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.39979028701782227
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0010.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.438462495803833
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0011.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.43782806396484375
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0012.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.40361833572387695
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0013.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.3944690227508545
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0014.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.3959383964538574
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0015.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.417743444442749
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/aab7e2bb-7a46-48d8-b5bc-9350dbea61ad/segment_0016.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.4365959167480469
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      }
+    ],
+    "counts": {},
+    "metadata": {
+      "run_id": "cf69809e-4be1-46e3-9f36-095c92d0b30e",
+      "segmentation_model": "SAM-VIT_B",
+      "feature_model": "resnet50",
+      "num_segments": 16,
+      "elapsed_time": 430.87184500694275,
+      "avg_feature_time": 0.5166111886501312,
+      "avg_classifier_time": null,
+      "avg_prototype_time": null
+    }
+  }
+}

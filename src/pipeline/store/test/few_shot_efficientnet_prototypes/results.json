@@ -1,0 +1,151 @@
+{
+  "run_id": "f3313b94-873f-4439-bd12-271cf2d66f95",
+  "mode": "few_shot",
+  "result": {
+    "summary": {
+      "run_id": "d08d7071-10b9-4f1c-a2c8-14b2db0fe387",
+      "train_summary": {
+        "car": {
+          "stored_samples": [
+            {
+              "sample_id": "ef89c03f-31c0-4d84-b718-5baa7566e201",
+              "feature_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/car/sample_ef89c03f-31c0-4d84-b718-5baa7566e201.npy",
+              "meta_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/car/meta_ef89c03f-31c0-4d84-b718-5baa7566e201.json",
+              "label": "car"
+            },
+            {
+              "sample_id": "e6cf5aa2-bd02-4dde-96bd-ad4f9925a68f",
+              "feature_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/car/sample_e6cf5aa2-bd02-4dde-96bd-ad4f9925a68f.npy",
+              "meta_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/car/meta_e6cf5aa2-bd02-4dde-96bd-ad4f9925a68f.json",
+              "label": "car"
+            },
+            {
+              "sample_id": "4452f7e2-ed3a-4b02-b106-4b48414166df",
+              "feature_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/car/sample_4452f7e2-ed3a-4b02-b106-4b48414166df.npy",
+              "meta_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/car/meta_4452f7e2-ed3a-4b02-b106-4b48414166df.json",
+              "label": "car"
+            },
+            {
+              "sample_id": "364164f2-78a5-4565-9076-86bc260378be",
+              "feature_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/car/sample_364164f2-78a5-4565-9076-86bc260378be.npy",
+              "meta_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/car/meta_364164f2-78a5-4565-9076-86bc260378be.json",
+              "label": "car"
+            }
+          ],
+          "num_generated": 4
+        },
+        "phone": {
+          "stored_samples": [
+            {
+              "sample_id": "24d41608-adbe-4d52-9289-6d44bcca42de",
+              "feature_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/phone/sample_24d41608-adbe-4d52-9289-6d44bcca42de.npy",
+              "meta_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/phone/meta_24d41608-adbe-4d52-9289-6d44bcca42de.json",
+              "label": "phone"
+            },
+            {
+              "sample_id": "0b4af6bd-60a0-4c23-b7a5-f771e7ef2d60",
+              "feature_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/phone/sample_0b4af6bd-60a0-4c23-b7a5-f771e7ef2d60.npy",
+              "meta_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/phone/meta_0b4af6bd-60a0-4c23-b7a5-f771e7ef2d60.json",
+              "label": "phone"
+            },
+            {
+              "sample_id": "020a4b47-64df-42f7-a2f9-87b7bc41c18c",
+              "feature_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/phone/sample_020a4b47-64df-42f7-a2f9-87b7bc41c18c.npy",
+              "meta_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/phone/meta_020a4b47-64df-42f7-a2f9-87b7bc41c18c.json",
+              "label": "phone"
+            },
+            {
+              "sample_id": "c1256b05-c035-4c9f-871f-1c762ee3053b",
+              "feature_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/phone/sample_c1256b05-c035-4c9f-871f-1c762ee3053b.npy",
+              "meta_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/samples/phone/meta_c1256b05-c035-4c9f-871f-1c762ee3053b.json",
+              "label": "phone"
+            }
+          ],
+          "num_generated": 4
+        }
+      },
+      "classifier_info": {
+        "method": "prototypes",
+        "prototypes": {
+          "car": {
+            "prototype_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/prototypes/car/prototype.npy",
+            "dim": 1280
+          },
+          "phone": {
+            "prototype_path": "src/pipeline/store/test/few_shot_efficientnet_prototypes/prototypes/phone/prototype.npy",
+            "dim": 1280
+          }
+        }
+      },
+      "metrics": {
+        "overall": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "per_label": {
+          "car": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 3
+          },
+          "phone": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 3
+          },
+          "macro avg": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 6
+          },
+          "weighted avg": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 6
+          }
+        }
+      },
+      "num_test_samples": 6,
+      "avg_inference_time": 0.1909634272257487,
+      "total_elapsed_time": 54.708984375
+    },
+    "per_sample_results": [
+      {
+        "image": "src/synthimage/generated_images/car/car_car_0001_c0e6c9d7-713a-453e-852d-db57a9b333fc.png",
+        "true": "car",
+        "pred": "car"
+      },
+      {
+        "image": "src/synthimage/generated_images/car/car_car_0002_015cf278-abee-4342-9591-18d4a6bbd471.png",
+        "true": "car",
+        "pred": "car"
+      },
+      {
+        "image": "src/synthimage/generated_images/car/car_car_0003_c9929035-f1ca-45ef-b91e-449b4f5019c9.png",
+        "true": "car",
+        "pred": "car"
+      },
+      {
+        "image": "src/synthimage/generated_images/phone/phone_phone_0001_68bffaf9-2a5a-48ee-b105-8262817612fe.png",
+        "true": "phone",
+        "pred": "phone"
+      },
+      {
+        "image": "src/synthimage/generated_images/phone/phone_phone_0002_d702c341-780a-4644-83e2-c171b4e2ce1e.png",
+        "true": "phone",
+        "pred": "phone"
+      },
+      {
+        "image": "src/synthimage/generated_images/phone/phone_phone_0003_7698607b-f59b-4ef9-b449-6e8bda8e199a.png",
+        "true": "phone",
+        "pred": "phone"
+      }
+    ]
+  }
+}

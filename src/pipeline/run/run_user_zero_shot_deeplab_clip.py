@@ -11,7 +11,7 @@ from src.pipeline.config import DEVICE, DEFAULT_OUTPUT_ROOT, CLIP_MODEL
 if __name__ == "__main__":
     clip_model, clip_preprocess = clip.load(CLIP_MODEL, device=DEVICE)
 
-    image_path = "examples/image.png"   # replace with your image path
+    image_path = "src/pipeline/run/examples/image.png"   # replace with your image path
 
     results = orchestrate(
         mode="user_zero_shot",

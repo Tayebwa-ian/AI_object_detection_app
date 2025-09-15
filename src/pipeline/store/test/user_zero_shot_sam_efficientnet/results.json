@@ -1,0 +1,545 @@
+{
+  "run_id": "2b633c5e-af9a-4120-b535-d033e725eeba",
+  "mode": "user_zero_shot",
+  "result": {
+    "summary": {
+      "run_id": "b4ea87f5-2556-4223-966d-63063f1528b9",
+      "counts": {
+        "dog": 4,
+        "cat": 4,
+        "phone": 4,
+        "jacket": 4
+      }
+    },
+    "segments": [
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0001.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.6039443016052246
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.19333666563034058,
+            0.19627061486244202,
+            0.20701594650745392,
+            0.20578928291797638,
+            0.1975874900817871
+          ],
+          "predicted": "dog",
+          "top_prob": 0.20701594650745392,
+          "inference_time": 2.1949970722198486
+        },
+        "prototype_preds": null,
+        "chosen_label": "dog",
+        "chosen_source": "clip",
+        "chosen_score": 0.20701594650745392
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0002.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.1617717742919922
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.1961154192686081,
+            0.19829529523849487,
+            0.20244604349136353,
+            0.2019972950220108,
+            0.2011459767818451
+          ],
+          "predicted": "dog",
+          "top_prob": 0.20244604349136353,
+          "inference_time": 1.148988962173462
+        },
+        "prototype_preds": null,
+        "chosen_label": "dog",
+        "chosen_source": "clip",
+        "chosen_score": 0.20244604349136353
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0003.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.15895628929138184
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.19346995651721954,
+            0.19534701108932495,
+            0.20476827025413513,
+            0.20932142436504364,
+            0.19709327816963196
+          ],
+          "predicted": "cat",
+          "top_prob": 0.20932142436504364,
+          "inference_time": 0.9683477878570557
+        },
+        "prototype_preds": null,
+        "chosen_label": "cat",
+        "chosen_source": "clip",
+        "chosen_score": 0.20932142436504364
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0004.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.10956168174743652
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.198390930891037,
+            0.20182561874389648,
+            0.2007279247045517,
+            0.19939424097537994,
+            0.19966134428977966
+          ],
+          "predicted": "phone",
+          "top_prob": 0.20182561874389648,
+          "inference_time": 0.9268295764923096
+        },
+        "prototype_preds": null,
+        "chosen_label": "phone",
+        "chosen_source": "clip",
+        "chosen_score": 0.20182561874389648
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0005.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.11261796951293945
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.19385474920272827,
+            0.19656796753406525,
+            0.20391987264156342,
+            0.20895051956176758,
+            0.19670693576335907
+          ],
+          "predicted": "cat",
+          "top_prob": 0.20895051956176758,
+          "inference_time": 0.8132896423339844
+        },
+        "prototype_preds": null,
+        "chosen_label": "cat",
+        "chosen_source": "clip",
+        "chosen_score": 0.20895051956176758
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0006.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.09685158729553223
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.19703154265880585,
+            0.20009101927280426,
+            0.20113340020179749,
+            0.20075611770153046,
+            0.20098797976970673
+          ],
+          "predicted": "dog",
+          "top_prob": 0.20113340020179749,
+          "inference_time": 0.7622215747833252
+        },
+        "prototype_preds": null,
+        "chosen_label": "dog",
+        "chosen_source": "clip",
+        "chosen_score": 0.20113340020179749
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0007.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.11068010330200195
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.1962544023990631,
+            0.20016196370124817,
+            0.2006841003894806,
+            0.20054103434085846,
+            0.20235852897167206
+          ],
+          "predicted": "jacket",
+          "top_prob": 0.20235852897167206,
+          "inference_time": 0.6643831729888916
+        },
+        "prototype_preds": null,
+        "chosen_label": "jacket",
+        "chosen_source": "clip",
+        "chosen_score": 0.20235852897167206
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0008.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.07978963851928711
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.1969626098871231,
+            0.2010652720928192,
+            0.20036673545837402,
+            0.20021677017211914,
+            0.20138858258724213
+          ],
+          "predicted": "jacket",
+          "top_prob": 0.20138858258724213,
+          "inference_time": 0.5962028503417969
+        },
+        "prototype_preds": null,
+        "chosen_label": "jacket",
+        "chosen_source": "clip",
+        "chosen_score": 0.20138858258724213
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0009.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.0995628833770752
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.19750140607357025,
+            0.2018667459487915,
+            0.20053443312644958,
+            0.20068199932575226,
+            0.1994154304265976
+          ],
+          "predicted": "phone",
+          "top_prob": 0.2018667459487915,
+          "inference_time": 0.6852550506591797
+        },
+        "prototype_preds": null,
+        "chosen_label": "phone",
+        "chosen_source": "clip",
+        "chosen_score": 0.2018667459487915
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0010.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.08020448684692383
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.1977992206811905,
+            0.20053693652153015,
+            0.200425386428833,
+            0.20100747048854828,
+            0.20023095607757568
+          ],
+          "predicted": "cat",
+          "top_prob": 0.20100747048854828,
+          "inference_time": 0.6425249576568604
+        },
+        "prototype_preds": null,
+        "chosen_label": "cat",
+        "chosen_source": "clip",
+        "chosen_score": 0.20100747048854828
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0011.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.08615827560424805
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.19774243235588074,
+            0.20002169907093048,
+            0.2011765092611313,
+            0.20114712417125702,
+            0.19991230964660645
+          ],
+          "predicted": "dog",
+          "top_prob": 0.2011765092611313,
+          "inference_time": 0.6189706325531006
+        },
+        "prototype_preds": null,
+        "chosen_label": "dog",
+        "chosen_source": "clip",
+        "chosen_score": 0.2011765092611313
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0012.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.08659648895263672
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.1979665607213974,
+            0.20031024515628815,
+            0.20057202875614166,
+            0.20007136464118958,
+            0.2010798454284668
+          ],
+          "predicted": "jacket",
+          "top_prob": 0.2010798454284668,
+          "inference_time": 0.7044730186462402
+        },
+        "prototype_preds": null,
+        "chosen_label": "jacket",
+        "chosen_source": "clip",
+        "chosen_score": 0.2010798454284668
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0013.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.08004927635192871
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.1971219927072525,
+            0.19891756772994995,
+            0.20106983184814453,
+            0.20125217735767365,
+            0.20163848996162415
+          ],
+          "predicted": "jacket",
+          "top_prob": 0.20163848996162415,
+          "inference_time": 0.6060018539428711
+        },
+        "prototype_preds": null,
+        "chosen_label": "jacket",
+        "chosen_source": "clip",
+        "chosen_score": 0.20163848996162415
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0014.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.11031699180603027
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.19804178178310394,
+            0.20051291584968567,
+            0.2009865790605545,
+            0.2010938972234726,
+            0.1993648111820221
+          ],
+          "predicted": "cat",
+          "top_prob": 0.2010938972234726,
+          "inference_time": 0.5791020393371582
+        },
+        "prototype_preds": null,
+        "chosen_label": "cat",
+        "chosen_source": "clip",
+        "chosen_score": 0.2010938972234726
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0015.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.08232760429382324
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.19711963832378387,
+            0.20161664485931396,
+            0.20043650269508362,
+            0.2003367692232132,
+            0.20049051940441132
+          ],
+          "predicted": "phone",
+          "top_prob": 0.20161664485931396,
+          "inference_time": 0.6834616661071777
+        },
+        "prototype_preds": null,
+        "chosen_label": "phone",
+        "chosen_source": "clip",
+        "chosen_score": 0.20161664485931396
+      },
+      {
+        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0016.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.08487248420715332
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.19736482203006744,
+            0.2014562338590622,
+            0.20080487430095673,
+            0.2006111890077591,
+            0.19976283609867096
+          ],
+          "predicted": "phone",
+          "top_prob": 0.2014562338590622,
+          "inference_time": 0.6501989364624023
+        },
+        "prototype_preds": null,
+        "chosen_label": "phone",
+        "chosen_source": "clip",
+        "chosen_score": 0.2014562338590622
+      }
+    ],
+    "metadata": {
+      "run_id": "b4ea87f5-2556-4223-966d-63063f1528b9",
+      "segmenter": "SAM-VIT_B",
+      "feature_extractor": "efficientnet_b0",
+      "clip_model": "CLIP",
+      "inference_time": 373.37455797195435,
+      "times": {
+        "segmentation": 357.4062829017639,
+        "resnet_per_segment_avg": 0.1343490332365036,
+        "clip_per_segment_avg": 0.8636388927698135,
+        "prototype_per_segment_avg": null
+      },
+      "num_segments": 16,
+      "avg_confidence_clip": 0.20283599384129047,
+      "avg_confidence_prototype": null
+    }
+  }
+}

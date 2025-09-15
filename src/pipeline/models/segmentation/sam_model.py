@@ -17,7 +17,7 @@ import numpy as np
 from PIL import Image
 from segment_anything import SamAutomaticMaskGenerator, sam_model_registry
 
-from ...config import SAM_CHECKPOINT, SAM_TYPE, DEVICE
+from ...config import SAM_CHECKPOINT, SAM_TYPE, DEVICE, BASE_DIR
 from ...utils.timing import measure_time
 
 
@@ -64,7 +64,13 @@ class SAMWrapper:
         # Load model
         self.model = sam_model_registry[self.model_type](checkpoint=self.checkpoint)
         self.model.to(device=self.device)
-        self.generator = SamAutomaticMaskGenerator(self.model)
+        self.generator = SamAutomaticMaskGenerator(
+            self.model,
+            points_per_side=16,
+            pred_iou_thresh=0.7,
+            stability_score_thresh=0.85,
+            min_mask_region_area=500,
+        )
 
     def _nms_filter(self, masks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
@@ -120,8 +126,9 @@ class SAMWrapper:
             list of saved file paths
         """
         os.makedirs(base_folder, exist_ok=True)
+        masks_sorted = sorted(masks, key=lambda x: x['area'], reverse=True)
         paths = []
-        for idx, m in enumerate(masks, 1):
+        for idx, m in enumerate(masks_sorted[:10]):
             seg = m["segmentation"].astype(np.uint8) * 255
             seg_img = Image.fromarray(seg)
             filename = os.path.join(base_folder, f"segment_{idx:04d}.png")
@@ -156,7 +163,7 @@ class SAMWrapper:
             masks = masks[:max_segments]
 
         # Create unique folder for this image
-        base_folder = os.path.join("segments", str(uuid.uuid4()))
+        base_folder = BASE_DIR / f"segments/sam_{str(uuid.uuid4())}"
         seg_paths = self._save_segments(masks, img_np, base_folder)
 
         confidences = [m.get("predicted_iou", 0.0) for m in masks]

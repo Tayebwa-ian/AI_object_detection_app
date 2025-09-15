@@ -211,3 +211,4 @@ node_modules/
 test_images/
 generated_images/
 Databases/
+segments*

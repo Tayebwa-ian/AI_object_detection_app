@@ -1,0 +1,53 @@
+{
+  "run_id": "5af7f2f0-2fe7-41a4-99a0-8e2ae85b4eab",
+  "mode": "user_few_shot",
+  "result": {
+    "segments": [
+      {
+        "segment_path": "segments_deeplab/fa7aa027-698c-459d-9c6e-93989a44da1e/class_00_segment_0001.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.4299170970916748
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments_deeplab/fa7aa027-698c-459d-9c6e-93989a44da1e/class_08_segment_0002.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.5282533168792725
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      }
+    ],
+    "counts": {},
+    "metadata": {
+      "run_id": "2a362614-62aa-4abe-a714-28dfc9156dab",
+      "segmentation_model": "DeepLabv3+ (ResNet-101)",
+      "feature_model": "resnet50",
+      "num_segments": 2,
+      "elapsed_time": 4.130427122116089,
+      "avg_feature_time": 0.47909772396087646,
+      "avg_classifier_time": null,
+      "avg_prototype_time": null
+    }
+  }
+}

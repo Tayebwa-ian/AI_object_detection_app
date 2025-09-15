@@ -1,0 +1,95 @@
+{
+  "run_id": "3a55d4ab-a0d3-44d2-80f5-74a548a0422a",
+  "mode": "user_zero_shot",
+  "result": {
+    "summary": {
+      "run_id": "54af1c68-3750-41bc-9126-2309bfe70fbd",
+      "counts": {
+        "jacket": 1,
+        "phone": 1
+      }
+    },
+    "segments": [
+      {
+        "segment_path": "segments_deeplab/8a47a65a-0360-410b-8d52-5a2ce9a609da/class_00_segment_0001.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.09022808074951172
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.19768553972244263,
+            0.20071129500865936,
+            0.2007991522550583,
+            0.19950345158576965,
+            0.20130063593387604
+          ],
+          "predicted": "jacket",
+          "top_prob": 0.20130063593387604,
+          "inference_time": 0.7567744255065918
+        },
+        "prototype_preds": null,
+        "chosen_label": "jacket",
+        "chosen_source": "clip",
+        "chosen_score": 0.20130063593387604
+      },
+      {
+        "segment_path": "segments_deeplab/8a47a65a-0360-410b-8d52-5a2ce9a609da/class_08_segment_0002.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.08229660987854004
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.19878733158111572,
+            0.20156873762607574,
+            0.20031465590000153,
+            0.19960764050483704,
+            0.1997215896844864
+          ],
+          "predicted": "phone",
+          "top_prob": 0.20156873762607574,
+          "inference_time": 0.7193267345428467
+        },
+        "prototype_preds": null,
+        "chosen_label": "phone",
+        "chosen_source": "clip",
+        "chosen_score": 0.20156873762607574
+      }
+    ],
+    "metadata": {
+      "run_id": "54af1c68-3750-41bc-9126-2309bfe70fbd",
+      "segmenter": "DeepLabv3+ (ResNet-101)",
+      "feature_extractor": "efficientnet_b0",
+      "clip_model": "CLIP",
+      "inference_time": 3.62844181060791,
+      "times": {
+        "segmentation": 1.916494369506836,
+        "resnet_per_segment_avg": 0.08648478984832764,
+        "clip_per_segment_avg": 0.7694166898727417,
+        "prototype_per_segment_avg": null
+      },
+      "num_segments": 2,
+      "avg_confidence_clip": 0.2014346867799759,
+      "avg_confidence_prototype": null
+    }
+  }
+}

@@ -18,7 +18,7 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 import torchvision.models.segmentation as segmentation
 
-from ...config import DEVICE, IMAGE_SIZE
+from ...config import DEVICE, IMAGE_SIZE, BASE_DIR
 from ...utils.timing import measure_time
 
 
@@ -129,7 +129,7 @@ class DeepLabV3Wrapper:
             masks = dict(sorted_masks[:max_segments])
 
         # Create unique folder
-        base_folder = os.path.join("segments_deeplab", str(uuid.uuid4()))
+        base_folder = BASE_DIR / f"segments/deeplab_{str(uuid.uuid4())}"
         seg_paths = self._save_segments(masks, base_folder)
 
         avg_conf = float(np.mean(confidences)) if confidences else 0.0

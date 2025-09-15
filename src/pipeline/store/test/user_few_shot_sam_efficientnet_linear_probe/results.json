@@ -1,0 +1,259 @@
+{
+  "run_id": "f6f66198-6e53-4105-ad1e-bb2153dafd42",
+  "mode": "user_few_shot",
+  "result": {
+    "segments": [
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0001.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.10388064384460449
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0002.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.10580682754516602
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0003.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.13390755653381348
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0004.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.2011408805847168
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0005.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.17364120483398438
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0006.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.09539675712585449
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0007.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.16767024993896484
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0008.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.10423612594604492
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0009.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.10140252113342285
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0010.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.09110093116760254
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0011.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.09100985527038574
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0012.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.16789698600769043
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0013.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.18198013305664062
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0014.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.09742498397827148
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0015.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.09699201583862305
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "segments/030c158d-7bca-41f5-b4b2-94bc9ddd3475/segment_0016.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.08756017684936523
+        },
+        "classifier_pred": {
+          "label": null,
+          "score": 0.0,
+          "source": null
+        },
+        "prototype_preds": null
+      }
+    ],
+    "counts": {},
+    "metadata": {
+      "run_id": "0f918a85-6dd1-4ce4-96ef-2eeea2e2135a",
+      "segmentation_model": "SAM-VIT_B",
+      "feature_model": "efficientnet_b0",
+      "num_segments": 16,
+      "elapsed_time": 356.98419642448425,
+      "avg_feature_time": 0.1254626214504242,
+      "avg_classifier_time": null,
+      "avg_prototype_time": null
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "run_id": "df69e2a1-c2b1-4156-8ee2-f49be11570f7",
+  "mode": "zero_shot",
+  "result": {
+    "run_id": "d24a237c-9cfe-4f52-af98-15b94ec72720",
+    "metrics": {
+      "clip": {
+        "overall": {
+          "accuracy": 0.8333333333333334,
+          "precision": 0.875,
+          "recall": 0.8333333333333333,
+          "f1": 0.8285714285714285
+        },
+        "per_label": {
+          "car": {
+            "precision": 0.75,
+            "recall": 1.0,
+            "f1": 0.8571428571428571,
+            "support": 3
+          },
+          "phone": {
+            "precision": 1.0,
+            "recall": 0.6666666666666666,
+            "f1": 0.8,
+            "support": 3
+          },
+          "macro avg": {
+            "precision": 0.875,
+            "recall": 0.8333333333333333,
+            "f1": 0.8285714285714285,
+            "support": 6
+          },
+          "weighted avg": {
+            "precision": 0.875,
+            "recall": 0.8333333333333334,
+            "f1": 0.8285714285714286,
+            "support": 6
+          }
+        }
+      }
+    },
+    "per_sample_results": [
+      {
+        "image": "src/synthimage/generated_images/car/car_car_0001_cd095493-7149-4bac-8b40-1509c005d179.png",
+        "true_label": "car",
+        "preds": [
+          [
+            "clip",
+            "car",
+            0.25083720684051514
+          ]
+        ],
+        "final": "car"
+      },
+      {
+        "image": "src/synthimage/generated_images/car/car_car_0002_d245fe43-b91f-4b21-b9be-6e1bc19ba50f.png",
+        "true_label": "car",
+        "preds": [
+          [
+            "clip",
+            "car",
+            0.28465476632118225
+          ]
+        ],
+        "final": "car"
+      },
+      {
+        "image": "src/synthimage/generated_images/car/car_car_0003_45d7b09e-4503-43d9-82a1-a02c5ee4bc31.png",
+        "true_label": "car",
+        "preds": [
+          [
+            "clip",
+            "car",
+            0.26083052158355713
+          ]
+        ],
+        "final": "car"
+      },
+      {
+        "image": "src/synthimage/generated_images/phone/phone_phone_0001_86524a69-8d9e-4430-9ec1-1d7c58adf500.png",
+        "true_label": "phone",
+        "preds": [
+          [
+            "clip",
+            "phone",
+            0.2783343493938446
+          ]
+        ],
+        "final": "phone"
+      },
+      {
+        "image": "src/synthimage/generated_images/phone/phone_phone_0002_e25dcbe0-234c-455c-9f2f-0ca4897aa1f2.png",
+        "true_label": "phone",
+        "preds": [
+          [
+            "clip",
+            "phone",
+            0.2892884612083435
+          ]
+        ],
+        "final": "phone"
+      },
+      {
+        "image": "src/synthimage/generated_images/phone/phone_phone_0003_56dff1ab-154e-41ce-af54-d3538488259f.png",
+        "true_label": "phone",
+        "preds": [
+          [
+            "clip",
+            "car",
+            0.23027947545051575
+          ]
+        ],
+        "final": "car"
+      }
+    ]
+  }
+}

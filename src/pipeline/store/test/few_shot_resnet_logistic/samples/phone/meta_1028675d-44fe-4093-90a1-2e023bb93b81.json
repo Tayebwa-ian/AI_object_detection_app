@@ -1,0 +1,11 @@
+{
+  "source_image": "src/synthimage/generated_images/phone/phone_phone_0001_0f920259-c25b-4e0e-96a8-ef4ba8103c89.png",
+  "feature_meta": {
+    "model_name": "resnet50",
+    "device": "cpu",
+    "feature_dim": 3072,
+    "tta": true,
+    "tta_augments": 2,
+    "inference_time": 0.40695810317993164
+  }
+}
