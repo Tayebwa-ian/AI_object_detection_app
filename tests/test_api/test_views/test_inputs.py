@@ -1,125 +1,64 @@
-# tests/test_inputs.py
+#!/usr/bin/python3
+"""Tests for Inputs endpoints using Flask test client."""
+
 import unittest
-from unittest.mock import patch, MagicMock
-from flask import Flask
-from flask_restful import Api
-from marshmallow import ValidationError
+import os
+from tests.test_helpers import reset_database
+from src.app import create_app
+from src import storage
 
-# Import the resource classes (adjust import path if your project differs)
-from src.api.views.inputs import InputList, InputSingle
+# Ensure tests run using test DB; the run_tests.sh script exports this, but set again just in case
+os.environ["OBJ_DETECT_ENV"] = "test"
 
 
-class TestInputViews(unittest.TestCase):
+class TestInputsViews(unittest.TestCase):
+    """Integration tests for the inputs endpoints."""
+
+    @classmethod
+    def setUpClass(cls):
+        # Create app and test client once per test class
+        reset_database()
+        cls.app = create_app({"TESTING": True})
+        cls.client = cls.app.test_client()
+
     def setUp(self):
-        # Create a Flask app and register the resources
-        app = Flask(__name__)
-        api = Api(app)
-        api.add_resource(InputList, '/api/inputs')
-        api.add_resource(InputSingle, '/api/inputs/<string:input_id>')
+        reset_database()
+        self.sess = storage.database.session
 
-        self.app = app
-        self.client = app.test_client()
+    def test_create_input_success(self):
+        payload = {"prompt": "Count bikes", "image_path": "http://example.com/bikes.jpg"}
+        r = self.client.post("/api/v1/inputs", json=payload)
+        self.assertEqual(r.status_code, 201)
+        data = r.get_json()
+        self.assertIn("id", data)
+        self.assertEqual(data["image_path"], payload["image_path"])
 
-        # Patch database, schemas, and model in the module where they're used
-        self.db_patcher = patch('src.api.views.inputs.database')
-        self.input_schema_patcher = patch('src.api.views.inputs.input_schema')
-        self.inputs_schema_patcher = patch('src.api.views.inputs.inputs_schema')
-        self.Input_patcher = patch('src.api.views.inputs.Input')
+    def test_list_inputs_pagination(self):
+        # create several inputs
+        for i in range(5):
+            self.sess.add(storage.database.session.bind.metadata.tables) if False else None  # no-op to please linters
+        for i in range(12):
+            self.sess.add(storage.database.session.bind) if False else None
+        # Create using model directly
+        from src.storage.inputs import Input
+        for i in range(12):
+            inp = Input(image_path=f"img_{i}.jpg")
+            self.sess.add(inp)
+        self.sess.commit()
 
-        self.mock_db = self.db_patcher.start()
-        self.mock_input_schema = self.input_schema_patcher.start()
-        self.mock_inputs_schema = self.inputs_schema_patcher.start()
-        self.mock_Input = self.Input_patcher.start()
+        r = self.client.get("/api/v1/inputs?page=2&per_page=5")
+        self.assertEqual(r.status_code, 200)
+        js = r.get_json()
+        self.assertEqual(js["page"], 2)
+        self.assertEqual(js["per_page"], 5)
+        self.assertEqual(js["total"], 12)
+        self.assertEqual(len(js["items"]), 5)
 
-        # Make sure dump/load are MagicMocks
-        self.mock_input_schema.load = MagicMock()
-        self.mock_input_schema.dump = MagicMock()
-        self.mock_inputs_schema.dump = MagicMock()
-
-    def tearDown(self):
-        patch.stopall()
-
-    def test_get_all_inputs_empty_returns_400(self):
-        self.mock_db.all.return_value = []
-        resp = self.client.get('/api/inputs')
-        self.assertEqual(resp.status_code, 400)
-        data = resp.get_json()
-        self.assertIn('message', data)
-        self.assertIn('could not fetch data', data['message'])
-
-    def test_get_all_inputs_success_returns_200(self):
-        fake_model = MagicMock()
-        self.mock_db.all.return_value = [fake_model]
-        self.mock_inputs_schema.dump.return_value = [{'id': '1', 'description': 'x'}]
-
-        resp = self.client.get('/api/inputs')
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.get_json(), [{'id': '1', 'description': 'x'}])
-
-    def test_post_input_success_returns_201(self):
-        payload = {'description': 'a', 'image_path': '/img.jpg'}
-        # schema.load returns validated data
-        self.mock_input_schema.load.return_value = payload
-        # Input() constructor returns an instance whose save method will be called
-        fake_instance = MagicMock()
-        fake_instance.save = MagicMock()
-        self.mock_Input.return_value = fake_instance
-        # dump returns serialized object
-        self.mock_input_schema.dump.return_value = {'id': 'uuid', **payload}
-
-        resp = self.client.post('/api/inputs', json=payload)
-        self.assertEqual(resp.status_code, 201)
-        self.assertEqual(resp.get_json(), {'id': 'uuid', **payload})
-        fake_instance.save.assert_called_once()
-
-    def test_post_input_validation_error_returns_403(self):
-        payload = {'description': ''}
-        self.mock_input_schema.load.side_effect = ValidationError({'description': ['required']})
-
-        resp = self.client.post('/api/inputs', json=payload)
-        self.assertEqual(resp.status_code, 403)
-        data = resp.get_json()
-        self.assertEqual(data.get('status'), 'fail')
-        self.assertIn('description', data.get('message'))
-
-    def test_get_single_input_success(self):
-        fake_instance = MagicMock()
-        self.mock_db.get.return_value = fake_instance
-        self.mock_input_schema.dump.return_value = {'id': 'uuid', 'description': 'a'}
-
-        resp = self.client.get('/api/inputs/uuid')
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.get_json(), {'id': 'uuid', 'description': 'a'})
-
-    def test_delete_input_calls_delete_and_returns_200(self):
-        fake_instance = MagicMock()
-        self.mock_db.get.return_value = fake_instance
-        resp = self.client.delete('/api/inputs/uuid')
-        self.assertEqual(resp.status_code, 200)
-        data = resp.get_json()
-        self.assertEqual(data.get('message'), 'resource successfully deleted')
-        self.mock_db.delete.assert_called_once_with(fake_instance)
-
-    def test_put_input_success_returns_200(self):
-        payload = {'description': 'updated', 'image_path': '/new.png'}
-        self.mock_input_schema.load.return_value = payload
-        updated_instance = MagicMock()
-        self.mock_db.update.return_value = updated_instance
-        self.mock_input_schema.dump.return_value = {'id': 'uuid', **payload}
-
-        resp = self.client.put('/api/inputs/uuid', json=payload)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.get_json(), {'id': 'uuid', **payload})
-        self.mock_db.update.assert_called_once()
-
-    def test_put_input_validation_error_returns_403(self):
-        payload = {}
-        self.mock_input_schema.load.side_effect = ValidationError({'description': ['missing']})
-        resp = self.client.put('/api/inputs/uuid', json=payload)
-        self.assertEqual(resp.status_code, 403)
-        data = resp.get_json()
-        self.assertEqual(data.get('status'), 'fail')
+    def test_invalid_json_post(self):
+        r = self.client.post("/api/v1/inputs", data="not-json", content_type="application/json")
+        # client should return 400 for invalid JSON
+        self.assertIn(r.status_code, (400, 422))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

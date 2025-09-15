@@ -1,0 +1,303 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Object Counting API",
+    "version": "1.0.0",
+    "description": "API for submitting images and model predictions, managing labels and AI models, running training/testing evaluation runs, and exposing metrics for object counting workflows."
+  },
+  "host": "localhost:5000",
+  "basePath": "/",
+  "schemes": ["http"],
+  "tags": [
+    { "name": "System", "description": "Health and system-level endpoints" },
+    { "name": "Inputs", "description": "Submit images/prompts for inference" },
+    { "name": "Labels", "description": "Manage label (object type) taxonomy" },
+    { "name": "Outputs", "description": "Model prediction outputs (detections/counts)" },
+    { "name": "Models", "description": "CRUD for AI models, training and test runs" },
+    { "name": "Monitoring", "description": "Metrics and Prometheus endpoints" }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Health check",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "API healthy",
+            "schema": { "$ref": "#/definitions/HealthResponse" }
+          }
+        }
+      }
+    },
+    "/api/v1/inputs": {
+      "get": {
+        "tags": ["Inputs"],
+        "summary": "List inputs",
+        "parameters": [
+          { "name": "page", "in": "query", "type": "integer", "default": 1 },
+          { "name": "per_page", "in": "query", "type": "integer", "default": 25 },
+          { "name": "is_test", "in": "query", "type": "boolean" }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": { "description": "Paginated list of inputs", "schema": { "$ref": "#/definitions/PaginatedInputs" } }
+        }
+      },
+      "post": {
+        "tags": ["Inputs"],
+        "summary": "Create an input",
+        "parameters": [
+          { "in": "body", "name": "body", "required": true, "schema": { "$ref": "#/definitions/Input" } }
+        ],
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "responses": {
+          "201": { "description": "Created", "schema": { "$ref": "#/definitions/Input" } },
+          "422": { "description": "Validation error", "schema": { "$ref": "#/definitions/ErrorResponse" } }
+        }
+      }
+    },
+    "/api/v1/inputs/{input_id}": {
+      "get": {
+        "tags": ["Inputs"],
+        "summary": "Get an input",
+        "parameters": [{ "name": "input_id", "in": "path", "required": true, "type": "string" }],
+        "produces": ["application/json"],
+        "responses": {
+          "200": { "description": "Input returned", "schema": { "$ref": "#/definitions/Input" } },
+          "404": { "description": "Not found", "schema": { "$ref": "#/definitions/ErrorResponse" } }
+        }
+      },
+      "put": {
+        "tags": ["Inputs"],
+        "summary": "Update an input",
+        "parameters": [
+          { "name": "input_id", "in": "path", "required": true, "type": "string" },
+          { "in": "body", "name": "body", "required": true, "schema": { "$ref": "#/definitions/Input" } }
+        ],
+        "responses": {
+          "200": { "description": "Updated input", "schema": { "$ref": "#/definitions/Input" } },
+          "404": { "description": "Not found" },
+          "422": { "description": "Validation error" }
+        }
+      },
+      "delete": {
+        "tags": ["Inputs"],
+        "summary": "Delete an input",
+        "parameters": [{ "name": "input_id", "in": "path", "required": true, "type": "string" }],
+        "responses": { "204": { "description": "Deleted" }, "404": { "description": "Not found" } }
+      }
+    },
+    "/api/v1/labels": {
+      "get": {
+        "tags": ["Labels"],
+        "summary": "List labels",
+        "parameters": [
+          { "name": "page", "in": "query", "type": "integer", "default": 1 },
+          { "name": "per_page", "in": "query", "type": "integer", "default": 50 }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": { "description": "Label list", "schema": { "$ref": "#/definitions/PaginatedLabels" } }
+        }
+      },
+      "post": {
+        "tags": ["Labels"],
+        "summary": "Create a label",
+        "parameters": [
+          { "in": "body", "name": "body", "required": true, "schema": { "$ref": "#/definitions/Label" } }
+        ],
+        "responses": {
+          "201": { "description": "Created", "schema": { "$ref": "#/definitions/Label" } },
+          "422": { "description": "Validation error", "schema": { "$ref": "#/definitions/ErrorResponse" } }
+        }
+      }
+    },
+    "/api/v1/outputs": {
+      "get": {
+        "tags": ["Outputs"],
+        "summary": "List outputs",
+        "parameters": [
+          { "name": "ai_model_id", "in": "query", "type": "string" },
+          { "name": "label_id", "in": "query", "type": "string" },
+          { "name": "input_id", "in": "query", "type": "string" },
+          { "name": "page", "in": "query", "type": "integer", "default": 1 },
+          { "name": "per_page", "in": "query", "type": "integer", "default": 50 }
+        ],
+        "responses": {
+          "200": { "description": "Outputs list", "schema": { "$ref": "#/definitions/PaginatedOutputs" } }
+        }
+      },
+      "post": {
+        "tags": ["Outputs"],
+        "summary": "Create an output record",
+        "parameters": [
+          { "in": "body", "name": "body", "required": true, "schema": { "$ref": "#/definitions/Output" } }
+        ],
+        "responses": {
+          "201": { "description": "Created output", "schema": { "$ref": "#/definitions/Output" } },
+          "422": { "description": "Validation error", "schema": { "$ref": "#/definitions/ErrorResponse" } }
+        }
+      }
+    },
+    "/api/v1/models/{model_id}/train": {
+      "post": {
+        "tags": ["Models"],
+        "summary": "Start a training run",
+        "parameters": [
+          { "name": "model_id", "in": "path", "required": true, "type": "string" },
+          { "in": "body", "name": "body", "schema": { "type": "object", "properties": { "dataset": { "type": "string" }, "epochs": { "type": "integer" }, "params": { "type": "object" } } } }
+        ],
+        "responses": {
+          "201": {
+            "description": "Training run recorded",
+            "schema": { "type": "object", "properties": { "run_id": { "type": "string" }, "metadata": { "type": "object" } } }
+          },
+          "404": { "description": "Model not found" }
+        }
+      }
+    },
+    "/api/v1/models/{model_id}/test": {
+      "post": {
+        "tags": ["Models"],
+        "summary": "Submit test results",
+        "parameters": [
+          { "name": "model_id", "in": "path", "required": true, "type": "string" },
+          { "in": "body", "name": "body", "schema": { "$ref": "#/definitions/TestRequest" } }
+        ],
+        "responses": {
+          "201": { "description": "Test results stored" },
+          "422": { "description": "Validation error" },
+          "404": { "description": "Model not found" }
+        }
+      }
+    },
+    "/metrics": {
+      "get": {
+        "tags": ["Monitoring"],
+        "summary": "Prometheus metrics endpoint (text/plain)",
+        "produces": ["text/plain"],
+        "responses": {
+          "200": { "description": "Prometheus metrics", "schema": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "HealthResponse": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" },
+        "message": { "type": "string" },
+        "database": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "message": { "type": "string" },
+        "errors": { "type": "object" }
+      }
+    },
+    "Pagination": {
+      "type": "object",
+      "properties": {
+        "page": { "type": "integer" },
+        "per_page": { "type": "integer" },
+        "total": { "type": "integer" }
+      }
+    },
+    "Input": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
+        "prompt": { "type": "string" },
+        "image_path": { "type": "string" },
+        "is_test": { "type": "boolean" }
+      },
+      "required": ["image_path"]
+    },
+    "Label": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "Output": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "input_id": { "type": "string" },
+        "label_id": { "type": "string" },
+        "ai_model_id": { "type": "string" },
+        "predicted_count": { "type": "integer" },
+        "confidence": { "type": "number", "format": "float" }
+      },
+      "required": ["input_id", "label_id", "ai_model_id", "predicted_count"]
+    },
+    "AIModel": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "PaginatedInputs": {
+      "allOf": [
+        { "$ref": "#/definitions/Pagination" },
+        { "type": "object", "properties": { "items": { "type": "array", "items": { "$ref": "#/definitions/Input" } } } }
+      ]
+    },
+    "PaginatedLabels": {
+      "allOf": [
+        { "$ref": "#/definitions/Pagination" },
+        { "type": "object", "properties": { "items": { "type": "array", "items": { "$ref": "#/definitions/Label" } } } }
+      ]
+    },
+    "PaginatedOutputs": {
+      "allOf": [
+        { "$ref": "#/definitions/Pagination" },
+        { "type": "object", "properties": { "items": { "type": "array", "items": { "$ref": "#/definitions/Output" } } } }
+      ]
+    },
+    "TestRequest": {
+      "type": "object",
+      "properties": {
+        "dataset": { "type": "string" },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label_id": { "type": "string" },
+              "accuracy": { "type": "number" },
+              "precision": { "type": "number" },
+              "recall": { "type": "number" },
+              "f1_score": { "type": "number" }
+            }
+          }
+        },
+        "latencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "input_id": { "type": "string" },
+              "value": { "type": "number" }
+            }
+          }
+        },
+        "metadata": { "type": "object" }
+      }
+    }
+  }
+}

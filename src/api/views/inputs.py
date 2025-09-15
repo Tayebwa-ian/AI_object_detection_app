@@ -1,165 +1,108 @@
 #!/usr/bin/python3
-"""
-Input Views module
+"""Inputs views (Flask-RESTful resources).
+
+Provides endpoints to create, list, update and delete Inputs.
+Inputs represent an image + prompt that was submitted for inference.
+
+Routes:
+ - GET  /api/v1/inputs
+ - POST /api/v1/inputs
+ - GET  /api/v1/inputs/<input_id>
+ - PUT  /api/v1/inputs/<input_id>
+ - DELETE /api/v1/inputs/<input_id>
 """
 from flask_restful import Resource
-from ...storage import database, Input
-from ..serializers.inputs import InputSchema
+from flask import request, jsonify
 from marshmallow import ValidationError, EXCLUDE
-from flask import request, jsonify, make_response
+from sqlalchemy.orm import joinedload
 
+from src import storage
+from src.storage.inputs import Input
+from src.api.serializers.inputs import InputSchema
 
 input_schema = InputSchema(unknown=EXCLUDE)
-inputs_schema = InputSchema(many=True)
+inputs_schema = InputSchema(many=True, unknown=EXCLUDE)
 
 
 class InputList(Resource):
-    """Handles requests for multiple Inputs"""
+    """List and create Inputs."""
 
     def get(self):
-        """
-        Get all inputs
-        ---
-        tags:
-          - Inputs
-        responses:
-          200:
-            description: List of all inputs
-            schema:
-              type: array
-              items:
-                $ref: '#/definitions/Input'
-          400:
-            description: Could not fetch data from storage
-        """
-        inputs = database.all(Input)
-        if not inputs:
-            response = {
-                "status": "error",
-                "message": "could not fetch data from the storage",
-                "data": inputs
-            }
-            return make_response(jsonify(response), 400)
-        return inputs_schema.dump(inputs), 200
+        """Return paginated list of inputs."""
+        sess = storage.database.session
+        try:
+            page = int(request.args.get("page", 1))
+            per_page = int(request.args.get("per_page", 25))
+        except ValueError:
+            return {"message": "page and per_page must be integers"}, 400
+
+        q = sess.query(Input).order_by(Input.created_at.desc())
+        # optional filter
+        if request.args.get("is_test") is not None:
+            val = request.args.get("is_test").lower()
+            if val in ("1", "true", "yes"):
+                q = q.filter(Input.is_test.is_(True))
+            elif val in ("0", "false", "no"):
+                q = q.filter(Input.is_test.is_(False))
+
+        total = q.count()
+        items = q.offset((page - 1) * per_page).limit(per_page).all()
+        return {"page": page, "per_page": per_page, "total": total, "items": inputs_schema.dump(items)}, 200
 
     def post(self):
-        """
-        Create a new input
-        ---
-        tags:
-          - Inputs
-        parameters:
-          - in: body
-            name: body
-            required: true
-            schema:
-              $ref: '#/definitions/Input'
-        responses:
-          201:
-            description: Input created successfully
-            schema:
-              $ref: '#/definitions/Input'
-          403:
-            description: Validation error
-        """
-        data = request.get_json()
-        try:
-            data = input_schema.load(data)
-        except ValidationError as e:
-            responseobject = {
-                "status": "fail",
-                "message": e.messages
-            }
-            return make_response(jsonify(responseobject), 403)
+        """Create a new Input. Validates payload using InputSchema."""
+        sess = storage.database.session
+        payload = request.get_json(force=True, silent=True)
+        if payload is None:
+            return {"message": "Invalid JSON payload"}, 400
 
-        new_input = Input(**data)
-        new_input.save()
-        return input_schema.dump(new_input), 201
+        try:
+            data = input_schema.load(payload, context={"session": sess})
+        except ValidationError as exc:
+            return {"message": "Validation error", "errors": exc.messages}, 422
+
+        obj = Input(**data)
+        sess.add(obj)
+        sess.commit()
+        return input_schema.dump(obj), 201
 
 
 class InputSingle(Resource):
-    """Handles operations on a single Input"""
+    """Retrieve, update, or delete a single Input."""
 
     def get(self, input_id):
-        """
-        Get a single input
-        ---
-        tags:
-          - Inputs
-        parameters:
-          - in: path
-            name: input_id
-            type: integer
-            required: true
-            description: ID of the Input to retrieve
-        responses:
-          200:
-            description: Input retrieved successfully
-            schema:
-              $ref: '#/definitions/Input'
-          404:
-            description: Input not found
-        """
-        input = database.get(Input, id=input_id)
-        if input:
-            return (input_schema.dump(input), 200)
-
-    def delete(self, input_id):
-        """
-        Delete an input
-        ---
-        tags:
-          - Inputs
-        parameters:
-          - in: path
-            name: input_id
-            type: integer
-            required: true
-            description: ID of the Input to delete
-        responses:
-          200:
-            description: Input successfully deleted
-          404:
-            description: Input not found
-        """
-        input = database.get(Input, id=input_id)
-        database.delete(input)
-        response = {'message': 'resource successfully deleted'}
-        return make_response(jsonify(response), 200)
+        """Retrieve a single Input by id."""
+        sess = storage.database.session
+        obj = sess.query(Input).options(joinedload(Input.outputs)).get(input_id)
+        if not obj:
+            return {"message": "Input not found"}, 404
+        return input_schema.dump(obj), 200
 
     def put(self, input_id):
-        """
-        Update an input
-        ---
-        tags:
-          - Inputs
-        parameters:
-          - in: path
-            name: input_id
-            type: integer
-            required: true
-            description: ID of the Input to update
-          - in: body
-            name: body
-            required: true
-            schema:
-              $ref: '#/definitions/Input'
-        responses:
-          200:
-            description: Input updated successfully
-            schema:
-              $ref: '#/definitions/Input'
-          403:
-            description: Validation error
-        """
-        data = request.get_json()
+        """Update an Input partially or fully."""
+        sess = storage.database.session
+        obj = sess.query(Input).get(input_id)
+        if not obj:
+            return {"message": "Input not found"}, 404
+
+        payload = request.get_json(force=True, silent=True) or {}
         try:
-            data = input_schema.load(data)
-        except ValidationError as e:
-            responseobject = {
-                "status": "fail",
-                "message": e.messages
-            }
-            return make_response(jsonify(responseobject), 403)
-        input = database.update(Input, input_id, **data)
-        return input_schema.dump(input), 200
+            data = input_schema.load(payload, partial=True, context={"session": sess})
+        except ValidationError as exc:
+            return {"message": "Validation error", "errors": exc.messages}, 422
+
+        for k, v in data.items():
+            setattr(obj, k, v)
+        sess.add(obj)
+        sess.commit()
+        return input_schema.dump(obj), 200
+
+    def delete(self, input_id):
+        """Delete an Input."""
+        sess = storage.database.session
+        obj = sess.query(Input).get(input_id)
+        if not obj:
+            return {"message": "Input not found"}, 404
+        sess.delete(obj)
+        sess.commit()
+        return "", 204

@@ -1,4 +1,6 @@
 ## Usage of this package via orchestrator.py
+[] run this in your terminal (python3 -m src.pipeline.orchestrator)
+[] you may need to make adjustments to the orchestrator.py file in order to run the appropriate work flow
 
 ### Synthetic Few-Shot (no segmentation) 
 ```

@@ -1,0 +1,519 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Object Counting API",
+    "version": "1.0.0",
+    "description": "API for submitting images and model predictions, managing labels and AI models, running training/testing evaluation runs, and exposing metrics for object counting workflows."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local development server"
+    }
+  ],
+  "tags": [
+    { "name": "System", "description": "Health and system-level endpoints" },
+    { "name": "Inputs", "description": "Submit images/prompts for inference" },
+    { "name": "Labels", "description": "Manage label (object type) taxonomy" },
+    { "name": "Outputs", "description": "Model prediction outputs (detections/counts)" },
+    { "name": "Models", "description": "CRUD for AI models, training and test runs" },
+    { "name": "Monitoring", "description": "Metrics and Prometheus endpoints" }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Health check",
+        "description": "Return basic API health and connectivity status.",
+        "responses": {
+          "200": {
+            "description": "API healthy",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HealthResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/inputs": {
+      "get": {
+        "tags": ["Inputs"],
+        "summary": "List inputs",
+        "description": "Return a paginated list of input records (images + prompts).",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 25 } },
+          { "name": "is_test", "in": "query", "schema": { "type": "boolean" }, "description": "Filter by test flag" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of inputs",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PaginatedInputs" }
+              }
+            }
+          },
+          "400": { "description": "Invalid parameters", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      },
+      "post": {
+        "tags": ["Inputs"],
+        "summary": "Create an input",
+        "description": "Submit a new input (image_path required). Validation is performed on image path and shot flags.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Input" },
+              "example": { "prompt": "Count cars", "image_path": "http://example.com/image.jpg", "is_few_shot": false }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Input" } } } },
+          "422": { "description": "Validation error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      }
+    },
+
+    "/api/v1/inputs/{input_id}": {
+      "get": {
+        "tags": ["Inputs"],
+        "summary": "Get an input",
+        "parameters": [{ "name": "input_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Input returned", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Input" } } } },
+          "404": { "description": "Not found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      },
+      "put": {
+        "tags": ["Inputs"],
+        "summary": "Update an input",
+        "parameters": [{ "name": "input_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Input" } } } },
+        "responses": {
+          "200": { "description": "Updated input", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Input" } } } },
+          "404": { "description": "Not found" },
+          "422": { "description": "Validation error" }
+        }
+      },
+      "delete": {
+        "tags": ["Inputs"],
+        "summary": "Delete an input",
+        "parameters": [{ "name": "input_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "204": { "description": "Deleted" }, "404": { "description": "Not found" } }
+      }
+    },
+
+    "/api/v1/labels": {
+      "get": {
+        "tags": ["Labels"],
+        "summary": "List labels",
+        "description": "Return a paginated list of labels (object types).",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 50 } }
+        ],
+        "responses": {
+          "200": { "description": "Label list", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedLabels" } } } }
+        }
+      },
+      "post": {
+        "tags": ["Labels"],
+        "summary": "Create a label",
+        "description": "Create a new label. Safety checks are applied (blacklist). To allow generic labels like 'vehicles', pass context on server side (not recommended).",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Label" }, "example": { "name": "car", "description": "A road vehicle" } } }
+        },
+        "responses": {
+          "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Label" } } } },
+          "422": { "description": "Validation or safety rejection", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      }
+    },
+
+    "/api/v1/labels/{label_id}": {
+      "get": {
+        "tags": ["Labels"],
+        "summary": "Get a label by id",
+        "parameters": [{ "name": "label_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Label object", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Label" } } } }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "tags": ["Labels"],
+        "summary": "Update a label",
+        "parameters": [{ "name": "label_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Label" } } } },
+        "responses": { "200": { "description": "Updated label" }, "404": { "description": "Not found" }, "422": { "description": "Validation error" } }
+      },
+      "delete": {
+        "tags": ["Labels"],
+        "summary": "Delete a label",
+        "parameters": [{ "name": "label_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "204": { "description": "Deleted" }, "404": { "description": "Not found" } }
+      }
+    },
+
+    "/api/v1/outputs": {
+      "get": {
+        "tags": ["Outputs"],
+        "summary": "List outputs",
+        "description": "Return prediction outputs with optional filters.",
+        "parameters": [
+          { "name": "ai_model_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "label_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "input_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 50 } }
+        ],
+        "responses": { "200": { "description": "Outputs list", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PaginatedOutputs" } } } } }
+      },
+      "post": {
+        "tags": ["Outputs"],
+        "summary": "Create an output record",
+        "description": "Submit a model prediction for an input (predicted_count, confidence, fk references required).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Output" },
+              "example": { "input_id": "uuid-input", "label_id": "uuid-label", "ai_model_id": "uuid-model", "predicted_count": 5, "confidence": 0.92 }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created output", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Output" } } } },
+          "422": { "description": "Validation error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      }
+    },
+
+    "/api/v1/outputs/{output_id}": {
+      "get": {
+        "tags": ["Outputs"],
+        "summary": "Get an output by id",
+        "parameters": [{ "name": "output_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Output object", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Output" } } } }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "tags": ["Outputs"],
+        "summary": "Update an output",
+        "parameters": [{ "name": "output_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Output" } } } },
+        "responses": { "200": { "description": "Updated output" }, "404": { "description": "Not found" }, "422": { "description": "Validation error" } }
+      },
+      "delete": {
+        "tags": ["Outputs"],
+        "summary": "Delete an output",
+        "parameters": [{ "name": "output_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "204": { "description": "Deleted" }, "404": { "description": "Not found" } }
+      }
+    },
+
+    "/api/v1/models": {
+      "get": {
+        "tags": ["Models"],
+        "summary": "List AI models",
+        "responses": { "200": { "description": "List of models", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/AIModel" } } } } } }
+      },
+      "post": {
+        "tags": ["Models"],
+        "summary": "Create AI model",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AIModel" } } } },
+        "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AIModel" } } } }, "422": { "description": "Validation error" } }
+      }
+    },
+
+    "/api/v1/models/{model_id}": {
+      "get": {
+        "tags": ["Models"],
+        "summary": "Get AI model by id",
+        "parameters": [{ "name": "model_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "AIModel", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AIModel" } } } }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "tags": ["Models"],
+        "summary": "Update AI model",
+        "parameters": [{ "name": "model_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AIModel" } } } },
+        "responses": { "200": { "description": "Updated" }, "404": { "description": "Not found" }, "422": { "description": "Validation error" } }
+      },
+      "delete": {
+        "tags": ["Models"],
+        "summary": "Delete AI model",
+        "parameters": [{ "name": "model_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "204": { "description": "Deleted" }, "404": { "description": "Not found" } }
+      }
+    },
+
+    "/api/v1/models/{model_id}/train": {
+      "post": {
+        "tags": ["Models"],
+        "summary": "Start a training run (simulated for development)",
+        "parameters": [{ "name": "model_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "dataset": { "type": "string" }, "epochs": { "type": "integer" }, "params": { "type": "object" } } } } } },
+        "responses": { "201": { "description": "Training run recorded", "content": { "application/json": { "schema": { "type": "object", "properties": { "run_id": { "type": "string" }, "metadata": { "type": "object" } } } } } }, "404": { "description": "Model not found" } }
+      }
+    },
+
+    "/api/v1/models/{model_id}/test": {
+      "post": {
+        "tags": ["Models"],
+        "summary": "Submit test results for a model and persist metrics",
+        "description": "Submit per-label metrics and per-input latencies. The server validates referenced IDs and stores ModelLabel and InferencePeriod rows associated to the created EvaluationRun.",
+        "parameters": [{ "name": "model_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dataset": { "type": "string" },
+                  "results": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "label_id": { "type": "string" },
+                        "accuracy": { "type": "number", "format": "float" },
+                        "precision": { "type": "number", "format": "float" },
+                        "recall": { "type": "number", "format": "float" },
+                        "f1_score": { "type": "number", "format": "float" }
+                      }
+                    }
+                  },
+                  "latencies": {
+                    "type": "array",
+                    "items": { "type": "object", "properties": { "input_id": { "type": "string" }, "value": { "type": "number", "format": "float" } } }
+                  },
+                  "metadata": { "type": "object" }
+                }
+              },
+              "example": {
+                "dataset": "testset-v1",
+                "results": [{"label_id": "label-uuid", "accuracy": 0.95, "precision": 0.94, "recall": 0.96, "f1_score": 0.95}],
+                "latencies": [{"input_id": "input-uuid", "value": 0.12}],
+                "metadata": {"notes": "batch test"}
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Test results stored", "content": { "application/json": { "schema": { "type": "object", "properties": { "run_id": { "type": "string" }, "model_labels_inserted": { "type": "integer" }, "latencies_inserted": { "type": "integer" } } } } } }, "422": { "description": "Validation error" }, "404": { "description": "Model not found" } }
+      }
+    },
+
+    "/metrics": {
+      "get": {
+        "tags": ["Monitoring"],
+        "summary": "Prometheus metrics endpoint (text/plain)",
+        "description": "Prometheus scrape endpoint exposing metric families in text format.",
+        "responses": {
+          "200": { "description": "Prometheus metrics (text format)", "content": { "text/plain; version=0.0.4": { "schema": { "type": "string" } } } }
+        }
+      }
+    },
+
+    "/api/v1/metrics/summary": {
+      "get": {
+        "tags": ["Monitoring"],
+        "summary": "JSON metrics summary",
+        "description": "Return aggregated metrics (top labels per model by avg confidence).",
+        "parameters": [{ "name": "top_n_labels", "in": "query", "schema": { "type": "integer", "default": 10 } }],
+        "responses": { "200": { "description": "JSON summary", "content": { "application/json": { "schema": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "object" } } } } } } }
+      }
+    },
+
+    "/api/v1/metrics/query": {
+      "get": {
+        "tags": ["Monitoring"],
+        "summary": "Flexible metrics query",
+        "description": "Query aggregated metrics by filters (approach, ai_model_id, label_id, input_id) and grouping.",
+        "parameters": [
+          { "name": "approach", "in": "query", "schema": { "type": "string" }, "description": "few_shot | zero_shot | none" },
+          { "name": "ai_model_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "label_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "input_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "metric", "in": "query", "schema": { "type": "string", "default": "confidence" }, "description": "confidence | latency | accuracy | precision | recall | f1" },
+          { "name": "agg", "in": "query", "schema": { "type": "string", "default": "avg" }, "description": "avg|min|max|count" },
+          { "name": "group_by", "in": "query", "schema": { "type": "string", "default": "model,label" }, "description": "model | label | input | model,label" }
+        ],
+        "responses": {
+          "200": { "description": "Aggregated metrics in JSON", "content": { "application/json": { "schema": { "type": "object", "properties": { "metric": { "type": "string" }, "agg": { "type": "string" }, "results": { "type": "array", "items": { "type": "object" } } } } } } },
+          "400": { "description": "Invalid parameters", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      }
+    }
+  },
+
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "healthy" },
+          "message": { "type": "string", "example": "AI Object Counting API is running" },
+          "database": { "type": "string", "example": "connected" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      },
+
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" },
+          "errors": { "type": "object", "additionalProperties": true }
+        }
+      },
+
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": { "type": "integer" },
+          "per_page": { "type": "integer" },
+          "total": { "type": "integer" }
+        }
+      },
+
+      "Input": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "prompt": { "type": "string", "description": "Optional textual prompt" },
+          "image_path": { "type": "string", "description": "URL or local path to image" },
+          "violation_count": { "type": "integer", "default": 0 },
+          "is_zero_shot": { "type": "boolean", "default": false },
+          "is_few_shot": { "type": "boolean", "default": false },
+          "is_test": { "type": "boolean", "default": false }
+        },
+        "required": ["image_path"]
+      },
+
+      "Label": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "name": { "type": "string", "description": "Unique label name (e.g. 'car')" },
+          "description": { "type": "string" }
+        },
+        "required": ["name"]
+      },
+
+      "Output": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "input_id": { "type": "string" },
+          "label_id": { "type": "string" },
+          "ai_model_id": { "type": "string" },
+          "predicted_count": { "type": "integer", "minimum": 0 },
+          "corrected_count": { "type": "integer", "minimum": 0 },
+          "confidence": { "type": "number", "format": "float", "minimum": 0.0, "maximum": 1.0 },
+          "bbox": { "type": "string", "description": "JSON string for bounding box or geometry" },
+          "is_human_verified": { "type": "boolean" }
+        },
+        "required": ["input_id", "label_id", "ai_model_id", "predicted_count"]
+      },
+
+      "AIModel": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "name": { "type": "string", "description": "Unique model name" },
+          "description": { "type": "string" }
+        },
+        "required": ["name"]
+      },
+
+      "ModelLabel": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "ai_model_id": { "type": "string" },
+          "label_id": { "type": "string" },
+          "run_id": { "type": "string" },
+          "accuracy": { "type": "number", "format": "float", "minimum": 0.0, "maximum": 1.0 },
+          "precision": { "type": "number", "format": "float", "minimum": 0.0, "maximum": 1.0 },
+          "recall": { "type": "number", "format": "float", "minimum": 0.0, "maximum": 1.0 },
+          "f1_score": { "type": "number", "format": "float", "minimum": 0.0, "maximum": 1.0 }
+        }
+      },
+
+      "InferencePeriod": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "ai_model_id": { "type": "string" },
+          "input_id": { "type": "string" },
+          "run_id": { "type": "string" },
+          "value": { "type": "number", "format": "float", "description": "Latency value (seconds or ms depending on convention)" }
+        }
+      },
+
+      "EvaluationRun": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "ai_model_id": { "type": "string" },
+          "run_type": { "type": "string", "description": "'train'|'test'" },
+          "started_at": { "type": "string", "format": "date-time" },
+          "finished_at": { "type": "string", "format": "date-time" },
+          "metadata": { "type": "string", "description": "JSON/text metadata about the run" }
+        }
+      },
+
+      "PaginatedInputs": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Pagination" },
+          {
+            "type": "object",
+            "properties": {
+              "items": { "type": "array", "items": { "$ref": "#/components/schemas/Input" } }
+            }
+          }
+        ]
+      },
+
+      "PaginatedLabels": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Pagination" },
+          {
+            "type": "object",
+            "properties": {
+              "items": { "type": "array", "items": { "$ref": "#/components/schemas/Label" } }
+            }
+          }
+        ]
+      },
+
+      "PaginatedOutputs": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Pagination" },
+          {
+            "type": "object",
+            "properties": {
+              "items": { "type": "array", "items": { "$ref": "#/components/schemas/Output" } }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

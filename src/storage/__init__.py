@@ -1,17 +1,25 @@
 #!/usr/bin/python3
-"""create a unique Storage instance for the application"""
-from .engine import engine
-from .base_model import BaseModel
-from .inputs import Input
-from .object_types import ObjectType
-from .ouputs import Output
+"""Storage package initializer.
+
+Creates a single `database` Engine instance for the application.
+The module exports:
+ - database: an Engine instance (call database.reload() if you changed DATABASE_URL at runtime)
+ - BaseModel and model classes for convenience (optional)
+"""
 from os import getenv
+from .engine.engine import Engine
+from .base_model import BaseModel, Base
 
+# instantiate Engine
+database = Engine()
 
-# load from database
-db = getenv('OBJ_DETECT_MYSQL_DB')
-if db and getenv('OBJ_DETECT_ENV') != 'test':
-    database = engine.Engine()
-    database.reload()
-else:
-    database = engine.Engine()
+# If user expects session immediately, create session (safe to call multiple times)
+database.reload()
+
+# Expose common models for convenience (optional; can also import from module files)
+from .ai_models import AIModel
+from .inputs import Input
+from .labels import Label
+from .outputs import Output
+from .models_labels import ModelLabel
+from .inference_periods import InferencePeriod
