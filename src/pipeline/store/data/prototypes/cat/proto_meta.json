@@ -1,7 +1,0 @@
-{
-  "label": "cat",
-  "prototype_path": "src/pipeline/store/data/prototypes/cat/prototype.npy",
-  "count": 10,
-  "feature_dim": 3072,
-  "created_at": 1757865945.2142062
-}

@@ -1,7 +1,0 @@
-{
-  "label": "jacket",
-  "prototype_path": "src/pipeline/store/data/prototypes/jacket/prototype.npy",
-  "count": 30,
-  "feature_dim": 3072,
-  "created_at": 1757865945.1890006
-}

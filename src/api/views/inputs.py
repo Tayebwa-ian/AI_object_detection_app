@@ -103,20 +103,12 @@ class InputList(Resource):
 
         Example JSON (simple create):
         {
-            "prompt": "Count cars",
+            "prompt": "cars", # label to predict
             "image_path": "/tmp/img.jpg",
-            "is_few_shot": false
+            "is_few_shot": false # if false run zero shot
+            "candidate_labels": ["bicycle","car"],  # for zero_shot
         }
 
-        Example JSON (run classification with user few-shot):
-        {
-            "prompt": "Check this photo for bicycles",
-            "image_path": "/tmp/img.jpg",
-            "mode": "user_few_shot",                 # or user_zero_shot
-            "candidate_labels": ["bicycle","car"],  # for zero_shot
-            "store_root": "/tmp/out",
-            "classifier_path": null
-        }
         ---
         tags:
           - Inputs
@@ -130,18 +122,12 @@ class InputList(Resource):
           422:
             description: validation / safety error
         """
-        raw = request.get_json(force=True, silent=True)
-        if not raw:
+        data = request.get_json(force=True, silent=True)
+        if not data:
             return {"message": "Invalid or missing JSON body"}, 400
 
-        # basic validation
-        try:
-            data = input_schema.load(raw)
-        except ValidationError as e:
-            return {"message": "validation error", "errors": e.messages}, 422
-
         # Safety check on prompt (also candidate_labels below)
-        prompt = raw.get("prompt") or ""
+        prompt = data.get("prompt") or ""
         if _contains_disallowed(prompt):
             return {"message": "prompt contains disallowed content"}, 422
 
@@ -156,7 +142,7 @@ class InputList(Resource):
         sess.flush()  # obtain id
 
         # If caller wants immediate classification/run
-        mode = raw.get("mode")  # expected 'user_few_shot' or 'user_zero_shot' or None
+        mode = data.get("mode")  # expected 'user_few_shot' or 'user_zero_shot' or None
         predictions = []
         persisted_latencies = []
         run_info = None
@@ -168,9 +154,9 @@ class InputList(Resource):
 
             try:
                 # Prepare orchestrator args
-                store_root = raw.get("store_root")
-                classifier_path = raw.get("classifier_path")
-                candidate_labels = raw.get("candidate_labels")
+                store_root = data.get("store_root")
+                classifier_path = data.get("classifier_path")
+                candidate_labels = data.get("candidate_labels")
 
                 # If mode is zero-shot and no candidate_labels provided, attempt to use DB labels
                 if mode == "user_zero_shot" and not candidate_labels:
@@ -189,7 +175,7 @@ class InputList(Resource):
                         image_path=new_input.image_path,
                         store_root=store_root or None,
                         classifier_path=classifier_path or None,
-                        few_shot_kwargs=raw.get("few_shot_kwargs"),
+                        few_shot_kwargs=data.get("few_shot_kwargs"),
                         verbose=False
                     )
                 elif mode == "user_zero_shot":
@@ -197,10 +183,10 @@ class InputList(Resource):
                         mode="user_zero_shot",
                         image_path=new_input.image_path,
                         candidate_labels=candidate_labels or [],
-                        prototypes_store=raw.get("prototypes_store"),
-                        use_clip=raw.get("use_clip", True),
-                        use_prototypes=raw.get("use_prototypes", True),
-                        zero_shot_kwargs=raw.get("zero_shot_kwargs"),
+                        prototypes_store=data.get("prototypes_store"),
+                        use_clip=data.get("use_clip", True),
+                        use_prototypes=data.get("use_prototypes", True),
+                        zero_shot_kwargs=data.get("zero_shot_kwargs"),
                         verbose=False
                     )
                 else:
@@ -417,12 +403,12 @@ class InputSingle(Resource):
         if not obj:
             return {"message": "not found"}, 404
 
-        raw = request.get_json(force=True, silent=True)
-        if not raw:
+        data = request.get_json(force=True, silent=True)
+        if not data:
             return {"message": "invalid JSON"}, 400
 
         try:
-            data = input_schema.load(raw, partial=True)
+            data = input_schema.load(data, partial=True)
         except ValidationError as e:
             return {"message": "validation error", "errors": e.messages}, 422
 
