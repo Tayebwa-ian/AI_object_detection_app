@@ -21,6 +21,7 @@ from flask import request, jsonify, make_response
 from marshmallow import ValidationError, EXCLUDE
 import json
 import traceback
+import clip
 
 from src import storage
 from src.storage.inputs import Input
@@ -29,6 +30,7 @@ from src.storage.outputs import Output
 from src.storage.ai_models import AIModel
 from src.storage.models_labels import ModelLabel
 from src.storage.inference_periods import InferencePeriod
+from src.pipeline.config import CLIP_MODEL, DEVICE
 
 # Optional evaluation run model (may not exist in older schemas)
 try:
@@ -190,15 +192,19 @@ class InputList(Resource):
                         image_path=image_path,
                     )
                 elif not mode: # run zero shot if true
+                    clip_model, clip_preprocess = clip.load(CLIP_MODEL, device=DEVICE)
                     res = orchestrate(
                         mode="user_zero_shot",
-                        image_path=new_input.image_path,
-                        candidate_labels=candidate_labels or [],
-                        prototypes_store=data.get("prototypes_store"),
-                        use_clip=data.get("use_clip", True),
-                        use_prototypes=data.get("use_prototypes", True),
-                        zero_shot_kwargs=data.get("zero_shot_kwargs"),
-                        verbose=False
+                        segmentation_model_name="sam",
+                        feature_extractor_name="resnet",
+                        labels=data["prompt"],
+                        candidate_labels=candidate_labels,
+                        clip_model=clip_model,
+                        clip_preprocess=clip_preprocess,
+                        clip_device=DEVICE,
+                        image_path=image_path,
+                        use_clip=True,
+                        use_prototypes=True,
                     )
 
                 # res is expected to be a dict. We support a few common shapes:

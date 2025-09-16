@@ -1,0 +1,9 @@
+{
+  "source_image": "src/synthimage/generated_images/phone/phone_9562c4c4-fcdb-4872-8e3b-c0fb8e3a0f2b.png",
+  "feature_meta": {
+    "model_name": "efficientnet_b0",
+    "device": "cpu",
+    "feature_dim": 1280,
+    "inference_time": 0.07716107368469238
+  }
+}

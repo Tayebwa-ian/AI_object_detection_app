@@ -1,24 +1,24 @@
 {
-  "run_id": "2b633c5e-af9a-4120-b535-d033e725eeba",
+  "run_id": "8fc567cb-e845-4116-bd7c-7893827dada4",
   "mode": "user_zero_shot",
   "result": {
     "summary": {
-      "run_id": "b4ea87f5-2556-4223-966d-63063f1528b9",
+      "run_id": "e22635e5-b94e-498a-9c87-a05abc44c1aa",
       "counts": {
-        "dog": 4,
+        "dog": 2,
         "cat": 4,
-        "phone": 4,
-        "jacket": 4
+        "jacket": 3,
+        "phone": 1
       }
     },
     "segments": [
       {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0001.png",
+        "segment_path": "src/pipeline/store/segments/sam_10025dde-3027-45e5-b15e-6a45b1e91885/segment_0000.png",
         "feature_meta": {
           "model_name": "efficientnet_b0",
           "device": "cpu",
           "feature_dim": 1280,
-          "inference_time": 0.6039443016052246
+          "inference_time": 0.2444462776184082
         },
         "clip": {
           "labels": [
@@ -29,28 +29,28 @@
             "jacket"
           ],
           "probs": [
-            0.19333666563034058,
-            0.19627061486244202,
-            0.20701594650745392,
-            0.20578928291797638,
-            0.1975874900817871
+            0.19308772683143616,
+            0.19614803791046143,
+            0.2073940932750702,
+            0.20595981180667877,
+            0.19741034507751465
           ],
           "predicted": "dog",
-          "top_prob": 0.20701594650745392,
-          "inference_time": 2.1949970722198486
+          "top_prob": 0.2073940932750702,
+          "inference_time": 0.9393432140350342
         },
         "prototype_preds": null,
         "chosen_label": "dog",
         "chosen_source": "clip",
-        "chosen_score": 0.20701594650745392
+        "chosen_score": 0.2073940932750702
       },
       {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0002.png",
+        "segment_path": "src/pipeline/store/segments/sam_10025dde-3027-45e5-b15e-6a45b1e91885/segment_0001.png",
         "feature_meta": {
           "model_name": "efficientnet_b0",
           "device": "cpu",
           "feature_dim": 1280,
-          "inference_time": 0.1617717742919922
+          "inference_time": 0.10952305793762207
         },
         "clip": {
           "labels": [
@@ -61,28 +61,60 @@
             "jacket"
           ],
           "probs": [
-            0.1961154192686081,
-            0.19829529523849487,
-            0.20244604349136353,
-            0.2019972950220108,
-            0.2011459767818451
+            0.19366338849067688,
+            0.19637607038021088,
+            0.20431233942508698,
+            0.2065219134092331,
+            0.19912631809711456
+          ],
+          "predicted": "cat",
+          "top_prob": 0.2065219134092331,
+          "inference_time": 0.6892168521881104
+        },
+        "prototype_preds": null,
+        "chosen_label": "cat",
+        "chosen_source": "clip",
+        "chosen_score": 0.2065219134092331
+      },
+      {
+        "segment_path": "src/pipeline/store/segments/sam_10025dde-3027-45e5-b15e-6a45b1e91885/segment_0002.png",
+        "feature_meta": {
+          "model_name": "efficientnet_b0",
+          "device": "cpu",
+          "feature_dim": 1280,
+          "inference_time": 0.10066699981689453
+        },
+        "clip": {
+          "labels": [
+            "car",
+            "phone",
+            "dog",
+            "cat",
+            "jacket"
+          ],
+          "probs": [
+            0.198362797498703,
+            0.20077010989189148,
+            0.20092156529426575,
+            0.19930091500282288,
+            0.2006445825099945
           ],
           "predicted": "dog",
-          "top_prob": 0.20244604349136353,
-          "inference_time": 1.148988962173462
+          "top_prob": 0.20092156529426575,
+          "inference_time": 0.817591667175293
         },
         "prototype_preds": null,
         "chosen_label": "dog",
         "chosen_source": "clip",
-        "chosen_score": 0.20244604349136353
+        "chosen_score": 0.20092156529426575
       },
       {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0003.png",
+        "segment_path": "src/pipeline/store/segments/sam_10025dde-3027-45e5-b15e-6a45b1e91885/segment_0003.png",
         "feature_meta": {
           "model_name": "efficientnet_b0",
           "device": "cpu",
           "feature_dim": 1280,
-          "inference_time": 0.15895628929138184
+          "inference_time": 0.09277772903442383
         },
         "clip": {
           "labels": [
@@ -93,28 +125,28 @@
             "jacket"
           ],
           "probs": [
-            0.19346995651721954,
-            0.19534701108932495,
-            0.20476827025413513,
-            0.20932142436504364,
-            0.19709327816963196
+            0.1935136467218399,
+            0.19535645842552185,
+            0.20468974113464355,
+            0.2091647833585739,
+            0.1972753256559372
           ],
           "predicted": "cat",
-          "top_prob": 0.20932142436504364,
-          "inference_time": 0.9683477878570557
+          "top_prob": 0.2091647833585739,
+          "inference_time": 0.5838015079498291
         },
         "prototype_preds": null,
         "chosen_label": "cat",
         "chosen_source": "clip",
-        "chosen_score": 0.20932142436504364
+        "chosen_score": 0.2091647833585739
       },
       {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0004.png",
+        "segment_path": "src/pipeline/store/segments/sam_10025dde-3027-45e5-b15e-6a45b1e91885/segment_0004.png",
         "feature_meta": {
           "model_name": "efficientnet_b0",
           "device": "cpu",
           "feature_dim": 1280,
-          "inference_time": 0.10956168174743652
+          "inference_time": 0.07573223114013672
         },
         "clip": {
           "labels": [
@@ -125,60 +157,28 @@
             "jacket"
           ],
           "probs": [
-            0.198390930891037,
-            0.20182561874389648,
-            0.2007279247045517,
-            0.19939424097537994,
-            0.19966134428977966
-          ],
-          "predicted": "phone",
-          "top_prob": 0.20182561874389648,
-          "inference_time": 0.9268295764923096
-        },
-        "prototype_preds": null,
-        "chosen_label": "phone",
-        "chosen_source": "clip",
-        "chosen_score": 0.20182561874389648
-      },
-      {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0005.png",
-        "feature_meta": {
-          "model_name": "efficientnet_b0",
-          "device": "cpu",
-          "feature_dim": 1280,
-          "inference_time": 0.11261796951293945
-        },
-        "clip": {
-          "labels": [
-            "car",
-            "phone",
-            "dog",
-            "cat",
-            "jacket"
-          ],
-          "probs": [
-            0.19385474920272827,
-            0.19656796753406525,
-            0.20391987264156342,
-            0.20895051956176758,
-            0.19670693576335907
+            0.19453072547912598,
+            0.1964755654335022,
+            0.20399680733680725,
+            0.20617780089378357,
+            0.19881902635097504
           ],
           "predicted": "cat",
-          "top_prob": 0.20895051956176758,
-          "inference_time": 0.8132896423339844
+          "top_prob": 0.20617780089378357,
+          "inference_time": 0.6533029079437256
         },
         "prototype_preds": null,
         "chosen_label": "cat",
         "chosen_source": "clip",
-        "chosen_score": 0.20895051956176758
+        "chosen_score": 0.20617780089378357
       },
       {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0006.png",
+        "segment_path": "src/pipeline/store/segments/sam_10025dde-3027-45e5-b15e-6a45b1e91885/segment_0005.png",
         "feature_meta": {
           "model_name": "efficientnet_b0",
           "device": "cpu",
           "feature_dim": 1280,
-          "inference_time": 0.09685158729553223
+          "inference_time": 0.09125566482543945
         },
         "clip": {
           "labels": [
@@ -189,156 +189,28 @@
             "jacket"
           ],
           "probs": [
-            0.19703154265880585,
-            0.20009101927280426,
-            0.20113340020179749,
-            0.20075611770153046,
-            0.20098797976970673
-          ],
-          "predicted": "dog",
-          "top_prob": 0.20113340020179749,
-          "inference_time": 0.7622215747833252
-        },
-        "prototype_preds": null,
-        "chosen_label": "dog",
-        "chosen_source": "clip",
-        "chosen_score": 0.20113340020179749
-      },
-      {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0007.png",
-        "feature_meta": {
-          "model_name": "efficientnet_b0",
-          "device": "cpu",
-          "feature_dim": 1280,
-          "inference_time": 0.11068010330200195
-        },
-        "clip": {
-          "labels": [
-            "car",
-            "phone",
-            "dog",
-            "cat",
-            "jacket"
-          ],
-          "probs": [
-            0.1962544023990631,
-            0.20016196370124817,
-            0.2006841003894806,
-            0.20054103434085846,
-            0.20235852897167206
-          ],
-          "predicted": "jacket",
-          "top_prob": 0.20235852897167206,
-          "inference_time": 0.6643831729888916
-        },
-        "prototype_preds": null,
-        "chosen_label": "jacket",
-        "chosen_source": "clip",
-        "chosen_score": 0.20235852897167206
-      },
-      {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0008.png",
-        "feature_meta": {
-          "model_name": "efficientnet_b0",
-          "device": "cpu",
-          "feature_dim": 1280,
-          "inference_time": 0.07978963851928711
-        },
-        "clip": {
-          "labels": [
-            "car",
-            "phone",
-            "dog",
-            "cat",
-            "jacket"
-          ],
-          "probs": [
-            0.1969626098871231,
-            0.2010652720928192,
-            0.20036673545837402,
-            0.20021677017211914,
-            0.20138858258724213
-          ],
-          "predicted": "jacket",
-          "top_prob": 0.20138858258724213,
-          "inference_time": 0.5962028503417969
-        },
-        "prototype_preds": null,
-        "chosen_label": "jacket",
-        "chosen_source": "clip",
-        "chosen_score": 0.20138858258724213
-      },
-      {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0009.png",
-        "feature_meta": {
-          "model_name": "efficientnet_b0",
-          "device": "cpu",
-          "feature_dim": 1280,
-          "inference_time": 0.0995628833770752
-        },
-        "clip": {
-          "labels": [
-            "car",
-            "phone",
-            "dog",
-            "cat",
-            "jacket"
-          ],
-          "probs": [
-            0.19750140607357025,
-            0.2018667459487915,
-            0.20053443312644958,
-            0.20068199932575226,
-            0.1994154304265976
-          ],
-          "predicted": "phone",
-          "top_prob": 0.2018667459487915,
-          "inference_time": 0.6852550506591797
-        },
-        "prototype_preds": null,
-        "chosen_label": "phone",
-        "chosen_source": "clip",
-        "chosen_score": 0.2018667459487915
-      },
-      {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0010.png",
-        "feature_meta": {
-          "model_name": "efficientnet_b0",
-          "device": "cpu",
-          "feature_dim": 1280,
-          "inference_time": 0.08020448684692383
-        },
-        "clip": {
-          "labels": [
-            "car",
-            "phone",
-            "dog",
-            "cat",
-            "jacket"
-          ],
-          "probs": [
-            0.1977992206811905,
-            0.20053693652153015,
-            0.200425386428833,
-            0.20100747048854828,
-            0.20023095607757568
+            0.19382315874099731,
+            0.1967162936925888,
+            0.2038162797689438,
+            0.20876242220401764,
+            0.19688184559345245
           ],
           "predicted": "cat",
-          "top_prob": 0.20100747048854828,
-          "inference_time": 0.6425249576568604
+          "top_prob": 0.20876242220401764,
+          "inference_time": 0.8255605697631836
         },
         "prototype_preds": null,
         "chosen_label": "cat",
         "chosen_source": "clip",
-        "chosen_score": 0.20100747048854828
+        "chosen_score": 0.20876242220401764
       },
       {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0011.png",
+        "segment_path": "src/pipeline/store/segments/sam_10025dde-3027-45e5-b15e-6a45b1e91885/segment_0006.png",
         "feature_meta": {
           "model_name": "efficientnet_b0",
           "device": "cpu",
           "feature_dim": 1280,
-          "inference_time": 0.08615827560424805
+          "inference_time": 0.15135812759399414
         },
         "clip": {
           "labels": [
@@ -349,60 +221,28 @@
             "jacket"
           ],
           "probs": [
-            0.19774243235588074,
-            0.20002169907093048,
-            0.2011765092611313,
-            0.20114712417125702,
-            0.19991230964660645
-          ],
-          "predicted": "dog",
-          "top_prob": 0.2011765092611313,
-          "inference_time": 0.6189706325531006
-        },
-        "prototype_preds": null,
-        "chosen_label": "dog",
-        "chosen_source": "clip",
-        "chosen_score": 0.2011765092611313
-      },
-      {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0012.png",
-        "feature_meta": {
-          "model_name": "efficientnet_b0",
-          "device": "cpu",
-          "feature_dim": 1280,
-          "inference_time": 0.08659648895263672
-        },
-        "clip": {
-          "labels": [
-            "car",
-            "phone",
-            "dog",
-            "cat",
-            "jacket"
-          ],
-          "probs": [
-            0.1979665607213974,
-            0.20031024515628815,
-            0.20057202875614166,
-            0.20007136464118958,
-            0.2010798454284668
+            0.1990310549736023,
+            0.2004246860742569,
+            0.1999654471874237,
+            0.198847234249115,
+            0.2017316371202469
           ],
           "predicted": "jacket",
-          "top_prob": 0.2010798454284668,
-          "inference_time": 0.7044730186462402
+          "top_prob": 0.2017316371202469,
+          "inference_time": 0.6977443695068359
         },
         "prototype_preds": null,
         "chosen_label": "jacket",
         "chosen_source": "clip",
-        "chosen_score": 0.2010798454284668
+        "chosen_score": 0.2017316371202469
       },
       {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0013.png",
+        "segment_path": "src/pipeline/store/segments/sam_10025dde-3027-45e5-b15e-6a45b1e91885/segment_0007.png",
         "feature_meta": {
           "model_name": "efficientnet_b0",
           "device": "cpu",
           "feature_dim": 1280,
-          "inference_time": 0.08004927635192871
+          "inference_time": 0.09926676750183105
         },
         "clip": {
           "labels": [
@@ -413,28 +253,28 @@
             "jacket"
           ],
           "probs": [
-            0.1971219927072525,
-            0.19891756772994995,
-            0.20106983184814453,
-            0.20125217735767365,
-            0.20163848996162415
+            0.19884414970874786,
+            0.1999487727880478,
+            0.20019690692424774,
+            0.19943156838417053,
+            0.20157858729362488
           ],
           "predicted": "jacket",
-          "top_prob": 0.20163848996162415,
-          "inference_time": 0.6060018539428711
+          "top_prob": 0.20157858729362488,
+          "inference_time": 0.7025036811828613
         },
         "prototype_preds": null,
         "chosen_label": "jacket",
         "chosen_source": "clip",
-        "chosen_score": 0.20163848996162415
+        "chosen_score": 0.20157858729362488
       },
       {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0014.png",
+        "segment_path": "src/pipeline/store/segments/sam_10025dde-3027-45e5-b15e-6a45b1e91885/segment_0008.png",
         "feature_meta": {
           "model_name": "efficientnet_b0",
           "device": "cpu",
           "feature_dim": 1280,
-          "inference_time": 0.11031699180603027
+          "inference_time": 0.10155344009399414
         },
         "clip": {
           "labels": [
@@ -445,28 +285,28 @@
             "jacket"
           ],
           "probs": [
-            0.19804178178310394,
-            0.20051291584968567,
-            0.2009865790605545,
-            0.2010938972234726,
-            0.1993648111820221
+            0.19861289858818054,
+            0.20058578252792358,
+            0.20027151703834534,
+            0.1988411843776703,
+            0.20168855786323547
           ],
-          "predicted": "cat",
-          "top_prob": 0.2010938972234726,
-          "inference_time": 0.5791020393371582
+          "predicted": "jacket",
+          "top_prob": 0.20168855786323547,
+          "inference_time": 0.6236436367034912
         },
         "prototype_preds": null,
-        "chosen_label": "cat",
+        "chosen_label": "jacket",
         "chosen_source": "clip",
-        "chosen_score": 0.2010938972234726
+        "chosen_score": 0.20168855786323547
       },
       {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0015.png",
+        "segment_path": "src/pipeline/store/segments/sam_10025dde-3027-45e5-b15e-6a45b1e91885/segment_0009.png",
         "feature_meta": {
           "model_name": "efficientnet_b0",
           "device": "cpu",
           "feature_dim": 1280,
-          "inference_time": 0.08232760429382324
+          "inference_time": 0.07787322998046875
         },
         "clip": {
           "labels": [
@@ -477,68 +317,36 @@
             "jacket"
           ],
           "probs": [
-            0.19711963832378387,
-            0.20161664485931396,
-            0.20043650269508362,
-            0.2003367692232132,
-            0.20049051940441132
+            0.1975795179605484,
+            0.20129212737083435,
+            0.20045030117034912,
+            0.19971762597560883,
+            0.2009604126214981
           ],
           "predicted": "phone",
-          "top_prob": 0.20161664485931396,
-          "inference_time": 0.6834616661071777
+          "top_prob": 0.20129212737083435,
+          "inference_time": 0.6743330955505371
         },
         "prototype_preds": null,
         "chosen_label": "phone",
         "chosen_source": "clip",
-        "chosen_score": 0.20161664485931396
-      },
-      {
-        "segment_path": "segments/b97ea519-775b-431b-82a7-ac87127d38bd/segment_0016.png",
-        "feature_meta": {
-          "model_name": "efficientnet_b0",
-          "device": "cpu",
-          "feature_dim": 1280,
-          "inference_time": 0.08487248420715332
-        },
-        "clip": {
-          "labels": [
-            "car",
-            "phone",
-            "dog",
-            "cat",
-            "jacket"
-          ],
-          "probs": [
-            0.19736482203006744,
-            0.2014562338590622,
-            0.20080487430095673,
-            0.2006111890077591,
-            0.19976283609867096
-          ],
-          "predicted": "phone",
-          "top_prob": 0.2014562338590622,
-          "inference_time": 0.6501989364624023
-        },
-        "prototype_preds": null,
-        "chosen_label": "phone",
-        "chosen_source": "clip",
-        "chosen_score": 0.2014562338590622
+        "chosen_score": 0.20129212737083435
       }
     ],
     "metadata": {
-      "run_id": "b4ea87f5-2556-4223-966d-63063f1528b9",
+      "run_id": "e22635e5-b94e-498a-9c87-a05abc44c1aa",
       "segmenter": "SAM-VIT_B",
       "feature_extractor": "efficientnet_b0",
       "clip_model": "CLIP",
-      "inference_time": 373.37455797195435,
+      "inference_time": 112.46154594421387,
       "times": {
-        "segmentation": 357.4062829017639,
-        "resnet_per_segment_avg": 0.1343490332365036,
-        "clip_per_segment_avg": 0.8636388927698135,
+        "segmentation": 103.78711438179016,
+        "resnet_per_segment_avg": 0.11475038528442383,
+        "clip_per_segment_avg": 0.7526535749435425,
         "prototype_per_segment_avg": null
       },
-      "num_segments": 16,
-      "avg_confidence_clip": 0.20283599384129047,
+      "num_segments": 10,
+      "avg_confidence_clip": 0.20452334880828857,
       "avg_confidence_prototype": null
     }
   }

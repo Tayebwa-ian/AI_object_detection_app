@@ -1,17 +1,17 @@
 {
-  "run_id": "9df7acfa-3e98-4aa5-be3d-2a079d3ee6be",
+  "run_id": "de998376-5630-4c9d-8d68-1227d090308a",
   "mode": "user_few_shot",
   "result": {
     "segments": [
       {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0001.png",
+        "segment_path": "src/pipeline/store/segments/sam_214b8073-c23b-4246-af8e-dbbf7ae19c0d/segment_0000.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.6299505233764648
+          "inference_time": 0.7062547206878662
         },
         "classifier_pred": {
           "label": null,
@@ -21,14 +21,14 @@
         "prototype_preds": null
       },
       {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0002.png",
+        "segment_path": "src/pipeline/store/segments/sam_214b8073-c23b-4246-af8e-dbbf7ae19c0d/segment_0001.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.8632662296295166
+          "inference_time": 0.5081868171691895
         },
         "classifier_pred": {
           "label": null,
@@ -38,14 +38,14 @@
         "prototype_preds": null
       },
       {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0003.png",
+        "segment_path": "src/pipeline/store/segments/sam_214b8073-c23b-4246-af8e-dbbf7ae19c0d/segment_0002.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.49074578285217285
+          "inference_time": 0.48143625259399414
         },
         "classifier_pred": {
           "label": null,
@@ -55,14 +55,14 @@
         "prototype_preds": null
       },
       {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0004.png",
+        "segment_path": "src/pipeline/store/segments/sam_214b8073-c23b-4246-af8e-dbbf7ae19c0d/segment_0003.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.49596524238586426
+          "inference_time": 0.48538923263549805
         },
         "classifier_pred": {
           "label": null,
@@ -72,14 +72,14 @@
         "prototype_preds": null
       },
       {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0005.png",
+        "segment_path": "src/pipeline/store/segments/sam_214b8073-c23b-4246-af8e-dbbf7ae19c0d/segment_0004.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.49758076667785645
+          "inference_time": 0.5524899959564209
         },
         "classifier_pred": {
           "label": null,
@@ -89,14 +89,14 @@
         "prototype_preds": null
       },
       {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0006.png",
+        "segment_path": "src/pipeline/store/segments/sam_214b8073-c23b-4246-af8e-dbbf7ae19c0d/segment_0005.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.6614987850189209
+          "inference_time": 0.5808467864990234
         },
         "classifier_pred": {
           "label": null,
@@ -106,14 +106,14 @@
         "prototype_preds": null
       },
       {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0007.png",
+        "segment_path": "src/pipeline/store/segments/sam_214b8073-c23b-4246-af8e-dbbf7ae19c0d/segment_0006.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.40834689140319824
+          "inference_time": 0.5222635269165039
         },
         "classifier_pred": {
           "label": null,
@@ -123,14 +123,14 @@
         "prototype_preds": null
       },
       {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0008.png",
+        "segment_path": "src/pipeline/store/segments/sam_214b8073-c23b-4246-af8e-dbbf7ae19c0d/segment_0007.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.3928213119506836
+          "inference_time": 0.5100240707397461
         },
         "classifier_pred": {
           "label": null,
@@ -140,14 +140,14 @@
         "prototype_preds": null
       },
       {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0009.png",
+        "segment_path": "src/pipeline/store/segments/sam_214b8073-c23b-4246-af8e-dbbf7ae19c0d/segment_0008.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.3639540672302246
+          "inference_time": 0.44930267333984375
         },
         "classifier_pred": {
           "label": null,
@@ -157,116 +157,14 @@
         "prototype_preds": null
       },
       {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0010.png",
+        "segment_path": "src/pipeline/store/segments/sam_214b8073-c23b-4246-af8e-dbbf7ae19c0d/segment_0009.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.40286731719970703
-        },
-        "classifier_pred": {
-          "label": null,
-          "score": 0.0,
-          "source": null
-        },
-        "prototype_preds": null
-      },
-      {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0011.png",
-        "feature_meta": {
-          "model_name": "resnet50",
-          "device": "cpu",
-          "feature_dim": 3072,
-          "tta": true,
-          "tta_augments": 2,
-          "inference_time": 0.3958852291107178
-        },
-        "classifier_pred": {
-          "label": null,
-          "score": 0.0,
-          "source": null
-        },
-        "prototype_preds": null
-      },
-      {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0012.png",
-        "feature_meta": {
-          "model_name": "resnet50",
-          "device": "cpu",
-          "feature_dim": 3072,
-          "tta": true,
-          "tta_augments": 2,
-          "inference_time": 0.44641566276550293
-        },
-        "classifier_pred": {
-          "label": null,
-          "score": 0.0,
-          "source": null
-        },
-        "prototype_preds": null
-      },
-      {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0013.png",
-        "feature_meta": {
-          "model_name": "resnet50",
-          "device": "cpu",
-          "feature_dim": 3072,
-          "tta": true,
-          "tta_augments": 2,
-          "inference_time": 0.4220304489135742
-        },
-        "classifier_pred": {
-          "label": null,
-          "score": 0.0,
-          "source": null
-        },
-        "prototype_preds": null
-      },
-      {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0014.png",
-        "feature_meta": {
-          "model_name": "resnet50",
-          "device": "cpu",
-          "feature_dim": 3072,
-          "tta": true,
-          "tta_augments": 2,
-          "inference_time": 0.38909125328063965
-        },
-        "classifier_pred": {
-          "label": null,
-          "score": 0.0,
-          "source": null
-        },
-        "prototype_preds": null
-      },
-      {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0015.png",
-        "feature_meta": {
-          "model_name": "resnet50",
-          "device": "cpu",
-          "feature_dim": 3072,
-          "tta": true,
-          "tta_augments": 2,
-          "inference_time": 0.4084506034851074
-        },
-        "classifier_pred": {
-          "label": null,
-          "score": 0.0,
-          "source": null
-        },
-        "prototype_preds": null
-      },
-      {
-        "segment_path": "segments/c8ac6327-ee39-46d4-8a6e-514c3f218fc8/segment_0016.png",
-        "feature_meta": {
-          "model_name": "resnet50",
-          "device": "cpu",
-          "feature_dim": 3072,
-          "tta": true,
-          "tta_augments": 2,
-          "inference_time": 0.3565206527709961
+          "inference_time": 0.6059367656707764
         },
         "classifier_pred": {
           "label": null,
@@ -278,12 +176,12 @@
     ],
     "counts": {},
     "metadata": {
-      "run_id": "3388149b-6735-41bf-a14a-c8a84a9e627b",
+      "run_id": "492fb857-3919-46b3-b985-9c7c88a46408",
       "segmentation_model": "SAM-VIT_B",
       "feature_model": "resnet50",
-      "num_segments": 16,
-      "elapsed_time": 390.62698221206665,
-      "avg_feature_time": 0.4765990376472473,
+      "num_segments": 10,
+      "elapsed_time": 117.81001710891724,
+      "avg_feature_time": 0.540225601196289,
       "avg_classifier_time": null,
       "avg_prototype_time": null
     }

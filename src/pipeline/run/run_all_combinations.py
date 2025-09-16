@@ -10,11 +10,9 @@ Covers:
 Results are printed and stored in `output/runs/<run_id>/`.
 """
 
-import os
-import json
 import pprint
 import uuid
-from pathlib import Path
+from .json_pretty_printer import save_json, ensure_dir
 
 import clip
 
@@ -26,16 +24,6 @@ from src.pipeline.config import DEVICE, CLIP_MODEL, DEFAULT_TEST_ROOT
 # -------------------------
 # Helpers
 # -------------------------
-def ensure_dir(path: str):
-    Path(path).mkdir(parents=True, exist_ok=True)
-
-
-def save_json(data, path: str):
-    """Save dict to JSON with pretty formatting."""
-    ensure_dir(os.path.dirname(path))
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
-
 
 def get_clip():
     """Lazy load CLIP with device detection."""
@@ -96,7 +84,6 @@ if __name__ == "__main__":
                             classifier_params={"max_iter": 200} if clf == "logistic" else None,
                             verbose=False,
                         )
-                        pprint.pprint(result)
                         save_json(result, f"{out_root}/{mode}_{feat_extractor}_{clf}/results.json")
 
                 # zero-shot branch
@@ -118,7 +105,6 @@ if __name__ == "__main__":
                         store_root=f"{out_root}/{mode}_{feat_extractor}",
                         verbose=False,
                     )
-                    pprint.pprint(result)
                     save_json(result, f"{out_root}/{mode}_{feat_extractor}/results.json")
 
                 # user image workflows (simulate with example images)

@@ -1,39 +1,39 @@
 {
-  "run_id": "4575aaed-0a42-455e-a9d7-3abe669bc046",
+  "run_id": "86ce3bcf-6555-4db2-919c-063f15e4fd10",
   "mode": "zero_shot",
   "result": {
-    "run_id": "db6b706b-c88b-4c91-91e0-52493784568e",
+    "run_id": "91094dff-99fb-45b2-90f5-9836c8879f4e",
     "metrics": {
       "clip": {
         "overall": {
-          "accuracy": 1.0,
-          "precision": 1.0,
-          "recall": 1.0,
-          "f1": 1.0
+          "accuracy": 0.8333333333333334,
+          "precision": 0.875,
+          "recall": 0.8333333333333333,
+          "f1": 0.8285714285714285
         },
         "per_label": {
           "car": {
             "precision": 1.0,
-            "recall": 1.0,
-            "f1": 1.0,
+            "recall": 0.6666666666666666,
+            "f1": 0.8,
             "support": 3
           },
           "phone": {
-            "precision": 1.0,
+            "precision": 0.75,
             "recall": 1.0,
-            "f1": 1.0,
+            "f1": 0.8571428571428571,
             "support": 3
           },
           "macro avg": {
-            "precision": 1.0,
-            "recall": 1.0,
-            "f1": 1.0,
+            "precision": 0.875,
+            "recall": 0.8333333333333333,
+            "f1": 0.8285714285714285,
             "support": 6
           },
           "weighted avg": {
-            "precision": 1.0,
-            "recall": 1.0,
-            "f1": 1.0,
+            "precision": 0.875,
+            "recall": 0.8333333333333334,
+            "f1": 0.8285714285714286,
             "support": 6
           }
         }
@@ -41,73 +41,73 @@
     },
     "per_sample_results": [
       {
-        "image": "src/synthimage/generated_images/car/car_car_0001_7cbd2662-81e3-4e25-801c-0a44efd2d3c6.png",
+        "image": "src/synthimage/generated_images/car/car_efa41323-f8e2-442d-bc65-a146362c50c7.png",
         "true_label": "car",
         "preds": [
           [
             "clip",
             "car",
-            0.276936411857605
+            0.25727716088294983
           ]
         ],
         "final": "car"
       },
       {
-        "image": "src/synthimage/generated_images/car/car_car_0002_c61e7665-9042-485a-9903-3f8931d5f3ea.png",
+        "image": "src/synthimage/generated_images/car/car_15c99c0b-bfd9-4ba2-ba30-a0e6caa105c1.png",
         "true_label": "car",
         "preds": [
           [
             "clip",
             "car",
-            0.27610599994659424
+            0.2570410668849945
           ]
         ],
         "final": "car"
       },
       {
-        "image": "src/synthimage/generated_images/car/car_car_0003_64c31d3c-8d88-45d3-89e3-c4c672886e5e.png",
+        "image": "src/synthimage/generated_images/car/car_d57e9222-f444-45b1-9ce2-a20cd5e1b2dd.png",
         "true_label": "car",
-        "preds": [
-          [
-            "clip",
-            "car",
-            0.28054124116897583
-          ]
-        ],
-        "final": "car"
-      },
-      {
-        "image": "src/synthimage/generated_images/phone/phone_phone_0001_290cd668-c068-412e-bbc7-6875f642fa4b.png",
-        "true_label": "phone",
         "preds": [
           [
             "clip",
             "phone",
-            0.23190319538116455
+            0.247162327170372
           ]
         ],
         "final": "phone"
       },
       {
-        "image": "src/synthimage/generated_images/phone/phone_phone_0002_992d7a08-2b50-4363-bdea-82ce68f175cf.png",
+        "image": "src/synthimage/generated_images/phone/phone_69977215-08eb-4612-a01b-3e56a4de1bd7.png",
         "true_label": "phone",
         "preds": [
           [
             "clip",
             "phone",
-            0.24581378698349
+            0.2559306025505066
           ]
         ],
         "final": "phone"
       },
       {
-        "image": "src/synthimage/generated_images/phone/phone_phone_0003_ecbca42f-9120-4908-863e-db5471f8cece.png",
+        "image": "src/synthimage/generated_images/phone/phone_ebd2a978-ed7c-48b9-9f81-7d7402b32c18.png",
         "true_label": "phone",
         "preds": [
           [
             "clip",
             "phone",
-            0.2884460687637329
+            0.2101483792066574
+          ]
+        ],
+        "final": "phone"
+      },
+      {
+        "image": "src/synthimage/generated_images/phone/phone_11b43230-e750-4a81-b5a9-7e3ee0afccb2.png",
+        "true_label": "phone",
+        "preds": [
+          [
+            "clip",
+            "phone",
+            0.27887624502182007
           ]
         ],
         "final": "phone"

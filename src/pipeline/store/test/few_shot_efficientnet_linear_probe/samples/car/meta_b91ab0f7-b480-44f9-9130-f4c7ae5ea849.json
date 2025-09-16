@@ -1,0 +1,9 @@
+{
+  "source_image": "src/synthimage/generated_images/car/car_6649aa95-896d-491e-bc6e-d8895ddfcb7b.png",
+  "feature_meta": {
+    "model_name": "efficientnet_b0",
+    "device": "cpu",
+    "feature_dim": 1280,
+    "inference_time": 0.08470392227172852
+  }
+}

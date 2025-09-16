@@ -1,22 +1,21 @@
 {
-  "run_id": "3a55d4ab-a0d3-44d2-80f5-74a548a0422a",
+  "run_id": "02d4d772-8015-437f-822e-9ed3a82baf55",
   "mode": "user_zero_shot",
   "result": {
     "summary": {
-      "run_id": "54af1c68-3750-41bc-9126-2309bfe70fbd",
+      "run_id": "41c9ecb4-5467-4948-a0d0-8b4a12542b7f",
       "counts": {
-        "jacket": 1,
-        "phone": 1
+        "cat": 2
       }
     },
     "segments": [
       {
-        "segment_path": "segments_deeplab/8a47a65a-0360-410b-8d52-5a2ce9a609da/class_00_segment_0001.png",
+        "segment_path": "src/pipeline/store/segments/deeplab_9aaa4464-0f43-4567-ad9b-51a6d235f368/class_00_segment_0001.png",
         "feature_meta": {
           "model_name": "efficientnet_b0",
           "device": "cpu",
           "feature_dim": 1280,
-          "inference_time": 0.09022808074951172
+          "inference_time": 0.0885765552520752
         },
         "clip": {
           "labels": [
@@ -27,28 +26,28 @@
             "jacket"
           ],
           "probs": [
-            0.19768553972244263,
-            0.20071129500865936,
-            0.2007991522550583,
-            0.19950345158576965,
-            0.20130063593387604
+            0.1952088326215744,
+            0.19950953125953674,
+            0.20070557296276093,
+            0.2031099945306778,
+            0.20146605372428894
           ],
-          "predicted": "jacket",
-          "top_prob": 0.20130063593387604,
-          "inference_time": 0.7567744255065918
+          "predicted": "cat",
+          "top_prob": 0.2031099945306778,
+          "inference_time": 0.7681937217712402
         },
         "prototype_preds": null,
-        "chosen_label": "jacket",
+        "chosen_label": "cat",
         "chosen_source": "clip",
-        "chosen_score": 0.20130063593387604
+        "chosen_score": 0.2031099945306778
       },
       {
-        "segment_path": "segments_deeplab/8a47a65a-0360-410b-8d52-5a2ce9a609da/class_08_segment_0002.png",
+        "segment_path": "src/pipeline/store/segments/deeplab_9aaa4464-0f43-4567-ad9b-51a6d235f368/class_08_segment_0002.png",
         "feature_meta": {
           "model_name": "efficientnet_b0",
           "device": "cpu",
           "feature_dim": 1280,
-          "inference_time": 0.08229660987854004
+          "inference_time": 0.1644001007080078
         },
         "clip": {
           "labels": [
@@ -59,36 +58,36 @@
             "jacket"
           ],
           "probs": [
-            0.19878733158111572,
-            0.20156873762607574,
-            0.20031465590000153,
-            0.19960764050483704,
-            0.1997215896844864
+            0.1950879842042923,
+            0.19971393048763275,
+            0.20102974772453308,
+            0.20326654613018036,
+            0.20090174674987793
           ],
-          "predicted": "phone",
-          "top_prob": 0.20156873762607574,
-          "inference_time": 0.7193267345428467
+          "predicted": "cat",
+          "top_prob": 0.20326654613018036,
+          "inference_time": 0.7893750667572021
         },
         "prototype_preds": null,
-        "chosen_label": "phone",
+        "chosen_label": "cat",
         "chosen_source": "clip",
-        "chosen_score": 0.20156873762607574
+        "chosen_score": 0.20326654613018036
       }
     ],
     "metadata": {
-      "run_id": "54af1c68-3750-41bc-9126-2309bfe70fbd",
+      "run_id": "41c9ecb4-5467-4948-a0d0-8b4a12542b7f",
       "segmenter": "DeepLabv3+ (ResNet-101)",
       "feature_extractor": "efficientnet_b0",
       "clip_model": "CLIP",
-      "inference_time": 3.62844181060791,
+      "inference_time": 4.140576124191284,
       "times": {
-        "segmentation": 1.916494369506836,
-        "resnet_per_segment_avg": 0.08648478984832764,
-        "clip_per_segment_avg": 0.7694166898727417,
+        "segmentation": 2.249295473098755,
+        "resnet_per_segment_avg": 0.12810730934143066,
+        "clip_per_segment_avg": 0.8174431324005127,
         "prototype_per_segment_avg": null
       },
       "num_segments": 2,
-      "avg_confidence_clip": 0.2014346867799759,
+      "avg_confidence_clip": 0.20318827033042908,
       "avg_confidence_prototype": null
     }
   }

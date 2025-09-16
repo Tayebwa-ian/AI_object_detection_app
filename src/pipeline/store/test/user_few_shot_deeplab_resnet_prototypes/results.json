@@ -1,17 +1,17 @@
 {
-  "run_id": "b81d86c0-eaf1-415f-9c97-0d3c6b2e6ebf",
+  "run_id": "70e5a03a-5c7d-4e5e-8a6a-9f3e85cdcbcc",
   "mode": "user_few_shot",
   "result": {
     "segments": [
       {
-        "segment_path": "segments_deeplab/ef629334-331e-4181-9a5f-5c8b1df77ec6/class_00_segment_0001.png",
+        "segment_path": "src/pipeline/store/segments/deeplab_c8fd5371-104e-4fc8-8c02-01a40c6df2cb/class_00_segment_0001.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.38248348236083984
+          "inference_time": 0.5749669075012207
         },
         "classifier_pred": {
           "label": null,
@@ -21,14 +21,14 @@
         "prototype_preds": null
       },
       {
-        "segment_path": "segments_deeplab/ef629334-331e-4181-9a5f-5c8b1df77ec6/class_08_segment_0002.png",
+        "segment_path": "src/pipeline/store/segments/deeplab_c8fd5371-104e-4fc8-8c02-01a40c6df2cb/class_08_segment_0002.png",
         "feature_meta": {
           "model_name": "resnet50",
           "device": "cpu",
           "feature_dim": 3072,
           "tta": true,
           "tta_augments": 2,
-          "inference_time": 0.5687985420227051
+          "inference_time": 0.8502416610717773
         },
         "classifier_pred": {
           "label": null,
@@ -40,12 +40,12 @@
     ],
     "counts": {},
     "metadata": {
-      "run_id": "bed89938-6d2e-4ba7-b27d-3de3ec806afe",
+      "run_id": "8b049bea-74a7-4116-86c4-7fa1dd48498f",
       "segmentation_model": "DeepLabv3+ (ResNet-101)",
       "feature_model": "resnet50",
       "num_segments": 2,
-      "elapsed_time": 3.2882914543151855,
-      "avg_feature_time": 0.47565221786499023,
+      "elapsed_time": 4.103919506072998,
+      "avg_feature_time": 0.7126200199127197,
       "avg_classifier_time": null,
       "avg_prototype_time": null
     }

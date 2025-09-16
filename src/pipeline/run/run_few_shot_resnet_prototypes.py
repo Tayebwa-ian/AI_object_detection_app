@@ -2,9 +2,10 @@
 Run orchestrator in few_shot mode using ResNet + prototype classifier.
 """
 
-import pprint
+from .json_pretty_printer import save_json
 from src.pipeline.orchestrator import orchestrate
 from src.synthimage.generator import generate_images  # adjust import if needed
+from src.pipeline.config import DEFAULT_TEST_ROOT
 
 if __name__ == "__main__":
     results = orchestrate(
@@ -17,4 +18,5 @@ if __name__ == "__main__":
         n_per_label_train=5,
         n_per_label_test=3,
     )
-    pprint.pprint(results)
+    save_json(results, f"{DEFAULT_TEST_ROOT}/single_run/train/fewshot_efficientnet_logistic/results.json")
+
