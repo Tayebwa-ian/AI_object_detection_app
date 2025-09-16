@@ -375,6 +375,7 @@ class FewShotManager:
         print(f"[FewShot] test_pipeline start run_id={run_id}")
         train_summary = {}
         # build training dataset
+        self.clear_store(store_root=store_root) # clear data stored and build a fresh dataset
         for lab in labels:
             out = self.generate_and_build_dataset(label=lab, num_images=n_per_label_train,
                                                   image_generator_fn=generate_images_fn,
@@ -457,39 +458,40 @@ class FewShotManager:
             filtered = counts
         return {"counts": filtered, "segments": out["segments"], "metadata": out["metadata"]}
 
-    # ----------------------------
-    # Utility: delete store
-    # ----------------------------
+    
     def clear_store(self, store_root: str) -> None:
         """
-        Delete the final directory and all its contents. Parent directories are preserved.
-        Use with caution as this operation is irreversible.
-        
+        Clear only the 'prototypes', 'classifiers', and 'data' folders inside store_root.
+        This is useful when rebuilding a new training dataset while preserving stored samples.
+
         Args:
-            store_root (str): Path to the directory to be deleted.
-        
+            store_root (str): Root directory where all few-shot data is stored.
+
         Raises:
-            ValueError: If store_root is a critical system path.
-            OSError: If deletion fails due to permissions or other issues.
+            ValueError: If store_root is invalid or a critical system path.
         """
-        # Safety check to prevent deleting critical paths
+        # Ensure we are working with a string
+        store_root = str(store_root)
+
+        if not store_root:
+            raise ValueError("store_root cannot be empty")
+
+        # Safety: prevent accidental system deletion
         critical_paths = ["/", "/home", "/etc", "C:\\", "C:\\Windows"]
-        if store_root.rstrip(os.sep) in critical_paths or not store_root:
-            raise ValueError(f"Cannot delete critical or empty path: {store_root}")
+        if store_root.rstrip(os.sep) in critical_paths:
+            raise ValueError(f"Refusing to clear critical path: {store_root}")
 
-        # Check if the path exists and is a directory
-        if not os.path.exists(store_root):
-            logging.warning(f"Directory does not exist: {store_root}")
-            return
-        if not os.path.isdir(store_root):
-            logging.warning(f"Path is not a directory: {store_root}")
-            return
+        targets = ["samples"]
+        for folder in targets:
+            path = os.path.join(store_root, folder)
+            if os.path.exists(path):
+                try:
+                    shutil.rmtree(path)
+                    logging.info(f"[FewShot] Cleared {path}")
+                except OSError as e:
+                    logging.error(f"Failed to clear {path}: {e}")
+                    raise
+            else:
+                logging.debug(f"[FewShot] Skipped missing folder: {path}")
 
-        try:
-            # Log the deletion for auditing
-            logging.info(f"Deleting directory and contents: {store_root}")
-            shutil.rmtree(store_root)
-            logging.info(f"Successfully deleted: {store_root}")
-        except OSError as e:
-            logging.error(f"Error deleting {store_root}: {e}")
-            raise
+

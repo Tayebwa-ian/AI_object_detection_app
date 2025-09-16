@@ -1,0 +1,11 @@
+{
+  "source_image": "src/synthimage/generated_images/car/car_faa2288d-1f8a-4e57-aa6a-8a3d91c74fa8.png",
+  "feature_meta": {
+    "model_name": "resnet50",
+    "device": "cpu",
+    "feature_dim": 3072,
+    "tta": true,
+    "tta_augments": 2,
+    "inference_time": 0.8021852970123291
+  }
+}

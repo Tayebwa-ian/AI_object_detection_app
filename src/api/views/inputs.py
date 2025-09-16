@@ -105,7 +105,7 @@ class InputList(Resource):
         {
             "prompt": "cars", # label to predict
             "image_path": "/tmp/img.jpg",
-            "is_few_shot": false # if false run zero shot
+            "advanced_mode": false # if true run few shot otherwise run zero shot
             "candidate_labels": ["bicycle","car"],  # for zero_shot
         }
 
@@ -134,15 +134,29 @@ class InputList(Resource):
         # Create Input row first (so we have an id)
         sess = storage.database.session
         new_input = Input()
+
+        # add is_few_shot and is_zero_shot to data object
+        if data["advanced_mode"]:
+            data["is_few_shot"] = True
+            data["is_zero_shot"] = False
+        else:
+            data["is_few_shot"] = False
+            data["is_zero_shot"] = True
+
+        # TODO we need to create a unique image path and store the image on the file system
+        image_path = None
+
         # fill allowed fields from data
-        for f in ("prompt", "image_path", "is_few_shot", "is_zero_shot", "is_test"):
+        for f in ("prompt", "image_path", "is_few_shot", "is_zero_shot"):
             if f in data:
                 setattr(new_input, f, data[f])
+        # perform data validation
+        new_input = input_schema.load(new_input)
         sess.add(new_input)
         sess.flush()  # obtain id
 
         # If caller wants immediate classification/run
-        mode = data.get("mode")  # expected 'user_few_shot' or 'user_zero_shot' or None
+        mode = data.get("advanced_mode")
         predictions = []
         persisted_latencies = []
         run_info = None
@@ -154,12 +168,10 @@ class InputList(Resource):
 
             try:
                 # Prepare orchestrator args
-                store_root = data.get("store_root")
-                classifier_path = data.get("classifier_path")
                 candidate_labels = data.get("candidate_labels")
 
                 # If mode is zero-shot and no candidate_labels provided, attempt to use DB labels
-                if mode == "user_zero_shot" and not candidate_labels:
+                if not mode and not candidate_labels:
                     # fetch label names from DB
                     candidate_labels = [l.name for l in sess.query(Label).with_entities(Label.name).all()]
 
@@ -169,16 +181,15 @@ class InputList(Resource):
                     return {"message": "candidate_labels contains disallowed terms"}, 422
 
                 # call orchestrator - user modes
-                if mode == "user_few_shot":
+                if mode: # run few shot if true
                     res = orchestrate(
                         mode="user_few_shot",
-                        image_path=new_input.image_path,
-                        store_root=store_root or None,
-                        classifier_path=classifier_path or None,
-                        few_shot_kwargs=data.get("few_shot_kwargs"),
-                        verbose=False
+                        segmentation_model_name="sam",
+                        feature_extractor_name="resnet",
+                        few_shot_classifier_type="logistic",
+                        image_path=image_path,
                     )
-                elif mode == "user_zero_shot":
+                elif not mode: # run zero shot if true
                     res = orchestrate(
                         mode="user_zero_shot",
                         image_path=new_input.image_path,
@@ -189,9 +200,6 @@ class InputList(Resource):
                         zero_shot_kwargs=data.get("zero_shot_kwargs"),
                         verbose=False
                     )
-                else:
-                    sess.rollback()
-                    return {"message": f"unsupported mode: {mode}"}, 400
 
                 # res is expected to be a dict. We support a few common shapes:
                 # - res["outputs"] or res["predictions"] -> list of { "label": <name>|<id>, "predicted_count": int, "confidence": float, "bbox": optional }
