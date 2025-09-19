@@ -212,3 +212,6 @@ test_images/
 generated_images/
 Databases/
 segments*
+segments
+mutants/
+coverage_html/

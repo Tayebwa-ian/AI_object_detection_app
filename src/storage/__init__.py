@@ -23,3 +23,4 @@ from .labels import Label
 from .outputs import Output
 from .models_labels import ModelLabel
 from .inference_periods import InferencePeriod
+from .evaluation_runs import EvaluationRun

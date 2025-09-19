@@ -129,7 +129,7 @@ class DeepLabV3Wrapper:
             masks = dict(sorted_masks[:max_segments])
 
         # Create unique folder
-        base_folder = BASE_DIR / f"segments/deeplab_{str(uuid.uuid4())}"
+        base_folder = BASE_DIR / f"src/pipeline/store/segments/deeplab_{str(uuid.uuid4())}"
         seg_paths = self._save_segments(masks, base_folder)
 
         avg_conf = float(np.mean(confidences)) if confidences else 0.0

@@ -15,5 +15,6 @@ if __name__ == "__main__":
         segmentation_model_name="sam",
         feature_extractor_name="resnet",
         few_shot_classifier_type="logistic",
+        image_path=image_path,
     )
     save_json(results, f"{DEFAULT_TEST_ROOT}/single_run/user/fewshot_sam_resnet_logistic/results.json")

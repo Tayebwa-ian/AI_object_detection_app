@@ -1,0 +1,11 @@
+{
+  "source_image": "src/synthimage/generated_images/dog/dog_0f2a99e0-ecca-4cce-8ea9-05d438ad9870.png",
+  "feature_meta": {
+    "model_name": "resnet50",
+    "device": "cpu",
+    "feature_dim": 3072,
+    "tta": true,
+    "tta_augments": 2,
+    "inference_time": 0.4864389896392822
+  }
+}

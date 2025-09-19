@@ -4,13 +4,11 @@ from flask import request, jsonify, make_response
 from werkzeug.utils import secure_filename
 import secrets
 import os
-from marshmallow import EXCLUDE
+from ..config import IMAGE_STORAGE
 
 
-if os.getenv("UPLOAD_FOLDER"):
-    upload_folder = os.getenv("UPLOAD_FOLDER")
-else:
-    upload_folder = 'media'
+
+upload_folder = IMAGE_STORAGE
 
 
 def upload_image(request=None):

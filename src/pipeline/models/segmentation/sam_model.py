@@ -163,7 +163,7 @@ class SAMWrapper:
             masks = masks[:max_segments]
 
         # Create unique folder for this image
-        base_folder = BASE_DIR / f"segments/sam_{str(uuid.uuid4())}"
+        base_folder = BASE_DIR / f"src/pipeline/store/segments/sam_{str(uuid.uuid4())}"
         seg_paths = self._save_segments(masks, img_np, base_folder)
 
         confidences = [m.get("predicted_iou", 0.0) for m in masks]

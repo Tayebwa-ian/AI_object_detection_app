@@ -1,17 +1,12 @@
 #!/usr/bin/python3
 """
-AI Model Views - manage AIModel CRUD and run training/testing workflows.
+Multi-Stage AI Training Views
 
 Endpoints:
- - GET  /api/v1/models           list models
- - POST /api/v1/models           create an AI model
- - GET/PUT/DELETE /api/v1/models/<id>
- - POST /api/v1/models/<id>/train   run synthetic training workflow (orchestrator "few_shot")
- - POST /api/v1/models/<id>/test    run test result ingestion (store ModelLabel + InferencePeriod + EvaluationRun)
+ - POST /api/v1/models/train -> Trigger multi-stage few-shot / zero-shot workflow
 """
 from flask_restful import Resource
 from flask import request, jsonify
-from marshmallow import EXCLUDE
 import json
 import traceback
 
@@ -20,17 +15,12 @@ from src.storage.ai_models import AIModel
 from src.storage.labels import Label
 from src.storage.models_labels import ModelLabel
 from src.storage.inference_periods import InferencePeriod
-from src.storage.outputs import Output
 
-# optional EvaluationRun
 try:
     from src.storage.evaluation_runs import EvaluationRun
 except Exception:
     EvaluationRun = None
 
-from ..serializers.labels import LabelSchema
-
-# orchestrator import
 try:
     from src.pipeline.orchestrator import orchestrate
     from src.synthimage.generator import generate_images
@@ -38,386 +28,231 @@ except Exception:
     orchestrate = None
     generate_images = None
 
-label_schema = LabelSchema(unknown=EXCLUDE)
 
+class MultiStageTrain(Resource):
+    """
+    Trigger multi-stage AI training workflow: segmentation -> feature extraction -> classification,
+    persist results, metrics, and evaluation run.
 
-class ModelsList(Resource):
-    """List and create AI models."""
-
-    def get(self):
-        """
-        Get all AI models
-        ---
-        tags:
-          - Models
-        responses:
-          200:
-            description: list of ai models
-        """
-        sess = storage.database.session
-        all_models = sess.query(AIModel).order_by(AIModel.created_at.desc()).all()
-        out = [{"id": m.id, "name": m.name, "description": getattr(m, "description", None)} for m in all_models]
-        return jsonify(out), 200
+    ---
+    tags:
+      - Models
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - mode
+              - labels
+              - n_per_label_train
+              - n_per_label_test
+              - models
+            properties:
+              mode:
+                type: string
+                enum: [few_shot, zero_shot]
+                description: "Training mode"
+                example: "few_shot"
+              labels:
+                type: array
+                description: "List of labels to train/test on"
+                items:
+                  type: string
+                example: ["cat", "dog", "person"]
+              n_per_label_train:
+                type: integer
+                description: "Number of training samples per label"
+                example: 10
+              n_per_label_test:
+                type: integer
+                description: "Number of testing samples per label"
+                example: 5
+              models:
+                type: object
+                description: "Models to use at each stage"
+                required:
+                  - segmentation
+                  - feature_extraction
+                  - classification
+                properties:
+                  segmentation:
+                    type: string
+                    description: "Model ID for segmentation stage"
+                    example: "seg_model_uuid"
+                  feature_extraction:
+                    type: string
+                    description: "Model ID for feature extraction stage"
+                    example: "feat_model_uuid"
+                  classification:
+                    type: string
+                    description: "Model ID for classification stage"
+                    example: "clf_model_uuid"
+    responses:
+      201:
+        description: Multi-stage training run recorded
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                run_id:
+                  type: string
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+                labels_used:
+                  type: array
+                  items:
+                    type: string
+                  example: ["cat", "dog", "person"]
+                model_labels_inserted:
+                  type: integer
+                  example: 3
+                inference_periods_inserted:
+                  type: integer
+                  example: 1
+      400:
+        description: Invalid request
+      500:
+        description: Training failed
+    """
 
     def post(self):
-        """
-        Create a new AIModel
-        ---
-        tags:
-          - Models
-        consumes:
-          - application/json
-        parameters:
-          - in: body
-            name: body
-            required: true
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                description:
-                  type: string
-        responses:
-          201:
-            description: model created
-          422:
-            description: validation error
-        """
-        raw = request.get_json(force=True, silent=True)
-        if not raw or not raw.get("name"):
-            return {"message": "name is required"}, 422
-        sess = storage.database.session
-        # ensure unique
-        exist = sess.query(AIModel).filter_by(name=raw["name"]).one_or_none()
-        if exist:
-            return {"message": "ai model with this name already exists", "id": exist.id}, 409
-        m = AIModel(name=raw["name"], description=raw.get("description"))
-        sess.add(m)
-        sess.commit()
-        return {"id": m.id, "name": m.name, "description": m.description}, 201
-
-
-class ModelSingle(Resource):
-    """Get / Update / Delete single AI model."""
-
-    def get(self, model_id):
-        """
-        Get AI model by id
-        ---
-        tags:
-          - Models
-        parameters:
-          - in: path
-            name: model_id
-            required: true
-            type: string
-        responses:
-          200: {}
-          404: {}
-        """
-        sess = storage.database.session
-        m = sess.query(AIModel).get(model_id)
-        if not m:
-            return {"message": "not found"}, 404
-        return {"id": m.id, "name": m.name, "description": m.description}, 200
-
-    def put(self, model_id):
-        """
-        Update AI model
-        ---
-        tags:
-          - Models
-        parameters:
-          - in: path
-            name: model_id
-            required: true
-            type: string
-          - in: body
-            name: body
-            required: false
-            schema:
-              type: object
-              properties:
-                name: { type: string }
-                description: { type: string }
-        responses:
-          200: updated
-          404: not found
-        """
         raw = request.get_json(force=True, silent=True) or {}
         sess = storage.database.session
-        m = sess.query(AIModel).get(model_id)
-        if not m:
-            return {"message": "not found"}, 404
-        if raw.get("name"):
-            m.name = raw["name"]
-        if raw.get("description") is not None:
-            m.description = raw["description"]
-        sess.commit()
-        return {"id": m.id, "name": m.name, "description": m.description}, 200
 
-    def delete(self, model_id):
-        """
-        Delete AI model
-        ---
-        tags:
-          - Models
-        parameters:
-          - in: path
-            name: model_id
-            required: true
-            type: string
-        responses:
-          204: deleted
-        """
-        sess = storage.database.session
-        m = sess.query(AIModel).get(model_id)
-        if not m:
-            return {"message": "not found"}, 404
-        sess.delete(m)
-        sess.commit()
-        return {}, 204
-
-
-class ModelTrain(Resource):
-    """Trigger synthetic training/evaluation via orchestrator (few_shot/zero_shot)."""
-
-    def post(self, model_id):
-        """
-        Start a training run (synthetic few_shot by default).
-        Request JSON may include:
-          - mode: "few_shot" | "zero_shot"
-          - labels: [ "car", "bicycle", ... ]    # required for synthetic flows
-          - n_per_label_train: int
-          - n_per_label_test: int
-          - use_existing_classifier: bool
-          - classifier_params: dict
-          - gen_kwargs: dict  (forwarded to generate_images)
-        The endpoint will create an EvaluationRun (if model supports it) and persist ModelLabel
-        and InferencePeriod rows returned by the orchestrator.
-        ---
-        tags:
-          - Models
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        responses:
-          201:
-            description: Training run recorded (run_id and counts)
-          400:
-            description: invalid request
-          404:
-            description: model not found
-        """
-        raw = request.get_json(force=True, silent=True) or {}
-        sess = storage.database.session
-        m = sess.query(AIModel).get(model_id)
-        if not m:
-            return {"message": "model not found"}, 404
-
+        # Required fields
         mode = raw.get("mode", "few_shot")
-        labels = raw.get("labels")
-        if mode in ("few_shot",) and (not labels or not isinstance(labels, list)):
-            return {"message": "labels list required for synthetic few_shot training"}, 400
+        submitted_labels = raw.get("labels", [])
+        n_train = int(raw.get("n_per_label_train", 10))
+        n_test = int(raw.get("n_per_label_test", 5))
+        model_ids = raw.get("models", {})
 
-        # if orchestrator is unavailable, return error
+        if mode not in ["few_shot", "zero_shot"]:
+            return {"message": "Invalid mode"}, 400
+        if not submitted_labels or not isinstance(submitted_labels, list):
+            return {"message": "labels list required"}, 400
+        if not all(stage in model_ids for stage in ["segmentation", "feature_extraction", "classification"]):
+            return {"message": "models object must contain segmentation, feature_extraction, classification"}, 400
         if orchestrate is None:
-            return {"message": "orchestrator not available"}, 500
+            return {"message": "Orchestrator not available"}, 500
 
-        # call orchestrator for synthetic flows
         try:
-            if mode == "few_shot":
-                res = orchestrate(
-                    mode="few_shot",
-                    generate_images_fn=generate_images,
-                    labels=labels,
-                    n_per_label_train=raw.get("n_per_label_train", 10),
-                    n_per_label_test=raw.get("n_per_label_test", 5),
-                    store_root=raw.get("store_root"),
-                    classifier_path=raw.get("classifier_path"),
-                    gen_kwargs=raw.get("gen_kwargs"),
-                    use_existing_classifier=raw.get("use_existing_classifier", False),
-                    classifier_params=raw.get("classifier_params"),
-                    few_shot_kwargs=raw.get("few_shot_kwargs"),
-                    verbose=False
-                )
-            elif mode == "zero_shot":
-                res = orchestrate(
-                    mode="zero_shot",
-                    generate_images_fn=generate_images,
-                    labels=labels,
-                    candidate_labels=raw.get("candidate_labels", labels),
-                    n_per_label_test=raw.get("n_per_label_test", 5),
-                    store_root=raw.get("store_root"),
-                    gen_kwargs=raw.get("gen_kwargs"),
-                    zero_shot_kwargs=raw.get("zero_shot_kwargs"),
-                    verbose=False
-                )
-            else:
-                return {"message": f"unsupported mode: {mode}"}, 400
+            # Merge and store labels
+            final_labels = self._merge_and_store_labels(sess, submitted_labels)
 
-            # Expected res contains keys like:
-            # res["run_id"], res["label_metrics"] (list of {label, accuracy, precision, recall, f1_score}),
-            # res["latencies"] (list of floats or dicts)
-            run_id = res.get("run_id") or None
+            # Resolve model IDs to names
+            stage_models = self._resolve_models(sess, model_ids)
 
-            # Create EvaluationRun if model has such model and we can supply id
-            created_run = None
-            if EvaluationRun:
-                created_run = EvaluationRun(ai_model_id=m.id, run_type="train", metadata=json.dumps(res.get("metadata", {})) )
-                sess.add(created_run)
-                sess.flush()
-                # If orchestrator supplied run_id, we can prefer that id (try to set it)
-                if run_id:
-                    try:
-                        setattr(created_run, "id", run_id)
-                    except Exception:
-                        pass
-                run_db_id = getattr(created_run, "id", None)
-            else:
-                run_db_id = run_id
+            # Run orchestrator
+            orchestrator_res = self._run_orchestrator(mode, final_labels, n_train, n_test, stage_models)
 
-            # Persist ModelLabel rows if provided
-            model_label_rows = res.get("label_metrics") or res.get("model_labels") or []
-            ml_objs = []
-            for r in model_label_rows:
-                # resolve label id creating label if needed
-                label_name = r.get("label") or r.get("label_name")
-                if not label_name:
-                    continue
-                # find or create label
-                lbl = sess.query(Label).filter_by(name=label_name).one_or_none()
-                if not lbl:
-                    lbl = Label(name=label_name, description="auto-created by training")
-                    sess.add(lbl)
-                    sess.flush()
-                ml = ModelLabel(ai_model_id=m.id,
-                                label_id=lbl.id,
-                                accuracy=float(r.get("accuracy", 0.0)),
-                                precision=float(r.get("precision", 0.0)),
-                                recall=float(r.get("recall", 0.0)),
-                                f1_score=float(r.get("f1_score", 0.0)))
-                if hasattr(ml, "run_id") and run_db_id:
-                    setattr(ml, "run_id", run_db_id)
-                ml_objs.append(ml)
-            if ml_objs:
-                sess.add_all(ml_objs)
+            # Persist EvaluationRun
+            run_db = self._create_evaluation_run(sess, orchestrator_res)
 
-            # Persist latencies if provided
-            lat_rows = res.get("latencies") or res.get("inference_times") or []
-            lat_objs = []
-            for lat in lat_rows:
-                if isinstance(lat, dict):
-                    input_id = lat.get("input_id")
-                    val = lat.get("value")
-                else:
-                    input_id = None
-                    val = float(lat)
-                ip = InferencePeriod(ai_model_id=m.id, input_id=input_id, value=float(val))
-                if hasattr(ip, "run_id") and run_db_id:
-                    setattr(ip, "run_id", run_db_id)
-                lat_objs.append(ip)
-            if lat_objs:
-                sess.add_all(lat_objs)
+            # Persist ModelLabel metrics
+            ml_objs = self._store_model_labels(sess, run_db, orchestrator_res)
+
+            # Persist InferencePeriod metrics
+            ip_objs = self._store_inference_period(sess, run_db, orchestrator_res)
 
             sess.commit()
-            return {"run_id": run_db_id, "model_labels_inserted": len(ml_objs), "latencies_inserted": len(lat_objs)}, 201
+            return {
+                "run_id": getattr(run_db, "id", None),
+                "labels_used": final_labels,
+                "model_labels_inserted": len(ml_objs),
+                "inference_periods_inserted": len(ip_objs)
+            }, 201
 
         except Exception as e:
             sess.rollback()
             traceback.print_exc()
-            return {"message": "training failed", "error": str(e)}, 500
+            return {"message": "Training failed", "error": str(e)}, 500
 
+    # -------------------- Helper Functions -------------------- #
 
-class ModelTest(Resource):
-    """Accept test results (external) and persist them to DB as ModelLabel/InferencePeriod rows."""
+    def _merge_and_store_labels(self, sess, submitted_labels):
+        """Merge DB labels with user-submitted labels, insert missing labels."""
+        submitted_labels = [lbl.strip().lower() for lbl in submitted_labels if lbl]
+        db_labels = [lbl.name.lower() for lbl in sess.query(Label).all()]
+        merged_labels = sorted(set(submitted_labels) | set(db_labels))
 
-    def post(self, model_id):
-        """
-        Ingest test results:
-        {
-          "dataset": "testset",
-          "results": [{"label_id": "<id>", "accuracy": 0.9, "precision": 0.8, "recall": 0.85, "f1_score": 0.825}, ...],
-          "latencies": [{"input_id": "<id>", "value": 0.12}, ...],
-          "metadata": {...}
+        for lbl in merged_labels:
+            if lbl not in db_labels:
+                sess.add(Label(name=lbl, description="auto-created at training"))
+        sess.flush()
+        return merged_labels
+
+    def _resolve_models(self, sess, model_ids):
+        """Retrieve model names from DB given stage model IDs."""
+        stage_models = {}
+        for stage, mid in model_ids.items():
+            model = sess.query(AIModel).get(mid)
+            if not model:
+                raise ValueError(f"Model with ID {mid} not found for stage {stage}")
+            stage_models[stage] = model.name
+        return stage_models
+
+    def _run_orchestrator(self, mode, labels, n_train, n_test, stage_models):
+        """Call orchestrator with resolved model names per stage."""
+        return orchestrate(
+            mode=mode,
+            segmentation_model_name=stage_models.get("segmentation"),
+            feature_extractor_name=stage_models.get("feature_extraction"),
+            few_shot_classifier_type="logistic",
+            labels=labels,
+            n_per_label_train=n_train,
+            n_per_label_test=n_test,
+            candidate_labels=labels,  # for zero-shot
+            verbose=True
+        )
+
+    def _create_evaluation_run(self, sess, orchestrator_res):
+        """Persist EvaluationRun row with metadata."""
+        if not EvaluationRun:
+            return None
+        metadata = {
+            "classifier_info": orchestrator_res["result"].get("classifier_info"),
+            "train_summary": orchestrator_res["result"].get("summary", {}).get("train_summary"),
+            "metrics": orchestrator_res["result"].get("metrics"),
+            "avg_inference_time": orchestrator_res["result"].get("avg_inference_time"),
+            "total_elapsed_time": orchestrator_res["result"].get("total_elapsed_time")
         }
-        ---
-        tags:
-          - Models
-        consumes:
-          - application/json
-        responses:
-          201:
-            description: results stored
-          422:
-            description: validation error
-          404:
-            description: model not found
-        """
-        raw = request.get_json(force=True, silent=True) or {}
-        sess = storage.database.session
-        m = sess.query(AIModel).get(model_id)
-        if not m:
-            return {"message": "model not found"}, 404
+        run = EvaluationRun(ai_model_id=None, run_type="train", metadata=json.dumps(metadata))
+        sess.add(run)
+        sess.flush()
+        return run
 
-        results = raw.get("results") or []
-        latencies = raw.get("latencies") or []
-
-        # create EvaluationRun record
-        run_db = None
-        if EvaluationRun:
-            run_db = EvaluationRun(ai_model_id=m.id, run_type="test", metadata=json.dumps(raw.get("metadata", {})))
-            sess.add(run_db)
-            sess.flush()
-            run_id_db = getattr(run_db, "id", None)
-        else:
-            run_id_db = None
-
+    def _store_model_labels(self, sess, run_db, orchestrator_res):
+        """Persist ModelLabel metrics per label."""
         ml_objs = []
-        for r in results:
-            lid = r.get("label_id")
-            if not lid:
-                # try label name
-                if r.get("label"):
-                    lbl = sess.query(Label).filter_by(name=r["label"]).one_or_none()
-                    if lbl:
-                        lid = lbl.id
-                    else:
-                        # create new label
-                        new_lbl = Label(name=r["label"], description="created during test ingestion")
-                        sess.add(new_lbl)
-                        sess.flush()
-                        lid = new_lbl.id
-            # ensure label exists
-            lbl_obj = sess.query(Label).get(lid)
-            if not lbl_obj:
+        per_label_metrics = orchestrator_res["result"].get("metrics", {}).get("per_label", {})
+        for label_name, metrics in per_label_metrics.items():
+            if label_name.lower() in ["macro avg", "weighted avg"]:
                 continue
-            ml = ModelLabel(ai_model_id=m.id,
-                            label_id=lid,
-                            accuracy=float(r.get("accuracy", 0.0)),
-                            precision=float(r.get("precision", 0.0)),
-                            recall=float(r.get("recall", 0.0)),
-                            f1_score=float(r.get("f1_score", 0.0)))
-            if hasattr(ml, "run_id") and run_id_db:
-                setattr(ml, "run_id", run_id_db)
+            lbl = sess.query(Label).filter(Label.name.ilike(label_name)).one_or_none()
+            if not lbl:
+                lbl = Label(name=label_name.lower(), description="auto-created by training")
+                sess.add(lbl)
+                sess.flush()
+            ml = ModelLabel(
+                ai_model_id=None,
+                label_id=lbl.id,
+                precision=float(metrics.get("precision", 0.0)),
+                recall=float(metrics.get("recall", 0.0)),
+                f1_score=float(metrics.get("f1", 0.0)),
+                run_id=getattr(run_db, "id", None)
+            )
             ml_objs.append(ml)
         if ml_objs:
             sess.add_all(ml_objs)
+        return ml_objs
 
-        ip_objs = []
-        for lat in latencies:
-            input_id = lat.get("input_id")
-            val = lat.get("value")
-            if val is None:
-                continue
-            ip = InferencePeriod(ai_model_id=m.id, input_id=input_id, value=float(val))
-            if hasattr(ip, "run_id") and run_id_db:
-                setattr(ip, "run_id", run_id_db)
-            ip_objs.append(ip)
-        if ip_objs:
-            sess.add_all(ip_objs)
-
-        sess.commit()
-        return {"run_id": getattr(run_db, "id", None), "model_labels_inserted": len(ml_objs), "latencies_inserted": len(ip_objs)}, 201
+    def _store_inference_period(self, sess, run_db, orchestrator_res):
+        """Persist average inference time from orchestrator."""
+        avg_time = orchestrator_res["result"].get("avg_inference_time")
+        if avg_time is None:
+            return []
+        ip = InferencePeriod(ai_model_id=None, value=float(avg_time), run_id=getattr(run_db, "id", None))
+        sess.add(ip)
+        return [ip]

@@ -1,0 +1,11 @@
+{
+  "source_image": "src/synthimage/generated_images/cat/cat_c29bd6d7-350d-411f-99d5-cb90c522321a.png",
+  "feature_meta": {
+    "model_name": "resnet50",
+    "device": "cpu",
+    "feature_dim": 3072,
+    "tta": true,
+    "tta_augments": 2,
+    "inference_time": 0.5375223159790039
+  }
+}

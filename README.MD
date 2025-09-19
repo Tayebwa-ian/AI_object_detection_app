@@ -26,3 +26,25 @@ OBJ_DETECT_ENV=test OBJ_DETECT_MYSQL_DB=obj_detect_test_db python3 -m unittestst
 
 ## API Usage  
 Here we demonstrate how to send requests to the api and receive responses
+
+### Insert model name:
+```
+curl -s -H "Content-Type: application/json" -X POST -d '{"name":"resnet", "description": "resnet50 model as a feature extractor"}' http://localhost:5000/api/v1/models  
+
+{
+"id": "d0706b53-6e4d-4970-ae1e-0db065da0758",
+"name": "resnet",
+"description": "resnet50 model as a feature extractor"
+}
+
+```  
+
+### Train model
+```
+curl -s -H "Content-Type: application/json" -X POST -d '{"mode":"few_shot", "models":{"segmentation":"7020c689-282a-4d35-bbb4-ee51c94613cd", "feature_extraction":"d0706b53-6e4d-4970-ae1e-0db065da0758", "classification":"36e76e67-9b68-48c2-a043-28de1f75467f"}, "n_per_label_train":"20", "n_per_label_test":"5", "labels":["cat", "dog", "car", "phone", "person"]}' http://localhost:5000/api/v1/train
+
+
+
+
+```  
+

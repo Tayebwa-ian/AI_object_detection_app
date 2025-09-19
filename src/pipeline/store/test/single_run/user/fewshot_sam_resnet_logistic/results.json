@@ -1,0 +1,193 @@
+{
+  "run_id": "a5320dd8-c18c-4797-92d9-ce6c92658db9",
+  "mode": "user_few_shot",
+  "result": {
+    "segments": [
+      {
+        "segment_path": "src/pipeline/store/src/pipeline/store/segments/sam_15607cc9-32d8-48f8-adc3-27641a158af7/segment_0000.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 1.1315686702728271
+        },
+        "classifier_pred": {
+          "label": "cat",
+          "score": 0.457332970497879,
+          "source": "logistic"
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "src/pipeline/store/src/pipeline/store/segments/sam_15607cc9-32d8-48f8-adc3-27641a158af7/segment_0001.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 1.3261356353759766
+        },
+        "classifier_pred": {
+          "label": "car",
+          "score": 0.34758874691242825,
+          "source": "logistic"
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "src/pipeline/store/src/pipeline/store/segments/sam_15607cc9-32d8-48f8-adc3-27641a158af7/segment_0002.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 1.0829546451568604
+        },
+        "classifier_pred": {
+          "label": "phone",
+          "score": 0.4518759925854183,
+          "source": "logistic"
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "src/pipeline/store/src/pipeline/store/segments/sam_15607cc9-32d8-48f8-adc3-27641a158af7/segment_0003.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.7890331745147705
+        },
+        "classifier_pred": {
+          "label": "cat",
+          "score": 0.3597249067158117,
+          "source": "logistic"
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "src/pipeline/store/src/pipeline/store/segments/sam_15607cc9-32d8-48f8-adc3-27641a158af7/segment_0004.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.5737297534942627
+        },
+        "classifier_pred": {
+          "label": "cat",
+          "score": 0.37414010305563666,
+          "source": "logistic"
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "src/pipeline/store/src/pipeline/store/segments/sam_15607cc9-32d8-48f8-adc3-27641a158af7/segment_0005.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.5257701873779297
+        },
+        "classifier_pred": {
+          "label": "cat",
+          "score": 0.37193417699986586,
+          "source": "logistic"
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "src/pipeline/store/src/pipeline/store/segments/sam_15607cc9-32d8-48f8-adc3-27641a158af7/segment_0006.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.4869861602783203
+        },
+        "classifier_pred": {
+          "label": "phone",
+          "score": 0.5420496295076601,
+          "source": "logistic"
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "src/pipeline/store/src/pipeline/store/segments/sam_15607cc9-32d8-48f8-adc3-27641a158af7/segment_0007.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.4538602828979492
+        },
+        "classifier_pred": {
+          "label": "phone",
+          "score": 0.433840331638942,
+          "source": "logistic"
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "src/pipeline/store/src/pipeline/store/segments/sam_15607cc9-32d8-48f8-adc3-27641a158af7/segment_0008.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.46813011169433594
+        },
+        "classifier_pred": {
+          "label": "phone",
+          "score": 0.6057172738755688,
+          "source": "logistic"
+        },
+        "prototype_preds": null
+      },
+      {
+        "segment_path": "src/pipeline/store/src/pipeline/store/segments/sam_15607cc9-32d8-48f8-adc3-27641a158af7/segment_0009.png",
+        "feature_meta": {
+          "model_name": "resnet50",
+          "device": "cpu",
+          "feature_dim": 3072,
+          "tta": true,
+          "tta_augments": 2,
+          "inference_time": 0.4645965099334717
+        },
+        "classifier_pred": {
+          "label": "phone",
+          "score": 0.4010957177657098,
+          "source": "logistic"
+        },
+        "prototype_preds": null
+      }
+    ],
+    "counts": {
+      "cat": 4,
+      "car": 1,
+      "phone": 5
+    },
+    "metadata": {
+      "run_id": "d7e473cd-7bbf-4be6-99f2-f5abcb3294d6",
+      "segmentation_model": "SAM-VIT_B",
+      "feature_model": "resnet50",
+      "num_segments": 10,
+      "elapsed_time": 161.50957322120667,
+      "avg_feature_time": 0.7302910566329956,
+      "avg_classifier_time": 0.0014658212661743165,
+      "avg_prototype_time": null
+    }
+  }
+}

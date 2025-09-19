@@ -1,0 +1,11 @@
+{
+  "source_image": "src/synthimage/generated_images/person/person_b78ded81-2244-4d5b-8cf7-e2dbf82a7c1f.png",
+  "feature_meta": {
+    "model_name": "resnet50",
+    "device": "cpu",
+    "feature_dim": 3072,
+    "tta": true,
+    "tta_augments": 2,
+    "inference_time": 0.513803243637085
+  }
+}
