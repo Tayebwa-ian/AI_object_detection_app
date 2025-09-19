@@ -1,26 +1,44 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from './theme';
-import Header from './components/Header';
-import InputPage from './pages/InputPage';
-import CorrectPage from './pages/CorrectPage';
-import HistoryPage from './pages/HistoryPage';
-import ObjectTypePage from './pages/ObjectTypePage';
+// src/App.js
 
-export default function App() {
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { CssBaseline, Container } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+
+import theme from "./layout/Theme";
+import AppLayout from "./layout/AppLayout";
+import GlobalLoading from "./components/GlobalLoading";
+import { LoadingProvider } from "./context/LoadingContext";
+
+import LabelsPage from "./pages/LabelsPage";
+import ModelsPage from "./pages/ModelsPage";
+import NormalMode from "./pages/NormalMode";
+import TrainTestMode from "./pages/TrainTestMode";
+import AdvancedMode from "./pages/AdvancedMode";
+
+function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Header />
-      <Routes>
-        <Route path="/" element={<InputPage />} />
-        <Route path="/correct" element={<CorrectPage />} />
-        <Route path="/history" element={<HistoryPage />} />
-        <Route path="/objects" element={<ObjectTypePage />} />
-        <Route path="/history/:id" element={<HistoryPage />} />
-      </Routes>
+      <LoadingProvider>
+        <Router>
+          <AppLayout>
+            <Container sx={{ mt: 3 }}>
+              <Routes>
+                <Route path="/labels" element={<LabelsPage />} />
+                <Route path="/models" element={<ModelsPage />} />
+                <Route path="/normal" element={<NormalMode />} />
+                <Route path="/train" element={<TrainTestMode />} />
+                <Route path="/advanced" element={<AdvancedMode />} />
+                <Route path="/" element={<NormalMode />} />
+              </Routes>
+            </Container>
+          </AppLayout>
+        </Router>
+        <GlobalLoading />
+      </LoadingProvider>
     </ThemeProvider>
   );
 }
+
+export default App;
