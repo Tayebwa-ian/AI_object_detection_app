@@ -100,7 +100,7 @@ const NormalMode = () => {
       </Box>
 
       <Box sx={{ mt: 2 }}>
-        <Button variant="contained" onClick={handleSubmit} disabled={!files.length}>Segment & Predict</Button>
+        <Button variant="contained" onClick={handleSubmit} disabled={!files.length}>Count</Button>
       </Box>
 
       <Box sx={{ mt: 3 }}>

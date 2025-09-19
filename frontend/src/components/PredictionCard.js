@@ -21,6 +21,7 @@ import {
  *   label_of_interest,
  *   candidate_labels,
  *   predicted_count,
+ *   corrected_count,
  *   detected_labels: [{ label, count, avg_confidence, num_segments, segments: [{id,label,count,confidence,image}...] }],
  *   segments: [...],
  *   models_used: { segmentation, feature_extraction, classification },
@@ -40,6 +41,7 @@ const PredictionCard = ({ prediction, onSaveCorrected }) => {
     image,
     label_of_interest,
     predicted_count,
+    corrected_count,
     detected_labels,
     models_used,
     latencies,
@@ -87,6 +89,7 @@ const PredictionCard = ({ prediction, onSaveCorrected }) => {
           <Grid item xs={12} md={8}>
             <Typography variant="h6">Label of interest: {label_of_interest}</Typography>
             <Typography variant="subtitle1">Predicted total count: {predicted_count}</Typography>
+            <Typography variant="subtitle1">Corrected count: {corrected_count ? corrected_count : 2}</Typography>
 
             <Box sx={{ mt: 2 }}>
               <Typography variant="subtitle2">Detected labels (aggregated)</Typography>

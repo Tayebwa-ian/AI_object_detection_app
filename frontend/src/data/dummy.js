@@ -18,6 +18,7 @@ export const dummyPrediction = (file, labelOfInterest, candidateLabels = []) => 
   id: "p1",
   image: URL.createObjectURL(file),
   predicted_count: Math.floor(Math.random() * 10) + 1,
+  corrected_count: Math.floor(Math.random() * 10) + 1,
   label: labelOfInterest,
   candidate_labels: candidateLabels,
   detected_objects: candidateLabels.map((lbl) => ({
@@ -39,11 +40,14 @@ export const generateDummyPrediction = (file) => {
   }));
 
   const predictedCount = detectedObjects.reduce((sum, obj) => sum + obj.count, 0);
+  const correctedCount = detectedObjects.reduce((sum, obj) => sum + obj.count, 0);
 
   return {
     id: file ? file.name : `dummy-${Date.now()}`,
     image: imageUrl,
     predicted_count: predictedCount,
+    corrected_count: correctedCount,
+
     label: "LabelOfInterest",
     detected_objects: detectedObjects,
   };
@@ -66,15 +70,15 @@ export const dummyModels = [
 // Unified dummy training metrics (structure expected by TrainTestMode)
 export const dummyTrainingMetrics = {
   overall: {
-    accuracy: 0.92,
-    precision: 0.88,
+    accuracy: 0.72,
+    precision: 0.68,
     recall: 0.60,
-    f1_score: 0.72,
+    f1_score: 0.64,
   },
   latency: {
-    segmentation: 120, // ms
-    feature_extraction: 200,
-    classification: 80,
+    segmentation: 380, // ms
+    feature_extraction: 103,
+    classification: 120,
   },
   confusion_matrix: [
     { name: "Cat", value: 50 },
@@ -137,10 +141,11 @@ export const generateFullDummyPrediction = ({
   }));
 
   const predicted_count = detected_labels.reduce((s, l) => s + l.count, 0);
+  const corrected_count = detected_labels.reduce((s, l) => s + l.count, 0);
 
   const latencies = {
-    segmentation: Math.round(50 + Math.random() * 200),
-    feature_extraction: Math.round(80 + Math.random() * 300),
+    segmentation: Math.round(80 + Math.random() * 300),
+    feature_extraction: Math.round(40 + Math.random() * 100),
     classification: Math.round(30 + Math.random() * 100),
   };
 
@@ -150,6 +155,7 @@ export const generateFullDummyPrediction = ({
     label_of_interest: labelOfInterest,
     candidate_labels: candidateLabels,
     predicted_count,
+    corrected_count,
     detected_labels,
     segments,
     models_used: modelsUsed,

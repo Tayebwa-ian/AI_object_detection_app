@@ -1,8 +1,26 @@
 // src/pages/TrainTestMode.js
 
 import React, { useState } from "react";
-import { Box, Typography, Card, CardContent, TextField, MenuItem, Grid, Button } from "@mui/material";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  TextField,
+  MenuItem,
+  Grid,
+  Button,
+  Chip,
+} from "@mui/material";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  ResponsiveContainer,
+} from "recharts";
 import { dummyTrainingMetrics } from "../data/dummy";
 
 // stage models (can be replaced by getModels if you wire it)
@@ -22,8 +40,23 @@ const TrainTestMode = () => {
   const [trainingSamples, setTrainingSamples] = useState(100);
   const [testingSamples, setTestingSamples] = useState(20);
 
+  // New state for labels to train with
+  const [labelInput, setLabelInput] = useState("");
+  const [labelsToTrain, setLabelsToTrain] = useState([]);
+
   const handleModelChange = (stage, value) => {
     setSelectedModels((prev) => ({ ...prev, [stage]: value }));
+  };
+
+  const handleAddLabel = () => {
+    if (labelInput.trim() !== "" && !labelsToTrain.includes(labelInput.trim())) {
+      setLabelsToTrain([...labelsToTrain, labelInput.trim()]);
+      setLabelInput("");
+    }
+  };
+
+  const handleRemoveLabel = (label) => {
+    setLabelsToTrain(labelsToTrain.filter((l) => l !== label));
   };
 
   // Use the unified shape from dummyTrainingMetrics
@@ -36,7 +69,10 @@ const TrainTestMode = () => {
     { metric: "F1 Score", value: overall.f1_score },
   ];
 
-  const latencyData = Object.entries(latency).map(([stage, value]) => ({ stage, value }));
+  const latencyData = Object.entries(latency).map(([stage, value]) => ({
+    stage,
+    value,
+  }));
 
   return (
     <Box>
@@ -44,7 +80,9 @@ const TrainTestMode = () => {
         Train & Test Mode
       </Typography>
 
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Typography variant="h6">Choose models:</Typography>
+
+      <Grid container spacing={2} sx={{ mb: 3, mt: 3 }}>
         <Grid item xs={12} sm={4}>
           <TextField
             select
@@ -53,7 +91,11 @@ const TrainTestMode = () => {
             value={selectedModels.segmentation}
             onChange={(e) => handleModelChange("segmentation", e.target.value)}
           >
-            {stageModels.segmentation.map((m) => <MenuItem key={m} value={m}>{m}</MenuItem>)}
+            {stageModels.segmentation.map((m) => (
+              <MenuItem key={m} value={m}>
+                {m}
+              </MenuItem>
+            ))}
           </TextField>
         </Grid>
 
@@ -65,7 +107,11 @@ const TrainTestMode = () => {
             value={selectedModels.feature_extraction}
             onChange={(e) => handleModelChange("feature_extraction", e.target.value)}
           >
-            {stageModels.feature_extraction.map((m) => <MenuItem key={m} value={m}>{m}</MenuItem>)}
+            {stageModels.feature_extraction.map((m) => (
+              <MenuItem key={m} value={m}>
+                {m}
+              </MenuItem>
+            ))}
           </TextField>
         </Grid>
 
@@ -77,11 +123,16 @@ const TrainTestMode = () => {
             value={selectedModels.classification}
             onChange={(e) => handleModelChange("classification", e.target.value)}
           >
-            {stageModels.classification.map((m) => <MenuItem key={m} value={m}>{m}</MenuItem>)}
+            {stageModels.classification.map((m) => (
+              <MenuItem key={m} value={m}>
+                {m}
+              </MenuItem>
+            ))}
           </TextField>
         </Grid>
       </Grid>
 
+      {/* Number of samples */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6}>
           <TextField
@@ -103,30 +154,70 @@ const TrainTestMode = () => {
         </Grid>
       </Grid>
 
+      {/* Labels to train with */}
+      <Typography variant="h6" sx={{ mt: 2 }}>
+        Labels to Train With:
+      </Typography>
+      <Box sx={{ display: "flex", gap: 2, mt: 1, mb: 2 }}>
+        <TextField
+          label="Enter Label"
+          value={labelInput}
+          onChange={(e) => setLabelInput(e.target.value)}
+          fullWidth
+        />
+        <Button variant="outlined" onClick={handleAddLabel}>
+          Add
+        </Button>
+      </Box>
+      <Box sx={{ mb: 3 }}>
+        {labelsToTrain.map((label, idx) => (
+          <Chip
+            key={idx}
+            label={label}
+            onDelete={() => handleRemoveLabel(label)}
+            sx={{ mr: 1, mb: 1 }}
+          />
+        ))}
+      </Box>
+
       <Button variant="contained" sx={{ mb: 3 }}>
-        Simulate Training Session
+        Start Training Session
       </Button>
 
+      <Typography variant="h4" sx={{ mb: 2 }}>
+        Previous Training Results:
+      </Typography>
+
+      {/* Overall Metrics */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6">Overall Metrics</Typography>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={overallData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <BarChart
+              data={overallData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="metric" />
               <YAxis domain={[0, 1]} />
-              <Tooltip formatter={(value) => (value * 100).toFixed(2) + "%"} />
+              <Tooltip
+                formatter={(value) => (value * 100).toFixed(2) + "%"}
+              />
               <Bar dataKey="value" fill="#1976d2" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
+      {/* Latency Metrics */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6">Latency per Stage (ms)</Typography>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={latencyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <BarChart
+              data={latencyData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="stage" />
               <YAxis />
@@ -137,11 +228,15 @@ const TrainTestMode = () => {
         </CardContent>
       </Card>
 
+      {/* Confusion Matrix */}
       <Card>
         <CardContent>
-          <Typography variant="h6">Confusion Matrix (Dummy)</Typography>
+          <Typography variant="h6">Confusion Matrix</Typography>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={confusion_matrix} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <BarChart
+              data={confusion_matrix}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />

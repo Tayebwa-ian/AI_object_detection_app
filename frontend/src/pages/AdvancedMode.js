@@ -82,7 +82,7 @@ const AdvancedMode = () => {
       </Box>
 
       <Box sx={{ mt: 2 }}>
-        <Button variant="contained" onClick={handleSubmit} disabled={!files.length || !selectedLabelId}>Segment & Predict</Button>
+        <Button variant="contained" onClick={handleSubmit} disabled={!files.length || !selectedLabelId}>Count</Button>
       </Box>
 
       <Box sx={{ mt: 3 }}>
